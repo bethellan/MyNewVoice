@@ -30,8 +30,8 @@ const FOOD_PRESS = {
     { icon: "🧋", text: "Smoothie" },
     { icon: "🧂", text: "I need salt" },
     { icon: "🚫🧂", text: "No salt please" },
-    { icon: "<img src=\"../assets/pepper.png\" alt=\"pepper\" class=\"img-icon\">", text: "I need pepper" },
-    { icon: "<img src=\"../assets/pepper.png\" alt=\"pepper\" class=\"img-icon\">", text: "No pepper please" }
+    { icon: "🧂", text: "I need pepper" },
+    { icon: "🚫🧂", text: "No pepper please" }
   ],
   prefs: [
     { icon: "😋", text: "I like this" },
