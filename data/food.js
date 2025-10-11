@@ -40,7 +40,7 @@ const FOOD_PRESS = {
     { icon: "🍽️", text: "This is cold — could you warm it for me please?" },
     { icon: "🔥", text: "Too hot" },
     { icon: "🍽️", text: "This is hot — could you let it cool please?" },
-    { icon: "🧂", text: "Too spicy" },
+    { icon: "🌶️", text: "Too spicy" },
     { icon: "🧂", text: "Too salty" },
     { icon: "🍬", text: "Too sweet" },
     { icon: "🍋", text: "Too sour" },
