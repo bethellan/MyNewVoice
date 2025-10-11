@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <title>BuildASentence</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <h1>What do you want to talk about?</h1>
+  </header>
+
+  <main class="tile-grid">
+    <!-- Social / Chit-Chat (wide) -->
+    <a class="tile tile-wide cat-social" href="pages/social.html" aria-label="Social and Chit-Chat">
+      <div class="emoji">🗣️🗣️</div>
+      <div class="label">Social / Chit-Chat</div>
+    </a>
+
+    <!-- Other categories (examples; update icons per your preference) -->
+    <a class="tile cat-people" href="pages/people.html"><div class="emoji">👨‍👩‍👧‍👦</div><div class="label">People</div></a>
+    <a class="tile cat-personal" href="pages/personal.html"><div class="emoji">🪥</div><div class="label">Personal Care</div></a>
+    <a class="tile cat-food" href="pages/food.html"><div class="emoji">🍽️</div><div class="label">Food & Drink</div></a>
+    <a class="tile cat-feelings" href="pages/feelings.html"><div class="emoji">🙂</div><div class="label">Feelings</div></a>
+    <a class="tile cat-time" href="pages/time.html"><div class="emoji">🕒</div><div class="label">Time and Day</div></a>
+    <a class="tile cat-health" href="pages/health.html"><div class="emoji">🏥</div><div class="label">Health</div></a>
+    <a class="tile cat-objects" href="pages/objects.html"><div class="emoji">🧰</div><div class="label">Objects</div></a>
+    <a class="tile cat-comfort" href="pages/comfort.html"><div class="emoji">🧣</div><div class="label">Comfort</div></a>
+    <a class="tile cat-transport" href="pages/transport.html"><div class="emoji">🚌</div><div class="label">Transport</div></a>
+    <a class="tile cat-environment" href="pages/help.html"><div class="emoji">🏠</div><div class="label">Environment / Help</div></a>
+  </main>
+</body>
+</html>
