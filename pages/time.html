@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Time and Day</title>
+<link rel="stylesheet" href="../style.css">
+<script defer src="../script.js"></script>
+<script defer src="../data/time.js"></script></head>
+<body>
+<div class="backbar"><a href="../index.html" id="back">← Menu</a><div class="title">Time and Day</div></div>
+<section class="section">
+<h2>Time of Day</h2><div class="grid-press" id="gridDay"></div>
+<h2>Relative Time</h2><div class="grid-press" id="gridRelative"></div>
+<h2>Days of the Week</h2><div class="grid-press" id="gridWeek"></div>
+<h2>Questions & Sentences</h2><div class="grid-press" id="gridQuestions"></div>
+</section>
+<script>
+window.addEventListener('DOMContentLoaded',()=>{
+__attachBack('#back','../index.html');
+__renderPressGrid(gridDay,TIME_PRESS.day);
+__renderPressGrid(gridRelative,TIME_PRESS.relative);
+__renderPressGrid(gridWeek,TIME_PRESS.week);
+__renderPressGrid(gridQuestions,TIME_PRESS.questions);
+});
+</script>
+</body></html>

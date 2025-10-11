@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../assets/icon-192.png">
+  <title>Social / Chit-Chat</title>
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="../script.js"></script>
+  <script defer src="../data/social.js"></script>
+</head>
+<body class="app-shell">
+  <div class="backbar">
+    <a href="../index.html" id="back"><span aria-hidden="true">←</span> Menu</a>
+    <div class="title">Social / Chit-Chat</div>
+    <div aria-hidden="true" style="width:42px"></div>
+  </div>
+
+  
+
+  <section class="section">
+    <h2>Greetings</h2>
+    <div class="grid-press" id="gridGreetings"></div>
+  </section>
+
+  <section class="section">
+    <h2>Small Talk</h2>
+    <div class="grid-press" id="gridSmallTalk"></div>
+  </section>
+
+  <section class="section">
+    <h2>Feelings & Reactions</h2>
+    <div class="grid-press" id="gridReactions"></div>
+  </section>
+
+  <script>
+    // When data is loaded (SOCIAL_PRESS), render grids
+    window.addEventListener('DOMContentLoaded', ()=>{
+      __attachBack('#back','../index.html');
+
+      // Render each category
+      __renderPressGrid(document.getElementById('gridGreetings'), SOCIAL_PRESS.greetings);
+      __renderPressGrid(document.getElementById('gridSmallTalk'), SOCIAL_PRESS.smalltalk);
+      __renderPressGrid(document.getElementById('gridReactions'), SOCIAL_PRESS.reactions);
+
+      // Quick actions
+      document.getElementById('btnSpeakHello').addEventListener('click', ()=> __speak('Hello!'));
+      document.getElementById('btnClear').addEventListener('click', ()=> speechSynthesis.cancel());
+    });
+  </script>
+</body>
+</html>

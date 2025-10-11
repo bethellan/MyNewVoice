@@ -1,19 +1,19 @@
 <!doctype html>
 <html lang='en'><head>
 <meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
-<title>Environment / Help</title>
+<title>Objects</title>
 <link rel='stylesheet' href='../style.css'>
 <script defer src='../script.js'></script>
-<script defer src='../data/help.js'></script></head>
+<script defer src='../data/objects.js'></script></head>
 <body>
-<div class='backbar'><a href='../index.html' id='back'>← Menu</a><div class='title'>Environment / Help</div></div>
+<div class='backbar'><a href='../index.html' id='back'>← Menu</a><div class='title'>Objects</div></div>
 <section class='section'>
-<h2>Environment / Help</h2><div class='grid-press' id='gridHelp'></div>
+<h2>Objects</h2><div class='grid-press' id='gridObjects'></div>
 </section>
 <script>
 window.addEventListener('DOMContentLoaded',()=>{
   __attachBack('#back','../index.html');
-  __renderPressGrid(gridHelp, HELP_PRESS.help);
+  __renderPressGrid(gridObjects, OBJECTS_PRESS.things);
 });
 </script>
 </body></html>

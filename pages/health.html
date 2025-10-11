@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Health</title>
+<link rel="stylesheet" href="../style.css">
+<script defer src="../script.js"></script>
+<script defer src="../data/health.js"></script></head>
+<body>
+<div class="backbar"><a href="../index.html" id="back">← Menu</a><div class="title">Health</div></div>
+<section class="section">
+<h2>Feelings</h2><div class="grid-press" id="gridFeelings"></div>
+<h2>Pain & Discomfort</h2><div class="grid-press" id="gridPain"></div>
+<h2>Care & Support</h2><div class="grid-press" id="gridCare"></div>
+</section>
+<script>
+window.addEventListener('DOMContentLoaded',()=>{
+__attachBack('#back','../index.html');
+__renderPressGrid(gridFeelings,HEALTH_PRESS.feelings);
+__renderPressGrid(gridPain,HEALTH_PRESS.pain);
+__renderPressGrid(gridCare,HEALTH_PRESS.care);
+});
+</script>
+</body></html>
