@@ -8,7 +8,7 @@ const SOCIAL_PRESS = {
     { icon: "🌙", text: "Good evening!" },
     { icon: "🫶", text: "Nice to see you!" },
     { icon: "🙏", text: "Thank you!" },
-    { icon: "🗣️🗣️", text: "Can we chat?" },
+    { icon: "💕", text: "Love you!" },
     { icon: "👋", text: "Goodbye!" }
   ],
   smalltalk: [
