@@ -2,9 +2,9 @@ const PEOPLE_PRESS = {
   Andrew: [
     { icon: "👨‍⚕️", text: "Andrew visited today." },
     { icon: "👨‍⚕️", text: "Where is Andrew?" },
-    { icon: "👨‍⚕️", text: "Andrew is my facourite son!" },
+    { icon: "👨‍⚕️", text: "Andrew is my favourite son!" },
     { icon: "👨‍⚕️", text: "I wish Andrew was here - he's my favourite son!" },
-    { icon: "👨‍⚕️", text: "I want to talk about Andrew.  He's the favourite" }
+    { icon: "👨‍⚕️", text: "I want to talk about Andrew.  He's the favourite.  I think Malcolm might be gay!" }
   ],
   Sue: [
     { icon: "👵", text: "Sue is here." },
