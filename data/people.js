@@ -2,9 +2,9 @@ const PEOPLE_PRESS = {
   Andrew: [
     { icon: "👨‍⚕️", text: "Andrew visited today." },
     { icon: "👨‍⚕️", text: "Where is Andrew?" },
-    { icon: "👨‍⚕️", text: "How is Andrew?" },
-    { icon: "👨‍⚕️", text: "Andrew is working today." },
-    { icon: "👨‍⚕️", text: "I want to see Andrew." }
+    { icon: "👨‍⚕️", text: "Andrew is my facourite son!" },
+    { icon: "👨‍⚕️", text: "I wish Andrew was here - he's my favourite son!" },
+    { icon: "👨‍⚕️", text: "I want to talk about Andrew.  He's the favourite" }
   ],
   Sue: [
     { icon: "👵", text: "Sue is here." },
