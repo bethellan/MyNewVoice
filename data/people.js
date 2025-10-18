@@ -4,7 +4,7 @@ const PEOPLE_PRESS = {
     { icon: "👨‍⚕️", text: "Where is Andrew?" },
     { icon: "👨‍⚕️", text: "Andrew is my favourite son!" },
     { icon: "👨‍⚕️", text: "I wish Andrew was here - he's my favourite son!" },
-    { icon: "👨‍⚕️", text: "I want to talk about Andrew.  He's the favourite.  I think Malcolm might be gay!" }
+    { icon: "👨‍⚕️", text: "I want to talk about Andrew!" }
   ],
   Sue: [
     { icon: "👵", text: "Sue is here." },
