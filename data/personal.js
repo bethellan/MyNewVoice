@@ -23,7 +23,7 @@ const PERSONAL_PRESS = {
     { icon: "↕️", text: "Adjust the bed" },
     { icon: "💤", text: "I'm tired" },
     { icon: "☕", text: "I need a rest" },
-  ]
+  ],
    exercise: [
     { icon: "🏋️‍♀️", text: "I wanto to do exercise" },
     { icon: "🚷", text: "I don't wanto to do exercise" },
