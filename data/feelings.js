@@ -8,14 +8,12 @@ const FEELINGS_PRESS = {
     { icon: "😐", text: "I'm okay" },
     { icon: "😟", text: "I'm worried" },
     { icon: "😢", text: "I'm upset" },
-    { icon: "🥰", text: "I feel loved" },
     { icon: "😶", text: "I don't know how I feel" }
   ],
   physical: [
     { icon: "🥱", text: "I'm tired" },
     { icon: "🤒", text: "I'm sick" },
     { icon: "🤕", text: "I'm sore" },
-    { icon: "🤢", text: "I feel sick" },
     { icon: "🥵", text: "I'm hot" },
     { icon: "🥶", text: "I'm cold" },
     { icon: "🤧", text: "I have a runny nose" },
