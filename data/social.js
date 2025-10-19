@@ -6,13 +6,15 @@ const SOCIAL_PRESS = {
     { icon: "🌞", text: "Good morning!" },
     { icon: "🌤️", text: "Good afternoon!" },
     { icon: "🌙", text: "Good evening!" },
+    { icon: "🤷‍♂️👉", text: "How are you?" },
     { icon: "🫶", text: "Nice to see you!" },
     { icon: "🙏", text: "Thank you!" },
     { icon: "💕", text: "Love you!" },
-    { icon: "👋", text: "Goodbye!" }
+    { icon: "👋", text: "Goodbye!" },
+    { icon: "🙏", text: "Namaste!" }
   ],
   smalltalk: [
-    { icon: "☀️", text: "Beautiful day!" },
+    { icon: "☀️", text: "It's a beautiful day!" },
     { icon: "⛅", text: "How's the weather?" },
     { icon: "🍵", text: "Want a drink?" },
     { icon: "🍽️", text: "Are you hungry?" },
