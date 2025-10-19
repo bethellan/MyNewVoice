@@ -9,6 +9,8 @@ window.HELP_PRESS = {
     { icon: "🆘", text: "Please help me." },
     { icon: "🙋", text: "I need assistance." },
     { icon: "📣", text: "Can someone come here?" },
+    { icon: "🪟", text: "Please open the window" },
+    { icon: "🪟", text: "Please close the window" },
     { icon: "🔘", text: "I pressed the call button." }
   ]
 };
