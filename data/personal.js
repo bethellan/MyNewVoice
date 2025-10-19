@@ -25,9 +25,9 @@ const PERSONAL_PRESS = {
     { icon: "☕", text: "I need a rest" },
   ],
    exercise: [
-    { icon: "🏋️‍♀️", text: "I wanto to do exercise" },
-    { icon: "🚷", text: "I don't wanto to do exercise" },
+    { icon: "🏋️‍♀️", text: "I want to do exercise" },
+    { icon: "🚷", text: "I don't want to do exercise" },
     { icon: "🧍", text: "I want to stand up" },
-    { icon: "❓", text: "Is sex out of the question?" },
+    { icon: "💏", text: "Is sex out of the question?" },
   ]
 };
