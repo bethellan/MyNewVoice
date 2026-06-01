@@ -1,1 +1,1 @@
-v120_content_editor_phrase_card_layout
+v123_settings_as_real_screens

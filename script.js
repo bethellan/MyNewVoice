@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v120: True card layout for Content Editor phrase submenu; v119 section cards and v114 viewport lock retained. No schema, speech or media-storage changes. */
+/* v123: Rebuilds Settings/Content Editor navigation so Content Editor runs as a real body-level screen, not a floating panel. Restores one-row tables with internal horizontal/vertical scrolling and keeps Back/Save outside the table. v114 viewport lock retained. No schema, speech or media-storage changes. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -167,7 +167,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v120';
+const CURRENT_APP_VERSION = 'v123';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -176,7 +176,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v120';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v123';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -4179,8 +4179,16 @@ function showManagementPanel() {
     const panel = document.getElementById('managementPanel');
 
     if (overlay && panel) {
+        // v123: Content Editor must be a real top-level screen, not a floating
+        // window trapped inside the app container or Settings panel. Moving it
+        // to document.body prevents ancestor sizing, border radius, transform or
+        // overflow rules from cropping the Back/Save footer.
+        if (overlay.parentElement !== document.body) {
+            document.body.appendChild(overlay);
+        }
+        document.body.classList.add('content-editor-open');
         renderContentManagementPanel();
-        overlay.style.display = 'flex';
+        overlay.style.display = 'block';
         overlay.classList.add('show');
     }
 }
@@ -4192,6 +4200,7 @@ function hideManagementPanel() {
     if (overlay && panel) {
         overlay.classList.remove('show');
         overlay.style.display = 'none';
+        document.body.classList.remove('content-editor-open');
     }
 }
 
@@ -4225,23 +4234,22 @@ function renderContentManagementPanel() {
 
 function renderContentTopicsScreen(panel, allCategories) {
     panel.innerHTML = `
-        <div class="content-setup-header editor-style-header compact-editor-header true-card-editor-header">
+        <div class="content-setup-header editor-style-header compact-editor-header table-editor-header">
             <div class="compact-editor-title">
-                <h3 id="managementPanelTitle">Edit Sections</h3>
-                <p class="editor-header-subtitle">Choose a main menu section.</p>
+                <h3 id="managementPanelTitle">Content Editor</h3>
+                <p class="editor-header-subtitle">Select a section to edit.</p>
             </div>
         </div>
 
-        <div class="private-section-details editor-details open-editor-section true-card-editor-body">
+        <div class="private-section-details editor-details open-editor-section table-editor-body">
             <div class="editor-section-title">Main menu topics</div>
-            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> use <em>Hide</em> instead of Delete while Dad is learning. Use <em>Edit Content</em> to change the phrases inside a section.</div>
-            <div class="topic-card-list" role="list" aria-label="Main menu topics">
+            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> keep one row per section. If the row is wider than the screen, scroll left or right inside the table.</div>
+            <div class="editor-table-wrap one-row-table-wrap" role="region" aria-label="Main menu topics table" tabindex="0">
                 ${renderContentCategoryRows(allCategories)}
-                <button type="button" class="management-add-line topic-add-card" data-content-add-topic-row>＋ Add new main menu topic</button>
             </div>
         </div>
 
-        <div class="private-setup-footer editor-bottom-actions settings-standard-actionbar compact-save-actions true-card-editor-footer">
+        <div class="private-setup-footer editor-bottom-actions settings-standard-actionbar compact-save-actions table-editor-footer">
             <button type="button" class="management-btn close-btn" data-content-back-settings>Back to Settings</button>
             <button type="button" class="management-btn save-private-setup" data-content-save-close>Save Changes</button>
         </div>
@@ -4252,24 +4260,23 @@ function renderContentPhraseScreen(panel, category) {
     const phrases = buttonData[category] || [];
     const meta = getCategoryMeta(category);
     panel.innerHTML = `
-        <div class="content-setup-header editor-style-header compact-editor-header true-card-editor-header phrase-card-editor-header">
+        <div class="content-setup-header editor-style-header compact-editor-header table-editor-header phrase-table-editor-header">
             <div class="compact-editor-title">
                 <h3 id="managementPanelTitle">${escapeHtml(meta.label)}</h3>
-                <p class="editor-header-subtitle">Edit phrases.</p>
+                <p class="editor-header-subtitle">Edit submenu phrases.</p>
             </div>
         </div>
 
-        <div class="private-section-details editor-details open-editor-section true-card-editor-body phrase-card-editor-body">
-            <div class="editor-section-title">Phrases</div>
+        <div class="private-section-details editor-details open-editor-section table-editor-body phrase-table-editor-body">
+            <div class="editor-section-title">Submenu phrases</div>
             ${renderContentSectionMediaTotals(category)}
-            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> tap the photo to change the phrase picture. Use <em>Hide</em> instead of Delete if the phrase may be useful later.</div>
-            <div class="phrase-card-list" role="list" aria-label="Phrases in ${escapeHtml(meta.label)}">
+            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> each phrase stays on one row. If controls are off screen, scroll left or right inside the table.</div>
+            <div class="editor-table-wrap one-row-table-wrap" role="region" aria-label="Phrases in ${escapeHtml(meta.label)}" tabindex="0">
                 ${renderContentPhraseRows(category, phrases)}
-                <button type="button" class="management-add-line phrase-add-card" data-content-add-phrase-row>＋ Add new phrase</button>
             </div>
         </div>
 
-        <div class="private-setup-footer editor-bottom-actions settings-standard-actionbar compact-save-actions true-card-editor-footer">
+        <div class="private-setup-footer editor-bottom-actions settings-standard-actionbar compact-save-actions table-editor-footer">
             <button type="button" class="management-btn close-btn" data-content-back-topics>Back to Sections</button>
             <button type="button" class="management-btn save-private-setup" data-content-save-close>Save Changes</button>
         </div>
@@ -4290,35 +4297,63 @@ function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = 
 }
 
 function renderContentCategoryRows(allCategories) {
-    return allCategories.map(category => {
+    const rows = allCategories.map((category, index) => {
         const meta = getCategoryMeta(category);
         const hidden = meta.hidden ? 'checked' : '';
-        const index = allCategories.indexOf(category);
         const selected = contentSetupSelected?.type === 'category' && contentSetupSelected.category === category;
         return `
-            <section class="topic-editor-card ${selected ? 'selected-row' : ''}" role="listitem" data-topic-card="${escapeHtml(category)}">
-                <div class="topic-card-media">
+            <tr class="management-table-row ${selected ? 'selected-row' : ''}" data-topic-row="${escapeHtml(category)}">
+                <td class="picture-cell">
                     ${renderMediaThumbForManagement('menu', category, false, meta.icon || '🗂️')}
                     ${renderMediaSizeLine(getPrivateMediaKey('menu', category), 'Image')}
-                </div>
-                <div class="topic-card-main">
-                    <label class="topic-card-label">Section title
-                        <input type="text" class="management-input table-title-input" data-content-inline-category-label="${escapeHtml(category)}" value="${escapeHtml(meta.label)}">
-                    </label>
-                    <div class="help-text topic-card-id">ID: <code>${escapeHtml(category)}</code></div>
-                    <button type="button" class="management-btn topic-primary-action" data-content-open-topic="${escapeHtml(category)}">Edit Content</button>
-                </div>
-                <div class="topic-card-controls" aria-label="Controls for ${escapeHtml(meta.label)}">
-                    <div class="topic-card-control-row topic-move-row">
-                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" ${index <= 0 ? 'disabled' : ''}>Move Up</button>
-                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" ${index >= allCategories.length - 1 ? 'disabled' : ''}>Move Down</button>
+                </td>
+                <td class="title-cell">
+                    <input type="text" class="management-input table-title-input" data-content-inline-category-label="${escapeHtml(category)}" value="${escapeHtml(meta.label)}" aria-label="Section title">
+                    <div class="help-text table-id-line">ID: <code>${escapeHtml(category)}</code></div>
+                </td>
+                <td class="icon-cell">
+                    <input type="text" class="management-input icon-input" data-content-inline-category-icon="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(meta.icon || '')}" placeholder="${escapeHtml(meta.icon || '🗂️')}" aria-label="Fallback icon">
+                </td>
+                <td class="edit-cell">
+                    <button type="button" class="management-btn primary-table-btn" data-content-open-topic="${escapeHtml(category)}">Edit content</button>
+                </td>
+                <td class="move-cell">
+                    <div class="table-button-stack move-button-stack">
+                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" ${index <= 0 ? 'disabled' : ''}>↑</button>
+                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" ${index >= allCategories.length - 1 ? 'disabled' : ''}>↓</button>
                     </div>
-                    <label class="content-checkbox-row compact-checkbox topic-hidden-toggle"><input type="checkbox" data-content-inline-category-hidden="${escapeHtml(category)}" ${hidden}> Hidden</label>
-                    <button type="button" class="management-btn remove-btn small-management-btn topic-delete-action" data-content-delete-topic-row="${escapeHtml(category)}">Delete</button>
-                </div>
-            </section>
+                </td>
+                <td class="hidden-cell">
+                    <label class="content-checkbox-row compact-checkbox"><input type="checkbox" data-content-inline-category-hidden="${escapeHtml(category)}" ${hidden}> Hidden</label>
+                </td>
+                <td class="delete-cell">
+                    <button type="button" class="management-btn remove-btn small-management-btn" data-content-delete-topic-row="${escapeHtml(category)}">Delete</button>
+                </td>
+            </tr>
         `;
-    }).join('') || '<p class="help-text">No topics found.</p>';
+    }).join('') || '<tr><td colspan="7" class="empty-table-cell">No topics found.</td></tr>';
+
+    return `
+        <table class="management-editor-table topic-editor-table one-row-editor-table">
+            <thead>
+                <tr>
+                    <th>Picture</th>
+                    <th>Title</th>
+                    <th>Icon</th>
+                    <th>Edit</th>
+                    <th>Move</th>
+                    <th>Show / Hide</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows}
+                <tr class="management-add-row">
+                    <td colspan="7"><button type="button" class="management-add-line" data-content-add-topic-row>＋ Add new main menu topic</button></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
 }
 
 function renderVoiceStatusBadge(voiceKey) {
@@ -4332,54 +4367,72 @@ function renderVoiceStatusBadge(voiceKey) {
 
 function renderContentPhraseRows(category, phrases) {
     const people = category === 'MyPeople';
-    if (!phrases.length) {
-        return '<p class="help-text phrase-empty-card">No phrases in this section yet.</p>';
-    }
-    return phrases.map((phrase, index) => {
+    const rows = phrases.map((phrase, index) => {
         const active = contentSetupSelected?.type === 'phrase' && contentSetupSelected.category === category && contentSetupSelected.phraseId === phrase.id;
         const voiceKey = getPrivateMediaKey('voice', phrase);
         const fallbackIcon = phrase.icon || getFallbackIcon(category, phrase.text || '');
         return `
-            <section class="phrase-editor-card ${active ? 'selected-row' : ''}" role="listitem" data-phrase-card="${escapeHtml(phrase.id || '')}">
-                <div class="phrase-card-media">
+            <tr class="management-table-row ${active ? 'selected-row' : ''}" data-phrase-row="${escapeHtml(phrase.id || '')}">
+                <td class="picture-cell">
                     ${renderMediaThumbForManagement('phrase', phrase.id || '', people, fallbackIcon)}
                     ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), 'Image')}
-                </div>
-                <div class="phrase-card-main">
-                    <label class="phrase-card-label">Phrase text
-                        <input type="text" class="management-input table-title-input" data-content-inline-phrase-text="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.text || '')}" placeholder="Enter phrase text">
-                    </label>
-                    <div class="help-text phrase-card-id">ID: <code>${escapeHtml(phrase.id || '')}</code></div>
+                </td>
+                <td class="title-cell phrase-text-cell">
+                    <input type="text" class="management-input table-title-input" data-content-inline-phrase-text="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.text || '')}" placeholder="Enter phrase text" aria-label="Phrase text">
+                    <div class="help-text table-id-line">ID: <code>${escapeHtml(phrase.id || '')}</code></div>
                     ${people ? renderMyPeopleRelationshipSelect(phrase, category) : ''}
-                    <details class="phrase-more-details">
-                        <summary>Voice and icon</summary>
-                        <div class="phrase-secondary-grid">
-                            <label class="phrase-card-label">Fallback icon
-                                <input type="text" class="management-input icon-input" data-content-inline-phrase-icon="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(phrase.icon || '')}" placeholder="${escapeHtml(fallbackIcon)}">
-                            </label>
-                            <div class="phrase-voice-block">
-                                ${renderVoiceStatusBadge(voiceKey)}
-                                ${renderMediaSizeLine(voiceKey, 'Audio')}
-                                <div class="phrase-voice-buttons">
-                                    <button type="button" class="management-btn small-management-btn" data-record-voice data-key="${escapeHtml(voiceKey)}" data-text="${escapeHtml(phrase.text || '')}">Record</button>
-                                    <button type="button" class="management-btn small-management-btn" data-play-voice data-key="${escapeHtml(voiceKey)}">Play</button>
-                                    <button type="button" class="management-btn remove-btn small-management-btn" data-delete-media data-key="${escapeHtml(voiceKey)}">Delete voice</button>
-                                </div>
-                            </div>
+                </td>
+                <td class="icon-cell">
+                    <input type="text" class="management-input icon-input" data-content-inline-phrase-icon="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(phrase.icon || '')}" placeholder="${escapeHtml(fallbackIcon)}" aria-label="Fallback icon">
+                </td>
+                <td class="voice-cell">
+                    <div class="voice-cell-inner">
+                        ${renderVoiceStatusBadge(voiceKey)}
+                        ${renderMediaSizeLine(voiceKey, 'Audio')}
+                        <div class="voice-buttons table-button-stack">
+                            <button type="button" class="management-btn small-management-btn" data-record-voice data-key="${escapeHtml(voiceKey)}" data-text="${escapeHtml(phrase.text || '')}">Record</button>
+                            <button type="button" class="management-btn small-management-btn" data-play-voice data-key="${escapeHtml(voiceKey)}">Play</button>
+                            <button type="button" class="management-btn remove-btn small-management-btn" data-delete-media data-key="${escapeHtml(voiceKey)}">Delete voice</button>
                         </div>
-                    </details>
-                </div>
-                <div class="phrase-card-controls" aria-label="Controls for phrase ${escapeHtml(phrase.text || '')}">
-                    <div class="phrase-card-control-row phrase-move-row">
-                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>Move Up</button>
-                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>Move Down</button>
                     </div>
-                    <label class="content-checkbox-row compact-checkbox phrase-hidden-toggle"><input type="checkbox" data-content-inline-phrase-hidden="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" ${phrase.hidden ? 'checked' : ''}> Hidden</label>
-                    <button type="button" class="management-btn remove-btn small-management-btn phrase-delete-action" data-content-delete-phrase-row="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" data-index="${index}">Delete</button>
-                </div>
-            </section>
+                </td>
+                <td class="move-cell">
+                    <div class="table-button-stack move-button-stack">
+                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>↑</button>
+                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>↓</button>
+                    </div>
+                </td>
+                <td class="hidden-cell">
+                    <label class="content-checkbox-row compact-checkbox"><input type="checkbox" data-content-inline-phrase-hidden="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" ${phrase.hidden ? 'checked' : ''}> Hidden</label>
+                </td>
+                <td class="delete-cell">
+                    <button type="button" class="management-btn remove-btn small-management-btn" data-content-delete-phrase-row="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" data-index="${index}">Delete</button>
+                </td>
+            </tr>
         `;
-    }).join('');
+    }).join('') || '<tr><td colspan="7" class="empty-table-cell">No phrases in this section yet.</td></tr>';
+
+    return `
+        <table class="management-editor-table phrase-editor-table one-row-editor-table">
+            <thead>
+                <tr>
+                    <th>Picture</th>
+                    <th>Phrase</th>
+                    <th>Icon</th>
+                    <th>Voice</th>
+                    <th>Move</th>
+                    <th>Show / Hide</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows}
+                <tr class="management-add-row">
+                    <td colspan="7"><button type="button" class="management-add-line" data-content-add-phrase-row>＋ Add new phrase</button></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
 }
 
 function renderContentSelectedEditor() {

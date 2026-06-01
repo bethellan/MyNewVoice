@@ -1,3 +1,20 @@
+V122_CONTENT_EDITOR_FULLSCREEN_TABLE_SCREEN
+- Content Editor now opens as a true full-screen screen instead of a constrained/floating Settings panel.
+- Restored one-row table format for section and phrase editors.
+- Table area now has its own vertical and horizontal scrolling.
+- Back/Save footer is outside the table scroll area and should remain visible/unblocked.
+- Preserved v114 locked main viewport fix, Dad-facing screens, speech, media storage and backup schema.
+
+
+## v122 - Content Editor table and footer fix
+- Restored Content Editor section and phrase screens to table format.
+- Kept each section/phrase as one row rather than stacked cards.
+- Added horizontal scrolling inside the table when controls are wider than the screen.
+- Reworked the Content Editor panel as header + scrollable table body + fixed visible Back/Save footer.
+- Retained v114 locked main viewport fix.
+- Backup/export schema unchanged: top-level fields, category IDs, phrase IDs, media IDs and storage keys unchanged.
+- Dad-facing main communication screens, speech fallback, local photos and recorded voices unchanged.
+
 MyNewVoice Consolidated Changelog
 ================================
 
@@ -1839,3 +1856,10 @@ V117_CONTENT_EDITOR_MOBILE_FIT
 - Retained v119 section cards and v114 locked viewport fix.
 - No backup schema, phrase ID, media ID, storage key, speech, image or audio behaviour changes.
 
+
+
+=== v123 Settings as real screens ===
+- Moved Content Editor to document.body when opened so it is no longer trapped inside the main app container or Settings panel.
+- Restored one-row table layout with internal vertical and horizontal scrolling.
+- Kept Back/Save footer outside the table scroll area so it cannot be cropped.
+- No backup schema, media, speech, phrase IDs, category IDs or Dad-facing communication screen changes.

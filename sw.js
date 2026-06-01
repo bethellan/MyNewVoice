@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v120: Content Editor phrase cards; v119 section cards and v114 locked viewport retained; schema, media and speech unchanged.
-const CACHE_NAME = 'mynewvoice-v120-content-editor-phrase-card-layout';
+// v123: Content Editor is a true full-screen table screen with internal scrolling and an unblocked footer; v114 locked viewport retained; schema, media and speech unchanged.
+const CACHE_NAME = 'mynewvoice-v123-content-editor-fullscreen-table-screen';
 const urlsToCache = [
   './',
   './index.html',
