@@ -1,1 +1,1 @@
-v125_main_menu_title_above_image
+v126_content_editor_picture_cell_click

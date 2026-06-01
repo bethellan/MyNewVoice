@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v125: Moves main menu card titles above their images while retaining v124 real-screen Settings/Content Editor and v114 locked viewport. No schema, speech or media-storage changes. */
+/* v126: Restores picture-cell click behaviour in Content Editor tables so tapping/clicking the left image area opens the picture edit/import menu. Retains v125 title-above-image, v124 real-screen Settings, v123 Content Editor screen, and v114 locked viewport. No schema, speech or media-storage changes. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -167,7 +167,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v125';
+const CURRENT_APP_VERSION = 'v126';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -176,7 +176,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v125';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v126';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -4306,7 +4306,7 @@ function renderContentCategoryRows(allCategories) {
         const selected = contentSetupSelected?.type === 'category' && contentSetupSelected.category === category;
         return `
             <tr class="management-table-row ${selected ? 'selected-row' : ''}" data-topic-row="${escapeHtml(category)}">
-                <td class="picture-cell">
+                <td class="picture-cell picture-cell-action" data-management-image-options data-key="${escapeHtml(getPrivateMediaKey('menu', category))}" data-kind="menu" data-id="${escapeHtml(category)}" data-people="0" title="Edit or import this section picture">
                     ${renderMediaThumbForManagement('menu', category, false, meta.icon || '🗂️')}
                     ${renderMediaSizeLine(getPrivateMediaKey('menu', category), 'Image')}
                 </td>
@@ -4545,9 +4545,12 @@ async function handleContentManagementClick(event) {
 
     const imageOptionsButton = target.closest('[data-management-image-options]');
     if (imageOptionsButton) {
+        event.preventDefault();
+        event.stopPropagation();
         const kind = imageOptionsButton.dataset.kind;
         const id = imageOptionsButton.dataset.id;
-        showManagementImageOptions(kind, id, contentSetupPhraseCategory);
+        const category = imageOptionsButton.dataset.category || contentSetupPhraseCategory;
+        showManagementImageOptions(kind, id, category);
         return;
     }
 

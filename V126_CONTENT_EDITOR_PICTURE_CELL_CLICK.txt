@@ -1,0 +1,17 @@
+MyNewVoice v126 - Content Editor picture-cell click fix
+
+Targeted change from v125.
+
+Changes:
+- The full left picture cell in Content Editor tables now opens the picture options menu.
+- Main menu section picture cells open the main-menu image edit/import menu.
+- Phrase picture cells open the phrase image edit/import menu.
+- Retains table layout, one entry per row, horizontal scroll, full-screen Settings/Content Editor behaviour, and main menu title-above-image layout.
+
+Preserved:
+- Backup/export schema unchanged.
+- Protected top-level fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio retained.
+- Speech fallback unchanged.

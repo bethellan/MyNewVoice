@@ -10629,3 +10629,16 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay.show .setting
     grid-template-rows: auto minmax(116px, 1fr) !important;
   }
 }
+
+
+/* v126: Make the whole left picture cell in Content Editor act as the image edit/import trigger. */
+#managementOverlay .one-row-editor-table .picture-cell-action {
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+}
+#managementOverlay .one-row-editor-table .picture-cell-action:hover {
+  background: rgba(47, 127, 86, 0.08) !important;
+}
+#managementOverlay .one-row-editor-table .picture-cell-action .management-media-thumb {
+  pointer-events: none !important;
+}
