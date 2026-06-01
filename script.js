@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v126: Restores picture-cell click behaviour in Content Editor tables so tapping/clicking the left image area opens the picture edit/import menu. Retains v125 title-above-image, v124 real-screen Settings, v123 Content Editor screen, and v114 locked viewport. No schema, speech or media-storage changes. */
+/* v127: Reinstalls robust picture/placeholder tap handling in the Content Editor and restyles the picture options panel to match the current real-screen Settings layout. Retains v126 table layout, v125 title-above-image, v124 real-screen Settings, v123 Content Editor screen and v114 locked viewport. No schema, speech or media-storage changes. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -167,7 +167,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v126';
+const CURRENT_APP_VERSION = 'v127';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -176,7 +176,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v126';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v127';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -2496,18 +2496,23 @@ function ensureManagementImageOptionsOverlay() {
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.innerHTML = `
-        <div class="image-options-panel">
-            <div class="settings-header">
-                <h3>Picture options</h3>
-                <button type="button" class="settings-close" data-image-options-cancel aria-label="Cancel picture options">×</button>
+        <div class="image-options-panel picture-options-panel-v127">
+            <div class="image-options-header-v127">
+                <div>
+                    <h3>Picture</h3>
+                    <p id="managementImageOptionsTitle">Edit this picture box</p>
+                </div>
+                <button type="button" class="settings-close picture-options-close-v127" data-image-options-cancel aria-label="Close picture options">×</button>
             </div>
-            <p class="settings-note" id="managementImageOptionsText">Choose what to do with this picture box.</p>
-            <div class="settings-actions settings-actions-compact">
-                <button type="button" class="settings-action-btn" data-image-options-edit>✂️ Edit / re-crop current picture</button>
-                <button type="button" class="settings-action-btn" data-image-options-load>📷 Load or take new picture</button>
-                <button type="button" class="settings-action-btn" data-image-options-icon>⭐ Choose fallback icon</button>
+            <p class="settings-note picture-options-note-v127" id="managementImageOptionsText">Choose what to do with this picture box.</p>
+            <div class="picture-options-actions-v127">
+                <button type="button" class="settings-action-btn picture-option-primary-v127" data-image-options-load>📷 Add / replace picture</button>
+                <button type="button" class="settings-action-btn" data-image-options-edit>✂️ Crop current picture</button>
+                <button type="button" class="settings-action-btn" data-image-options-icon>⭐ Fallback icon</button>
                 <button type="button" class="settings-action-btn danger-settings-btn" data-image-options-delete>🗑️ Delete picture</button>
-                <button type="button" class="settings-action-btn" data-image-options-cancel>Cancel</button>
+            </div>
+            <div class="picture-options-footer-v127">
+                <button type="button" class="management-btn" data-image-options-cancel>Cancel</button>
             </div>
         </div>
     `;
@@ -2582,12 +2587,14 @@ async function showManagementImageOptions(kind, id, category = '') {
     const record = await getPrivateMediaRecord(key);
     const overlay = ensureManagementImageOptionsOverlay();
     const textEl = overlay.querySelector('#managementImageOptionsText');
+    const titleEl = overlay.querySelector('#managementImageOptionsTitle');
     const editBtn = overlay.querySelector('[data-image-options-edit]');
     const deleteBtn = overlay.querySelector('[data-image-options-delete]');
     const label = kind === 'menu' ? `${getCategoryMeta(id).label} main menu button picture` : `${(findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || id} phrase picture`;
     const phraseText = kind === 'menu' ? '' : ((findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || '');
     window.__mnvImageOptions = { kind, id, category, key, label, text: phraseText };
-    if (textEl) textEl.textContent = record ? 'This picture box already has a saved picture. You can crop it again, replace it, delete it, or choose a fallback icon.' : 'This picture box does not yet have a saved picture. You can load/take a picture or choose a fallback icon.';
+    if (titleEl) titleEl.textContent = label;
+    if (textEl) textEl.textContent = record ? 'Saved picture found. You can replace it, crop it again, delete it, or use a fallback icon.' : 'No saved picture yet. Add/take a picture, or choose a fallback icon.';
     if (editBtn) editBtn.disabled = !record;
     if (deleteBtn) deleteBtn.disabled = !record;
     overlay.style.display = 'flex';
@@ -4233,6 +4240,27 @@ function renderContentManagementPanel() {
     panel.onclick = handleContentManagementClick;
     panel.onchange = handleContentManagementChange;
     applyPrivateImagesIn(panel);
+    bindContentEditorPictureTriggers(panel);
+}
+
+function bindContentEditorPictureTriggers(panel) {
+    if (!panel) return;
+    panel.querySelectorAll('[data-management-image-options]').forEach(el => {
+        if (el.dataset.pictureTriggerBound === '1') return;
+        el.dataset.pictureTriggerBound = '1';
+        const open = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const kind = el.dataset.kind;
+            const id = el.dataset.id;
+            const category = el.dataset.category || contentSetupPhraseCategory;
+            showManagementImageOptions(kind, id, category);
+        };
+        el.addEventListener('click', open);
+        el.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') open(event);
+        });
+    });
 }
 
 function renderContentTopicsScreen(panel, allCategories) {
@@ -4287,12 +4315,12 @@ function renderContentPhraseScreen(panel, category) {
 }
 
 
-function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = '') {
+function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = '', category = '') {
     const key = getPrivateMediaKey(kind, kind === 'menu' ? id : { id });
     const roundClass = people ? ' people-thumb' : '';
     const iconText = fallbackIcon || (kind === 'menu' ? getCategoryMeta(id).icon : '🖼️');
     return `
-        <button type="button" class="management-media-thumb${roundClass}" data-management-image-options data-key="${escapeHtml(key)}" data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-people="${people ? '1' : '0'}" aria-label="Edit picture">
+        <button type="button" class="management-media-thumb${roundClass}" data-management-image-options data-key="${escapeHtml(key)}" data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-category="${escapeHtml(category)}" data-people="${people ? '1' : '0'}" aria-label="Edit or import picture">
             <img alt="" data-private-media-key="${escapeHtml(key)}" style="display:none;">
             <span class="management-thumb-fallback" data-management-thumb-key="${escapeHtml(key)}">${escapeHtml(iconText)}</span>
         </button>
@@ -4307,7 +4335,7 @@ function renderContentCategoryRows(allCategories) {
         return `
             <tr class="management-table-row ${selected ? 'selected-row' : ''}" data-topic-row="${escapeHtml(category)}">
                 <td class="picture-cell picture-cell-action" data-management-image-options data-key="${escapeHtml(getPrivateMediaKey('menu', category))}" data-kind="menu" data-id="${escapeHtml(category)}" data-people="0" title="Edit or import this section picture">
-                    ${renderMediaThumbForManagement('menu', category, false, meta.icon || '🗂️')}
+                    ${renderMediaThumbForManagement('menu', category, false, meta.icon || '🗂️', category)}
                     ${renderMediaSizeLine(getPrivateMediaKey('menu', category), 'Image')}
                 </td>
                 <td class="title-cell">
@@ -4376,8 +4404,8 @@ function renderContentPhraseRows(category, phrases) {
         const fallbackIcon = phrase.icon || getFallbackIcon(category, phrase.text || '');
         return `
             <tr class="management-table-row ${active ? 'selected-row' : ''}" data-phrase-row="${escapeHtml(phrase.id || '')}">
-                <td class="picture-cell">
-                    ${renderMediaThumbForManagement('phrase', phrase.id || '', people, fallbackIcon)}
+                <td class="picture-cell picture-cell-action" data-management-image-options data-key="${escapeHtml(getPrivateMediaKey('phrase', phrase))}" data-kind="phrase" data-id="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" data-people="${people ? '1' : '0'}" title="Edit or import this phrase picture">
+                    ${renderMediaThumbForManagement('phrase', phrase.id || '', people, fallbackIcon, category)}
                     ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), 'Image')}
                 </td>
                 <td class="title-cell phrase-text-cell">

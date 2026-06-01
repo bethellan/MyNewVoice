@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v126: Content Editor picture cells open image edit/import menu; v125 title-above-image, v124 real-screen Settings, v123 Content Editor screen and v114 locked viewport retained.
-const CACHE_NAME = 'mynewvoice-v126_content_editor_picture_cell_click';
+// v127: Content Editor picture cells open image edit/import menu; v125 title-above-image, v124 real-screen Settings, v123 Content Editor screen and v114 locked viewport retained.
+const CACHE_NAME = 'mynewvoice-v127_content_editor_picture_options_restore';
 const urlsToCache = [
   './',
   './index.html',

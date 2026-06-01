@@ -10642,3 +10642,90 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay.show .setting
 #managementOverlay .one-row-editor-table .picture-cell-action .management-media-thumb {
   pointer-events: none !important;
 }
+
+
+/* v127: robust picture edit/import targets and current-screen picture options panel. */
+#managementOverlay .one-row-editor-table .picture-cell-action,
+#managementOverlay .one-row-editor-table .picture-cell-action * {
+  cursor: pointer !important;
+}
+#managementOverlay .one-row-editor-table .picture-cell-action {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: rgba(47,127,86,.18) !important;
+}
+#managementOverlay .one-row-editor-table .picture-cell-action .management-media-thumb {
+  pointer-events: auto !important;
+}
+.picture-options-panel-v127 {
+  width: min(560px, calc(100vw - 24px)) !important;
+  max-height: calc(100dvh - 32px) !important;
+  border-radius: 22px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #f8fcf9 !important;
+  border: 1px solid rgba(47,127,86,.26) !important;
+}
+.image-options-header-v127 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 16px 18px !important;
+  background: linear-gradient(135deg, #5aaa78, #23583f) !important;
+  color: white !important;
+}
+.image-options-header-v127 h3 {
+  margin: 0 !important;
+  font-size: clamp(1.45rem, 5vw, 2rem) !important;
+  line-height: 1.05 !important;
+}
+.image-options-header-v127 p {
+  margin: 4px 0 0 !important;
+  font-size: clamp(.9rem, 3.5vw, 1.05rem) !important;
+  line-height: 1.25 !important;
+  color: rgba(255,255,255,.92) !important;
+}
+.picture-options-close-v127 {
+  flex: 0 0 auto !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.96) !important;
+  color: #17432f !important;
+}
+.picture-options-note-v127 {
+  margin: 14px 16px 8px !important;
+  padding: 12px 14px !important;
+  border-radius: 14px !important;
+  background: white !important;
+  border: 1px solid rgba(47,127,86,.18) !important;
+  color: #244436 !important;
+}
+.picture-options-actions-v127 {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+  padding: 8px 16px 14px !important;
+}
+.picture-options-actions-v127 .settings-action-btn {
+  width: 100% !important;
+  min-height: 56px !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  border-radius: 16px !important;
+  font-size: 1.05rem !important;
+}
+.picture-option-primary-v127 {
+  border-color: rgba(47,127,86,.35) !important;
+  background: linear-gradient(180deg, #ffffff, #eef8f1) !important;
+  font-weight: 900 !important;
+}
+.picture-options-footer-v127 {
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) !important;
+  border-top: 1px solid rgba(47,127,86,.16) !important;
+  background: rgba(255,255,255,.86) !important;
+}
+.picture-options-footer-v127 .management-btn {
+  width: 100% !important;
+  min-height: 52px !important;
+}
