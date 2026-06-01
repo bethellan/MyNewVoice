@@ -4228,7 +4228,7 @@ function renderContentTopicsScreen(panel, allCategories) {
         <div class="content-setup-header editor-style-header compact-editor-header">
             <div class="compact-editor-title">
                 <h3 id="managementPanelTitle">Content Editor</h3>
-                <p class="editor-header-subtitle">Step 1 of 2: choose the main menu section you want to edit.</p>
+                <p class="editor-header-subtitle">Select a section to edit.</p>
             </div>
         </div>
 
@@ -4242,7 +4242,7 @@ function renderContentTopicsScreen(panel, allCategories) {
                         <tr>
                             <th>Picture</th>
                             <th>Title</th>
-                            <th>Fallback icon</th>
+                            <th style="display:none">Fallback icon</th>
                             <th>Edit content</th>
                             <th>Move</th>
                             <th>Show / hide</th>
@@ -4286,7 +4286,7 @@ function renderContentPhraseScreen(panel, category) {
                         <tr>
                             <th>Picture</th>
                             <th>Phrase</th>
-                            <th>Fallback icon</th>
+                            <th style="display:none">Fallback icon</th>
                             <th>Voice</th>
                             <th>Move</th>
                             <th>Show / hide</th>

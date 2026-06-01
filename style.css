@@ -9121,3 +9121,33 @@ body {
     padding: 0.34rem 0.42rem !important;
   }
 }
+
+
+/* v118 mobile content editor card layout */
+@media (max-width: 1200px){
+.management-panel .editor-table-scroll-hint{display:none;}
+.management-panel .management-editor-table,
+.management-panel .management-editor-table thead,
+.management-panel .management-editor-table tbody,
+.management-panel .management-editor-table tr,
+.management-panel .management-editor-table td{
+display:block;
+width:100%;
+}
+.management-panel .management-editor-table thead{display:none;}
+.management-panel .management-editor-table tr{
+border:1px solid #d6e5d8;
+border-radius:16px;
+margin:10px 0;
+padding:10px;
+background:#fff;
+}
+.management-panel .management-editor-table td{
+border:none;
+padding:6px 4px;
+}
+.management-panel .editor-header{
+padding:10px 14px !important;
+min-height:auto !important;
+}
+}
