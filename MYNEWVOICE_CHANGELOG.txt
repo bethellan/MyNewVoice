@@ -1785,3 +1785,23 @@ v114_locked_main_viewport
 - Added a stable --mnv-app-height set at startup and reused by body, container, Settings, password and About overlays.
 - Added guarded viewport relock only for genuine orientation/large-width changes when no overlay or form input is active.
 - Updated internal version/cache/build naming to v114.
+
+
+v115 - Settings menu rewrite
+Date: 1 June 2026
+
+Changes:
+- Rebuilt the carer Settings screen as a contained full-screen panel with a fixed header and independently scrollable Settings content.
+- Reworded and regrouped Settings controls into clearer sections: Edit Content, Display & Touch, Voice & Speech, Introduction Message, Backup & Restore, Offline Use, Storage & Backup Size, Test Tools, and Advanced / Clear Device Data.
+- Made Settings buttons full-width/responsive, shortened labels, improved wrapping, and prevented titles/buttons from sitting partly off screen on iPhone.
+- Kept Dad-facing main menu and phrase screens unchanged.
+- Retained the v114 locked main viewport fix so returning from Settings does not resize the main screen.
+- Updated CURRENT_APP_VERSION, offline cache name, service worker cache name, app-version.json and BUILD_VERSION.txt to v115.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.

@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v114: restoreMainMenuLayoutAfterModal removed – Settings are full-screen fixed screens that do not alter body geometry. */
+/* v115: Settings menu rewritten; v114 viewport lock retained. restoreMainMenuLayoutAfterModal removed – Settings are full-screen fixed screens that do not alter body geometry. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -167,7 +167,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v114';
+const CURRENT_APP_VERSION = 'v115';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -176,7 +176,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v114';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v115';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -1087,23 +1087,31 @@ function ensureSettingsOverlay() {
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-labelledby', 'settingsTitle');
     overlay.innerHTML = `
-        <div class="settings-panel">
-            <div class="settings-header">
-                <h3 id="settingsTitle">Settings</h3>
+        <div class="settings-panel settings-v115-panel">
+            <div class="settings-header settings-v115-header">
+                <div class="settings-v115-title-wrap">
+                    <h3 id="settingsTitle">Settings</h3>
+                    <p class="settings-v115-subtitle">Carer controls for content, voice, backup, offline use and device storage.</p>
+                </div>
+                <button type="button" class="settings-v115-close" data-settings-close aria-label="Return to app">Return to App</button>
             </div>
-            <div class="settings-dashboard settings-task-dashboard settings-commercial-dashboard" aria-label="Settings dashboard">
-                <section class="settings-group settings-group-wide settings-section-card settings-section-information">
-                    <h4>Information</h4>
-                    <p class="settings-group-note">About MyNewVoice, version details, storage summary and offline status are shown from the Information button before this Settings area.</p>
-                    <div class="settings-actions settings-actions-compact">
-                        <button type="button" class="settings-action-btn return-app-settings-btn" data-settings-close><span class="settings-card-icon" aria-hidden="true">↩</span><span class="settings-card-text"><strong>Return to App</strong><small>Close Settings.</small></span></button>
+            <div class="settings-dashboard settings-v115-dashboard" aria-label="Settings dashboard">
+                <section class="settings-v115-card settings-v115-priority-card">
+                    <div class="settings-v115-card-head">
+                        <span class="settings-v115-card-icon" aria-hidden="true">✎</span>
+                        <div>
+                            <h4>Edit Content</h4>
+                            <p>Change phrases, menu cards, photos, fallback icons and recorded voices.</p>
+                        </div>
                     </div>
+                    <button type="button" class="settings-action-btn settings-v115-primary-action" data-open-management>
+                        <span class="settings-card-text"><strong>Open Content Editor</strong><small>Choose a section, then edit one item.</small></span>
+                    </button>
                 </section>
 
-                <details class="settings-group settings-group-wide settings-foldout-card settings-section-card settings-section-display" open>
-                    <summary>Display &amp; Touch</summary>
-                    <p class="settings-group-note">Controls how the app looks and how Dad activates buttons.</p>
-                    <div class="settings-form-grid">
+                <details class="settings-v115-card settings-v115-foldout settings-section-display" open>
+                    <summary><span>Display &amp; Touch</span><small>Main screen appearance and tap behaviour.</small></summary>
+                    <div class="settings-v115-form-grid">
                         <label for="settingsDisplayMode">View</label>
                         <select id="settingsDisplayMode" class="settings-select">
                             <option value="menu">Menu view</option>
@@ -1117,7 +1125,7 @@ function ensureSettingsOverlay() {
                             <option value="earth-sage">Earth &amp; Sage</option>
                             <option value="midnight">Midnight</option>
                         </select>
-                        <label for="settingsPressActivation">Tap setting</label>
+                        <label for="settingsPressActivation">Tap response</label>
                         <select id="settingsPressActivation" class="settings-select">
                             <option value="normal">Normal tap</option>
                             <option value="long">Long press</option>
@@ -1126,121 +1134,116 @@ function ensureSettingsOverlay() {
                     </div>
                 </details>
 
-                <details class="settings-group settings-group-wide settings-foldout-card settings-section-card settings-section-voice" open>
-                    <summary>Voice &amp; Message</summary>
-                    <p class="settings-group-note">Choose the device voice and how long spoken messages stay open.</p>
-                    <div class="settings-form-grid">
+                <details class="settings-v115-card settings-v115-foldout settings-section-voice" open>
+                    <summary><span>Voice &amp; Speech</span><small>Voice choice, speech speed, pitch and popup delay.</small></summary>
+                    <div class="settings-v115-form-grid">
                         <label for="settingsSpeechVoice">Voice choice</label>
-                        <div class="settings-inline-row settings-voice-row">
+                        <div class="settings-v115-inline">
                             <select id="settingsSpeechVoice" class="settings-select">
                                 <option value="">Default device voice</option>
                             </select>
                             <button type="button" class="management-btn small-management-btn" data-preview-speech-voice>Preview</button>
                         </div>
-                        <p id="settingsSpeechVoiceStatus" class="settings-help settings-voice-status settings-form-wide">Voice: default device voice.</p>
+                        <p id="settingsSpeechVoiceStatus" class="settings-help settings-voice-status settings-v115-wide">Voice: default device voice.</p>
                         <label for="settingsSpeechRate">Speech speed: <span id="settingsSpeechRateValue">Normal</span></label>
                         <input id="settingsSpeechRate" class="settings-range" type="range" min="0.7" max="1.2" step="0.05" value="0.9">
                         <label for="settingsSpeechPitch">Pitch: <span id="settingsSpeechPitchValue">Normal</span></label>
                         <input id="settingsSpeechPitch" class="settings-range" type="range" min="0.8" max="1.2" step="0.05" value="1">
                         <label for="settingsPopupCloseDelay">Popup delay: <span id="settingsPopupCloseDelayValue">2 seconds</span></label>
                         <input id="settingsPopupCloseDelay" class="settings-range" type="range" min="1" max="5" step="1" value="2">
-                        <label for="settingsPopupCloseMode">Message close behaviour</label>
+                        <label for="settingsPopupCloseMode">Popup close</label>
                         <select id="settingsPopupCloseMode" class="settings-select">
                             <option value="timed">Timed close</option>
                             <option value="manual">Press anywhere to close</option>
                         </select>
-                        <p class="settings-help settings-form-wide">Press-anywhere mode keeps Dad's message on screen until it has been shown.</p>
+                        <p class="settings-help settings-v115-wide">Press-anywhere mode keeps Dad's message on screen until it has been shown.</p>
                     </div>
                 </details>
 
-                <details class="settings-group settings-group-wide settings-foldout-card settings-section-card settings-section-introduction">
-                    <summary>Introduction Message</summary>
-                    <p class="settings-group-note">Optional opening message for Dad.</p>
-                    <div class="settings-form-grid">
+                <details class="settings-v115-card settings-v115-foldout settings-section-introduction">
+                    <summary><span>Introduction Message</span><small>Optional opening message for Dad.</small></summary>
+                    <div class="settings-v115-form-grid">
                         <label for="settingsIntroductionEnabled">Introduction</label>
                         <select id="settingsIntroductionEnabled" class="settings-select">
                             <option value="off">Off</option>
                             <option value="on">On</option>
                         </select>
                     </div>
-                    <div id="introductionSettingsPanel" class="introduction-settings-panel" hidden>
+                    <div id="introductionSettingsPanel" class="introduction-settings-panel settings-v115-intro-panel" hidden>
                         <label for="settingsIntroductionText">Text</label>
                         <textarea id="settingsIntroductionText" class="settings-textarea" maxlength="500" placeholder="Hello, my name is... Please give me time."></textarea>
                         <label for="settingsIntroductionIcon">Icon</label>
-                        <div class="introduction-inline-actions">
+                        <div class="settings-v115-inline">
                             <input id="settingsIntroductionIcon" class="settings-icon-input" maxlength="4" value="👋">
                             <button type="button" class="management-btn small-management-btn" data-intro-icon-menu>Choose</button>
                         </div>
-                        <div class="introduction-inline-actions introduction-media-actions">
+                        <div class="settings-v115-button-row">
                             <button type="button" class="management-btn small-management-btn" data-intro-image-options>Picture</button>
                             <button type="button" class="management-btn small-management-btn" data-intro-record>Record</button>
                             <button type="button" class="management-btn small-management-btn" data-intro-play>Play</button>
                             <button type="button" class="management-btn remove-btn small-management-btn" data-intro-delete-audio>Delete audio</button>
                         </div>
-                        <div class="introduction-save-row settings-standard-actionbar compact-save-actions">
+                        <div class="settings-standard-actionbar compact-save-actions settings-v115-save-row">
                             <button type="button" class="management-btn close-btn" data-intro-cancel>Cancel</button>
                             <button type="button" class="management-btn save-private-setup" data-intro-save>Save</button>
                         </div>
                     </div>
                 </details>
 
-                <section class="settings-group settings-group-wide settings-section-card settings-section-content">
-                    <h4>Photos, Voices &amp; Phrases</h4>
-                    <p class="settings-group-note">Edit Dad's main menu cards, phrase rows, pictures, fallback icons and recorded voices.</p>
-                    <div class="carer-workflow-note" role="note">
-                        <strong>Suggested order:</strong> choose a section → choose a phrase → edit text, picture or voice → save changes. Export a backup before large changes.
+                <section class="settings-v115-card settings-section-backup">
+                    <div class="settings-v115-card-head">
+                        <span class="settings-v115-card-icon" aria-hidden="true">⇅</span>
+                        <div>
+                            <h4>Backup &amp; Restore</h4>
+                            <p>Save a complete backup before large edits or when moving to another device.</p>
+                        </div>
                     </div>
-                    <div class="settings-actions settings-actions-compact">
-                        <button type="button" class="settings-action-btn settings-action-prominent" data-open-management><span class="settings-card-icon" aria-hidden="true">✎</span><span class="settings-card-text"><strong>Edit Content</strong><small>Step-by-step phrase, photo and voice setup.</small></span></button>
-                    </div>
-                </section>
-
-                <section class="settings-group settings-group-wide settings-section-card settings-section-backup">
-                    <h4>Backup &amp; Restore</h4>
-                    <p class="settings-group-note">Save a complete backup before making large changes or moving to another device.</p>
-                    <div class="settings-actions settings-actions-compact">
-                        <button type="button" class="settings-action-btn" data-export-full-backup><span class="settings-card-icon" aria-hidden="true">⇩</span><span class="settings-card-text"><strong>Export Backup</strong><small>Save everything.</small></span></button>
-                        <button type="button" class="settings-action-btn" data-import-full-backup><span class="settings-card-icon" aria-hidden="true">⇧</span><span class="settings-card-text"><strong>Import Backup</strong><small>Load backup.</small></span></button>
+                    <div class="settings-v115-actions-two">
+                        <button type="button" class="settings-action-btn" data-export-full-backup><span class="settings-card-text"><strong>Export Backup</strong><small>Save everything.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-import-full-backup><span class="settings-card-text"><strong>Import Backup</strong><small>Load a saved backup.</small></span></button>
                         <input type="file" id="fullBackupImportFile" accept=".mnvoice,.mnvoice.json,.json,application/json" hidden>
                     </div>
                 </section>
 
-                <details class="settings-group settings-group-wide settings-foldout-card settings-section-card settings-section-offline">
-                    <summary>Offline &amp; Storage</summary>
-                    <p class="settings-group-note">Keep the app available offline and manage backup size.</p>
+                <details class="settings-v115-card settings-v115-foldout settings-section-offline">
+                    <summary><span>Offline Use</span><small>Save the app so it opens without internet.</small></summary>
                     <div id="offlineStatusPanel" class="settings-status-panel">Checking offline status…</div>
+                    <div class="settings-v115-actions-two">
+                        <button type="button" class="settings-action-btn" data-prepare-offline><span class="settings-card-text"><strong>Save Offline</strong><small>Download app files.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-check-offline-ready><span class="settings-card-text"><strong>Check Offline</strong><small>Check saved files.</small></span></button>
+                    </div>
+                </details>
+
+                <details class="settings-v115-card settings-v115-foldout settings-section-storage">
+                    <summary><span>Storage &amp; Backup Size</span><small>Review photos, voices and local storage.</small></summary>
                     <div id="mediaQualityPanel" class="settings-status-panel">Checking media…</div>
                     <div id="storageHealthPanel" class="settings-status-panel">Checking storage health…</div>
-                    <div class="settings-actions settings-actions-compact">
-                        <button type="button" class="settings-action-btn" data-prepare-offline><span class="settings-card-icon" aria-hidden="true">⬇</span><span class="settings-card-text"><strong>Save Offline</strong><small>Download app files.</small></span></button>
-                        <button type="button" class="settings-action-btn" data-check-offline-ready><span class="settings-card-icon" aria-hidden="true">✓</span><span class="settings-card-text"><strong>Check Offline</strong><small>Test without internet.</small></span></button>
-                        <button type="button" class="settings-action-btn" data-check-storage-health><span class="settings-card-icon" aria-hidden="true">ⓘ</span><span class="settings-card-text"><strong>Storage Health</strong><small>Images, voices and unused files.</small></span></button>
-                        <button type="button" class="settings-action-btn" data-compress-images-good><span class="settings-card-icon" aria-hidden="true">◒</span><span class="settings-card-text"><strong>Compress Photos</strong><small>Smaller backup, good quality.</small></span></button>
-                        <button type="button" class="settings-action-btn" data-compress-images-smallest><span class="settings-card-icon" aria-hidden="true">◐</span><span class="settings-card-text"><strong>Shrink Photos</strong><small>Smallest backup, lower quality.</small></span></button>
+                    <div class="settings-v115-actions-two">
+                        <button type="button" class="settings-action-btn" data-check-storage-health><span class="settings-card-text"><strong>Check Storage</strong><small>Images, voices and unused files.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-compress-images-good><span class="settings-card-text"><strong>Compress Photos</strong><small>Smaller backup, good quality.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-compress-images-smallest><span class="settings-card-text"><strong>Make Photos Smaller</strong><small>Smallest backup, lower quality.</small></span></button>
                     </div>
                 </details>
 
-                <details class="settings-group settings-group-wide settings-foldout-card settings-section-card settings-section-test">
-                    <summary>Test Tools</summary>
-                    <p class="settings-group-note">Use after editing content, recording voices or changing speech settings.</p>
+                <details class="settings-v115-card settings-v115-foldout settings-section-test">
+                    <summary><span>Test Tools</span><small>Check speech, photos and saved voices.</small></summary>
                     <div id="settingsTestPanel" class="settings-status-panel">Run these after editing content or recording voices.</div>
-                    <div class="settings-actions settings-actions-compact">
-                        <button type="button" class="settings-action-btn" data-test-speech><span class="settings-card-icon" aria-hidden="true">🔊</span><span class="settings-card-text"><strong>Speech</strong><small>Speak a test phrase.</small></span></button>
-                        <button type="button" class="settings-action-btn" data-test-photos><span class="settings-card-icon" aria-hidden="true">◉</span><span class="settings-card-text"><strong>Photos &amp; Voices</strong><small>Check saved media.</small></span></button>
+                    <div class="settings-v115-actions-two">
+                        <button type="button" class="settings-action-btn" data-test-speech><span class="settings-card-text"><strong>Test Speech</strong><small>Speak a test phrase.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-test-photos><span class="settings-card-text"><strong>Test Photos &amp; Voices</strong><small>Check saved media.</small></span></button>
                     </div>
                 </details>
 
-                <details class="settings-group settings-group-wide settings-foldout-card settings-section-card settings-section-advanced">
-                    <summary>Advanced / Clear Device Data</summary>
-                    <p class="settings-group-note">Export a backup first. These remove saved files from this device and require confirmation.</p>
-                    <div class="settings-actions settings-actions-compact">
-                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-unused-media><span class="settings-card-icon" aria-hidden="true">⌧</span><span class="settings-card-text"><strong>Unused Media</strong><small>Remove orphan files.</small></span></button>
-                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-images><span class="settings-card-icon" aria-hidden="true">⌧</span><span class="settings-card-text"><strong>Images</strong><small>Remove pictures.</small></span></button>
-                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-audio><span class="settings-card-icon" aria-hidden="true">⌧</span><span class="settings-card-text"><strong>Audio</strong><small>Remove voices.</small></span></button>
+                <details class="settings-v115-card settings-v115-foldout settings-section-advanced">
+                    <summary><span>Advanced / Clear Device Data</span><small>Export a backup first. Confirmation required.</small></summary>
+                    <div class="settings-v115-actions-two">
+                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-unused-media><span class="settings-card-text"><strong>Remove Unused Media</strong><small>Delete orphan files only.</small></span></button>
+                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-images><span class="settings-card-text"><strong>Remove All Images</strong><small>Delete pictures from this device.</small></span></button>
+                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-audio><span class="settings-card-text"><strong>Remove All Audio</strong><small>Delete voices from this device.</small></span></button>
                     </div>
                 </details>
-            </div>        </div>
-    `;
+            </div>
+        </div>    `;
 
     overlay.addEventListener('click', (event) => {
         if (event.target.closest('[data-settings-close]')) {
