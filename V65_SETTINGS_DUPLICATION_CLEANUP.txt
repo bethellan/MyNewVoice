@@ -1,0 +1,22 @@
+MyNewVoice v65 - Settings duplication cleanup
+
+Changes:
+- Removed the duplicate Offline check button from the Test section.
+- Kept offline checking in Offline & Storage only.
+- Shortened/clarified Offline & Storage labels:
+  - Save Offline: Download app files.
+  - Check Offline: Ready without internet?
+  - Storage Health: Images, voices, unused files.
+  - Compress Photos: Reduce backup size.
+  - Shrink Photos: Smaller, lower quality.
+  - Try Protect Storage: Device support varies.
+- Test section now focuses on Speech and Photos/Voices.
+- Preserved v64 compact Cancel / Save edit footers and v63 update refresh fix.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.

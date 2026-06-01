@@ -1,0 +1,1693 @@
+MyNewVoice Consolidated Changelog
+================================
+
+Legacy version note files consolidated.
+
+--- V10_CENTERED_SUBMENU_ROWS.txt ---
+MyNewVoice v10 - Centered submenu rows
+
+Change summary:
+- Vertically centered the left image/icon and right phrase text within each large submenu row button.
+- Preserved stacked submenu layout, locked title bar, category colours, phrase popup, recorded voice fallback, device generated speech, photo setup and backup/import features.
+- Updated service-worker cache name to force refreshed CSS after GitHub upload.
+
+
+--- V11_IMAGE_CROPPER.txt ---
+MyNewVoice v11 - Image cropper
+
+Changes:
+- Added a crop step after choosing a local photo in Settings -> Photo / Voice Setup.
+- Photos can be cropped before being saved locally on the device/browser.
+- Square and rectangle crop modes are available in the crop screen.
+- Phrase images default to square crops.
+- Top menu and zoom images default to rectangle crops.
+- Saved images are rendered with object-fit cover/contain as already appropriate, so images should not be stretched.
+- Submenu phrase rows and left image slots were made moderately taller so cropped photos are easier to see.
+
+Private photos and recorded voices remain local to the device/browser unless exported through the private backup tool.
+
+
+--- V12_IOS_TTS_NO_SUBTITLES.txt ---
+MyNewVoice v12 - iPhone text-to-speech fallback and popup cleanup
+
+Changes:
+- Fixed generated device speech fallback on iPhone/iPad by avoiding an async IndexedDB lookup before speechSynthesis when no local recording is known.
+- If a phrase has a recorded voice, the recording still plays first.
+- If no recorded voice exists, device text-to-speech starts immediately from the tap event.
+- Removed subtitles UI and subtitle overlay.
+- Removed the X button from the phrase popup.
+- Phrase popup now closes 2 seconds after recorded or generated speech finishes.
+- Existing photos, cropper, local voice recording, backup/import, menu order, and layout are retained.
+
+
+--- V13_PASSWORD_COMPACT_PHOTO_VOICE_SETUP.txt ---
+MyNewVoice v13 - Password-protected compact Photo / Voice Setup
+
+Changes:
+- Photo / Voice Setup is now behind the existing management password.
+- Photo / Voice Setup now uses a section picker plus a collapsed item list and one selected-item control panel, rather than repeating full controls for every phrase.
+- SAVE CHANGES closes the setup screen and returns to the main app.
+- My People phrase images use a fixed circular crop.
+- Other phrase images use a fixed square crop.
+- Top menu images use a fixed square crop.
+- Zoom images use a fixed rectangle crop.
+- Shape options are no longer shown to the user.
+- The photo picker accepts image files from the device. On iPhone/Android this allows the native photo/camera chooser where the browser supports it.
+- The Main menu button inside submenus is smaller.
+- Settings/theme/about icons are visible on the main screen only and hidden inside submenus.
+
+
+--- V14_CARER_CONTENT_SETUP.txt ---
+MyNewVoice v14 - Carer Content Setup
+
+Changes:
+- Rebuilt Content Management as a password-protected carer dashboard.
+- Added top menu section editing: rename, hide/show, and reorder.
+- Added one-selected-phrase editing: edit text, optional fallback icon, hide/show, reorder, and delete.
+- Added safer Add Phrase workflow with automatic stable ID and photo filename generation.
+- Added content backup/export that includes phrase data and top menu configuration.
+- Preserved dad-facing communication layout, speech fallback, image cropper, photo/voice setup, and popup behaviour.
+
+Note:
+- Private photos and recorded voices are still managed and backed up separately through Photo / Voice Setup.
+- Hiding a phrase or section is safer than deleting it because hidden content can be restored later.
+
+
+--- V15_SAFE_REFRESH_SETTINGS_ONLY.txt ---
+MyNewVoice v15 - Safe Refresh and Settings-only Main Controls
+
+Changes:
+- Added Settings > Refresh app code.
+- Refresh app code deletes only MyNewVoice app caches and asks the service worker to update.
+- Refresh app code does not clear IndexedDB, so locally saved photos and recorded voices are preserved.
+- The refresh pathway is designed for iPhone/iPad, Android and desktop browsers.
+- Removed the main-screen About/info button. About is now inside Settings only.
+- Removed the main-screen day/night theme button. The app stays in the standard light appearance.
+- Settings remains the only floating main-screen control.
+- Settings is hidden inside submenus so the phrase screen stays uncluttered.
+
+
+--- V16_SINGLE_PHRASE_IMAGE_FULL_BACKUP.txt ---
+MyNewVoice v16 - single phrase image and complete backup
+
+Changes:
+- Photo / Voice Setup wording now explains where the selected picture will appear.
+- Top menu images are cropped square and downsized before local storage.
+- Phrase photos use one image only: it appears beside the phrase and in the spoken popup.
+- My People photos are cropped circular.
+- Separate phrase zoom image setup has been removed from the setup workflow. Legacy zoom images may still display if already present.
+- Images are downsized/cropped at selection time to reduce storage and backup size.
+- Settings now includes password-protected complete backup export/import.
+- Complete backup preserves menu/phrase content, menu order/visibility, local photos, and recorded voices.
+- Backup files use the .mnvoice extension and are intended to work on iPhone/iPad, Android, and PC.
+
+
+--- V17_CLEAR_IMAGES_AUDIO.txt ---
+MyNewVoice v17 - separate clear images/audio maintenance
+
+Added password-protected Settings actions:
+- Remove all images
+- Remove all audio
+
+Each action has a two-step confirmation prompt because it is destructive.
+Removing images keeps recorded voices, text, menu structure, and phrase setup.
+Removing audio keeps images, text, menu structure, and phrase setup; phrases fall back to device speech.
+Export a complete backup before using either action if the current setup needs to be preserved.
+
+
+--- V18_PC_TTS_TITLEBAR_SPLIT.txt ---
+MyNewVoice v18 - PC text-to-speech fallback and submenu titlebar split
+
+Changes:
+- Improved browser/device text-to-speech fallback when no recorded voice exists.
+- Keeps a live utterance reference and retries once after voices initialise for desktop Chrome/Edge.
+- Adds speech priming after the first user gesture.
+- Splits submenu title bar into a left square back-arrow button and a larger title section.
+- Prevents the back button from overlapping the submenu title.
+- Preserves backup/export schema, local images, local audio, content setup and Dad-facing layout.
+
+
+--- V19_CUSTOM_CATEGORIES_EDITOR_LAYOUT.txt ---
+MyNewVoice v19 - Custom categories and editor-style settings
+
+Changes:
+- Imported custom top-menu categories from complete backups are now preserved and shown.
+- Unknown/custom category IDs are no longer filtered out during import or rendering.
+- Content editing now uses a more editor-style table layout inspired by the standalone MyNewVoice Backup Editor.
+- Settings top menu is simplified: editing, complete import/export, remove images/audio, refresh app code, and About.
+- Content Management now includes menu/phrase text editing plus picture and voice controls in the same carer editor area.
+- Backup/export schema is unchanged and remains compatible with v17+ complete backups and the separate editor.
+
+
+--- V20_SETTINGS_EDITOR_NAVIGATION_FIX.txt ---
+MyNewVoice v20 - Settings/editor navigation fix
+
+Changes:
+- Settings now asks for the password once when Settings is opened.
+- Repeated password prompts were removed from the Settings actions.
+- Settings menu retained the practical carer actions: edit content/media, export complete backup, import complete backup, remove all images, remove all audio, refresh app code, and About.
+- The in-app MyNewVoice Content Editor now uses a two-step workflow:
+  1. Main menu topics table.
+  2. Edit content opens a separate phrase list screen for that selected topic.
+- The phrase editor/dropdown selector was removed from the top topics page.
+- The editor no longer closes when tapping outside the panel, reducing accidental shutdown during editing.
+- Management image thumbnail previews now load local stored images after selecting/taking/cropping a picture.
+- The image picker no longer forces camera-only capture, allowing the device/browser to offer camera, photo library, or file selection where supported.
+
+Backup schema:
+- No backup/export schema change.
+- The protected complete-backup fields remain unchanged: type, version, exportedAt, appVersion, buttonData, categoryConfig, mediaRecords.
+
+
+--- V22_SETTINGS_VISUAL_TIDY.txt ---
+MyNewVoice v22 - Settings visual tidy
+
+Appearance-only update.
+
+Changes:
+- Tidied Settings dashboard styling.
+- Improved full-screen content editor header, table cards, row spacing, picture boxes, icon controls, action buttons, horizontal scroll hint, and sticky Save/Cancel bar.
+- No functionality changes.
+- No backup/export schema changes.
+- Local photos and audio are not cleared or modified.
+- Dad-facing communication layout and speech behaviour are unchanged.
+
+
+--- V23_SETTINGS_ENTRY_CLEANUP.txt ---
+MyNewVoice v23 - Settings entry cleanup
+
+Changes:
+- Removed oversized Content Editor intro text from the top of the editor.
+- Added a Back to Settings button on the Content Editor topics screen.
+- Settings now opens directly as a full-screen panel instead of briefly appearing small then resizing.
+- Management editor opening animation/resize effect disabled.
+
+Preserved:
+- No backup/export schema changes.
+- No import/export behaviour changes.
+- No Dad-facing communication layout changes.
+- No local image/audio storage changes.
+
+
+--- V25_SETTINGS_NAVIGATION_REFINE.txt ---
+MyNewVoice v25 - Settings Navigation Refine
+
+Changes:
+- Added Return to App button on the main Settings menu.
+- Settings now exits to the app only from the main Settings menu.
+- Content editor Save returns one level up instead of closing the whole settings flow.
+- Phrase editor Save returns to the main topics editor.
+- Topics editor Save returns to Settings.
+- Cancel/back actions return one level up.
+
+Preserved:
+- Backup/export schema.
+- Local images/audio.
+- Dad-facing layout.
+- Speech fallback.
+- Custom category support.
+
+
+--- V26_STABILISED_CODEBASE.txt ---
+MyNewVoice v26 - Stabilised Codebase
+
+Purpose:
+Stabilisation-only pass from v25. No new Dad-facing features and no backup schema change.
+
+Cleaned:
+- Updated app/export version references to v26.
+- Removed duplicate/incorrect complete-backup import hooks from unrelated overlays.
+- Routed dormant legacy Photo / Voice Setup password path to the current editor-style content manager.
+- Made media refreshes update the current editor/communication UI and avoid unnecessary legacy overlay refreshes unless that overlay is visible.
+- Kept complete backup structure unchanged.
+
+Protected backup fields preserved:
+- type
+- version
+- exportedAt
+- appVersion
+- buttonData
+- categoryConfig
+- mediaRecords
+
+Manual testing still recommended:
+- Import v17+ backup.
+- Import backup with custom top-level category.
+- Phrase with recorded voice.
+- Phrase without recorded voice.
+- Image crop/load/delete.
+- Settings navigation save/cancel/back.
+- Refresh app code preserves local images/audio.
+
+
+--- V27_SIMPLE_VOCABULARY_AND_PRESS_DELAY.txt ---
+MyNewVoice v27 - Simple Vocabulary View and Press Delay
+
+Changes:
+- Added Settings display mode: Menu view or Simple vocabulary list.
+- Simple vocabulary list shows all visible phrases grouped by section in one scrolling page.
+- Added Settings button press time: Normal tap, Long press, or Longer press.
+- Display and press settings are saved locally and also exported as optional appSettings in complete backups.
+- No protected backup fields were changed.
+- Dad-facing phrase rows, images, recorded voice priority, and generated speech fallback are preserved.
+
+
+--- V28_MOBILE_TOUCH_INTERACTION_LOCK.txt ---
+MyNewVoice v28 - Mobile Touch Interaction Lock
+
+Small permanent touch-interaction fix for hold-to-speak on iOS and Android.
+
+Changes:
+- Added CSS to suppress text selection, iOS touch callout, tap highlight, and image dragging on app buttons/cards/phrase rows/images.
+- Added installTouchInteractionLock() startup helper.
+- The helper blocks contextmenu, selectstart, and dragstart inside the app root, while allowing normal text entry fields.
+- Used touch-action: manipulation on app controls; did not add touch-action: none to communication surfaces so scrolling remains available.
+- Confirmed existing hold-to-speak logic uses pointerdown, pointerup, pointercancel, and pointerleave.
+
+Unchanged:
+- Backup/export/import schema.
+- Phrase/category/media IDs and storage keys.
+- Dad-facing layout and phrases.
+- Speech behaviour, local images/audio, and settings data.
+
+
+--- V29_VOICE_FLAG_COPYRIGHT_ABOUT.txt ---
+MyNewVoice v29 - Voice Flag and Copyright About Update
+
+Changes:
+- Added a visible voice status badge in the phrase editor rows.
+- Badge shows "🎙️ Voice saved" when a recorded voice exists for a phrase.
+- Badge shows "Voice: none" when no recorded voice exists and the phrase will use device speech.
+- Added Copyright © Andrew Bethell. All rights reserved. to the About box.
+- Added an HTML body comment with Andrew Bethell copyright/authorship wording.
+- Updated service-worker cache/version references to v29.
+
+Preserved:
+- Backup/export/import schema.
+- Phrase/category/media IDs and storage keys.
+- Dad-facing communication layout.
+- Speech fallback behaviour.
+- Local photo/audio storage.
+- Settings navigation and editor workflow.
+
+
+--- V30A_PROFESSIONAL_VISUAL_POLISH.txt ---
+MyNewVoice v30A - Professional visual polish only
+
+Changes:
+- Added tactile button press/depress states for main menu cards, phrase rows, Settings buttons, editor buttons and picture boxes.
+- Made shadows, card borders, table rows and Settings/editor visual grouping more consistent.
+- Improved table readability and focus/active states without changing layout structure.
+
+Deliberately unchanged:
+- Dad-facing layout structure.
+- Phrase/category/media IDs and storage keys.
+- Backup/export/import schema.
+- Speech behaviour and recorded voice fallback.
+- Local image/audio storage.
+- Settings navigation and editor workflow.
+
+
+--- V31_AUTO_UPDATE_CHECK.txt ---
+MyNewVoice v31 - Auto update check
+
+Adds an optional Settings-based update checker that compares this app with app-version.json on the hosted website.
+If a newer version is detected, the carer is prompted before app files are refreshed.
+
+The refresh clears only MyNewVoice app caches/service-worker app files and does not clear IndexedDB, local media, phrase/menu edits, recorded voices, or imported backup data.
+
+Backup/export schema is unchanged. Existing protected fields are preserved:
+type, version, exportedAt, appVersion, buttonData, categoryConfig, mediaRecords.
+
+
+--- V32_SETTINGS_EDITOR_POLISH.txt ---
+MyNewVoice v32 - Settings and Content Editor professional polish
+
+Carer-facing visual refinement only.
+
+Changes:
+- Grouped Settings dashboard cards.
+- Smaller, cleaner Settings icons and chevrons.
+- Clearer Backup, Maintenance/Edit, Danger Zone and About/Exit areas.
+- Cleaner topic and phrase editor tables.
+- More compact row action buttons.
+- Improved voice/status badge spacing and table readability.
+
+Deliberately unchanged:
+- Dad-facing communication screens.
+- Phrase/category/media IDs.
+- Local images and audio storage.
+- Speech behaviour.
+- Backup/export/import schema.
+- Import/export logic.
+
+
+--- V33_INTRO_BUTTON_POPUP_DELAY.txt ---
+MyNewVoice v33 - Introduction button and popup delay
+
+- Added Settings slider for popup close delay after speech, 1-5 seconds.
+- Added optional introduction button on the main title bar when enabled in Settings.
+- Introduction text/icon are stored as optional appSettings.
+- Introduction picture/audio are stored in existing local media records.
+- Protected backup fields and existing schema remain unchanged.
+
+
+--- V34_INTRO_BUTTON_FIX.txt ---
+MyNewVoice v34 - Introduction button fix
+
+Changes:
+- If an introduction photo exists, the main header introduction button shows the photo only.
+- If no introduction photo exists, the fallback icon is shown.
+- Reattached the introduction button handler safely on each render.
+- Introduction button now opens the popup even when only a photo/icon is present and no text/audio is saved.
+- Text-to-speech for introduction text stays synchronous when no saved recording exists, matching phrase-button fallback behaviour.
+
+Unchanged:
+- Backup/export schema.
+- appSettings structure.
+- mediaRecords structure.
+- Phrase/category/media IDs and storage keys.
+- Dad-facing phrase rows and normal speech behaviour.
+
+
+--- V35_INTRO_HEADER_PHOTO_ONLY.txt ---
+MyNewVoice v35 - Introduction Header Photo Only
+
+Changes:
+- When the introduction feature is enabled and an introduction photo exists, the main menu title bar shows only a larger centred photo.
+- Removed the fallback icon and the word Introduction from the header in photo-present mode.
+- Made the photo header button compact, with even padding around the photo.
+- Preserved fallback icon/text behaviour when no introduction photo exists.
+- No backup/export schema changes.
+
+
+--- V36_GENERATED_VOICE_SETTING.txt ---
+MyNewVoice v36 - Generated voice setting
+
+Adds Settings controls for device/browser generated speech voice, speech speed, and pitch. Recorded voices still take priority. No protected backup schema fields were changed; the settings are saved as optional appSettings fields.
+
+
+--- V37_DEFAULT_SIMPLE_LIST_ABOUT_RETURN.txt ---
+MyNewVoice v37 - default simple list and About return behaviour
+
+Changes:
+- Simple Vocabulary View is now the default display mode for new installs/devices with no saved display preference.
+- The About box now opens as a Settings sub-screen. Closing About returns to the Settings menu instead of returning directly to the app.
+- Return to App remains the explicit way to leave Settings from the Settings main menu.
+- Refresh app code remains allowed to leave Settings because the app reloads.
+
+Unchanged:
+- Dad-facing phrase/button behaviour.
+- Backup/export/import schema and protected fields.
+- Local images/audio storage.
+- Phrase IDs, category IDs, media IDs and storage keys.
+
+
+--- V38_ABOUT_RETURN_FIX.txt ---
+MyNewVoice v38 - About return fix
+
+Changes:
+- About MyNewVoice closes back to the Settings menu.
+- Return to App remains the direct exit from Settings to the communication app.
+- About box includes Version: v38.
+- Protected backup/export schema unchanged.
+
+Sub-folders to upload:
+- assets/ contains the app icons and README for sounds.
+- images/ contains placeholder/reference folders and README files.
+Upload these folders with the root files to preserve the GitHub Pages app structure.
+
+
+--- V39_ABOUT_SETTINGS_NAVIGATION_AUDIT.txt ---
+MyNewVoice v39 - About / Settings navigation audit
+
+Purpose:
+- Isolate About MyNewVoice from Return to App.
+- About opens from Settings and closes back to the Settings menu.
+- Return to App is the explicit Settings exit back to the communication app.
+
+No backup/export schema changes.
+No phrase/category/media ID changes.
+No Dad-facing communication layout or speech behaviour changes.
+
+
+--- V40_VOICE_PERSISTENCE_HEADER_FIX.txt ---
+MyNewVoice v40 - Voice persistence and header fix
+
+- Settings password changed to 4321.
+- Generated speech voice settings now persist safely across reloads by preventing stale compressed content data from overwriting newer standalone app settings.
+- App settings continue to export as optional appSettings without changing protected backup fields.
+- Voice status text added to Settings to show whether the saved voice is available or a fallback/default is being used.
+- Introduction header button/photo is restricted to the main screen only; submenu headers remain plain title headers with no introduction image/button.
+- Backup/export/import schema unchanged.
+
+
+--- V41_SETTINGS_INFORMATION_ENTRY_MENU.txt ---
+MyNewVoice v41 - Settings Information Entry Menu
+
+Changes:
+- The main settings cog now opens a two-option entry menu: Information and Settings.
+- Information opens the About MyNewVoice screen without requiring the password.
+- Closing Information returns to the two-option entry menu.
+- Settings opens the password-protected carer settings dashboard.
+- The Settings password remains 4321.
+- About now displays Version: v41.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local images/audio storage unchanged.
+- Dad-facing communication layout unchanged.
+- Speech behaviour unchanged.
+
+Sub-folders:
+- No sub-folder content changed in this release.
+
+
+--- V42_IOS_ICON_SUBMENU_INTRO_HEADER_FIX.txt ---
+MyNewVoice v42 - iOS icon and submenu introduction header fix
+
+Changes:
+- Added polished MyNewVoice app icon assets based on the selected "Tap to Speak" concept.
+- Replaced the PWA 192x192 and 512x512 icon files.
+- Added apple-touch-icon.png for iPhone/iPad Add to Home Screen use.
+- Added favicon PNG files.
+- Updated manifest theme colour to match the new teal icon.
+- Updated app-version.json to v42.
+- Updated the service worker cache name to v42.
+- Strengthened the top-bar logic so the introduction picture/icon/text is strictly main-menu-only.
+- In menu display mode, lower-level submenus now show only the submenu title/back controls in the top bar, not the introduction picture.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local photos and recorded voices unchanged.
+- Speech fallback behaviour unchanged.
+- Dad-facing menu/phrase layout unchanged except for removing the unwanted introduction header picture from submenu top bars.
+
+
+--- V43_SUBMENU_HEADER_ICON_REMOVED_SETTINGS_ENTRY_ICONS.txt ---
+MyNewVoice v43 - Submenu header icon removed and Settings entry icons refined
+
+Changes:
+- Removed the introduction fallback icon from submenu title bars.
+- In Menu View, lower-level submenus now show only the back arrow and the green title header text.
+- The introduction image/icon/button remains available only on the main menu header.
+- Refined the first Settings entry menu icons shown when the cog is first clicked: smaller, cleaner, and less visually heavy.
+- Updated app-version.json to v43.
+- Updated CURRENT_APP_VERSION to v43.
+- Updated service worker cache name to v43 so GitHub/iPhone/iPad installs can refresh.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase IDs, category IDs, media IDs, and storage keys unchanged.
+- Local photos and recorded voices unchanged.
+- Speech behaviour and fallback unchanged.
+- Dad-facing phrase row layout unchanged.
+- Main menu introduction behaviour preserved.
+
+
+--- V44_SETTINGS_SAVE_RETURNS_PREVIOUS_LEVEL.txt ---
+MyNewVoice v44 - Settings save returns previous level
+
+Built from v43.
+
+Changes:
+- In the Settings introduction editor, Save introduction now saves the values, closes the introduction edit panel, and returns focus to the prior Settings level.
+- Cancel in the introduction editor now also closes the edit panel and returns to the prior Settings level.
+- Existing content-editor Save behaviour is preserved: saving phrase rows returns to the topic list, and saving the topic list returns to Settings.
+
+Preserved:
+- Backup/export/import JSON schema unchanged.
+- Phrase IDs, category IDs, media IDs, and storage keys unchanged.
+- Local photos and recorded voices unchanged.
+- Speech fallback behaviour unchanged.
+- Dad-facing menu and phrase layout unchanged.
+
+
+--- V45_MY_PEOPLE_ROUND_SUBMENU_IMAGES.txt ---
+MyNewVoice v45 - My People Round Submenu Images
+
+Built from: MyNewVoice v44 settings save returns previous level
+
+Change summary:
+- Fixed My People submenu image rendering so every My People phrase row uses a circular photo/icon holder.
+- Newly added My People entries now display circular images even when relationship/person details are blank.
+- Preserved the existing circular crop workflow.
+- Added a CSS safety guard so My People row images and fallback icons remain circular.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase IDs unchanged.
+- Category IDs unchanged.
+- Media IDs/storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing phrase row layout otherwise unchanged.
+
+
+--- V46_THEMES_SETTINGS.txt ---
+MyNewVoice v46 - Themes Settings
+
+Changes:
+- Added a Theme selector in Settings.
+- Theme options: Default, Cyberpunk, Star Trek, Darth Vader, Sunny Day, Banana Split, Water, Earth, Fire.
+- Themes are colour-only and preserve the existing Dad-facing layout, button sizes, scrolling, phrase rows, speech behaviour, images and audio.
+- Theme preference is stored as optional appSettings.theme.
+
+Compatibility / preservation:
+- Backup/export/import schema unchanged.
+- Existing top-level backup fields remain unchanged: type, version, exportedAt, appVersion, buttonData, categoryConfig, mediaRecords.
+- appSettings remains optional and backward-compatible; older backups without appSettings.theme default to Default.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local photos and recorded voices unchanged.
+- Speech fallback unchanged.
+
+Build source:
+- Created from MyNewVoice v45 baseline.
+
+
+--- V47_MODERN_BUTTONS_THEME_COLOURS.txt ---
+MyNewVoice v47 - Modern buttons and theme colours
+
+Changes from v46:
+- Modernised visible button styling across the app using CSS only.
+- Expanded theme colours so selected themes affect main menu cards, submenu phrase rows, settings cards/buttons, popup panels, borders, shadows and input controls.
+- Preserved existing Dad-facing layout, button sizes, scrolling behaviour, phrase row structure, media display, speech behaviour and backup/import/export logic.
+- Existing appSettings.theme remains the saved theme setting; no schema migration required.
+
+Protected compatibility notes:
+- Backup/export/import schema unchanged.
+- Existing top-level backup fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local photos and recorded audio are not cleared or migrated.
+- This is a visual styling pass only.
+
+
+--- V48_MATERIAL_THEMES_SETTINGS_ARROW_CLEANUP.txt ---
+MyNewVoice v48 - Modern material themes and settings arrow cleanup
+
+Changes:
+- Replaced the previous novelty theme list with modern material-style themes:
+  Default, Metallic, Photoreal, Realistic, Marble, Metal, Water.
+- Reworked theme colours and surfaces to give clearer modern/realistic material effects while preserving the Dad-facing layout.
+- Added subtle CSS-only material surface effects for metal, marble and water styles.
+- Removed the chevron/greater-than symbol from the first Settings entry menu Information and Settings buttons.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing protected top-level backup fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing phrase row structure, button sizes and scrolling behaviour unchanged.
+
+Compatibility:
+- Theme preference remains stored in optional appSettings.theme.
+- Old v46/v47 theme names that are no longer offered will fall back to Default when settings are normalised.
+
+
+--- V49_DESIGN_CONCEPT_COLOUR_THEMES.txt ---
+MyNewVoice v49 - Design Concept Colour Themes
+
+Built from v48.
+
+Changes:
+- Replaced the v48 material-style theme list with the uploaded design-concept theme set:
+  - Default
+  - Gentle Morning
+  - Deep Ocean
+  - Earth & Sage
+  - Midnight
+- Mapped the uploaded design concept colour systems into the app theme variables.
+- Added theme-specific category/phrase colour palettes so cards and phrase rows follow the chosen concept more closely.
+- Preserved Dad-facing layout, phrase row structure, button sizing, scrolling, speech, popup behaviour, photos/audio and backup behaviour.
+- Existing older theme names from v46-v48 are normalised safely back to an appropriate supported theme or Default.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Media storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Settings entry chevrons remain removed from v48.
+
+
+--- V50_TACTILE_3D_INTERFACE_REDESIGN.txt ---
+MyNewVoice v50 - Tactile 3D interface redesign
+
+Built from v49.
+
+Changes:
+- Adds a CSS-only tactile/soft-3D visual redesign across the existing interface.
+- Modernises main menu cards with raised surfaces, recessed image wells, highlights, bevels, and clearer press states.
+- Modernises submenu phrase rows with tactile card surfaces, recessed image/icon holders, stronger depth, and physical pressed/talking states.
+- Modernises the top message/submenu bar, back button, settings panels, settings buttons, popup card, and form controls.
+- Retains the v49 theme list and colour systems: Default, Gentle Morning, Deep Ocean, Earth & Sage, and Midnight.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing protected top-level backup fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing category structure and phrase row structure unchanged.
+- No changes to app content, menu order, phrase order, or backup editor compatibility.
+
+
+--- V51_RESTORE_SETTINGS_COG_AFTER_V50_REDESIGN.txt ---
+MyNewVoice v51 - Restore Settings Cog After v50 Redesign
+
+Built from v50_tactile_3d_interface_redesign.
+
+Purpose:
+- Restore the Settings cog after the v50 tactile/soft-3D visual redesign.
+
+Changes:
+- Excluded .management-toggle from broad tactile button selectors.
+- Added a final CSS override so the Settings cog remains a fixed circular button at the top-right of the main app screen.
+- Preserved the v50 tactile/soft-3D visual redesign for normal app buttons, phrase rows, settings controls and popup surfaces.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing category structure and phrase row structure unchanged.
+- v49 theme set retained: Default, Gentle Morning, Deep Ocean, Earth & Sage, Midnight.
+
+
+--- V52_INFORMATION_BUTTON_LOGIC_CLEANUP.txt ---
+MyNewVoice v52 - Information button logic cleanup
+
+Changes:
+- Top-level Information button now hides the Settings entry overlay and opens the About/Information modal directly.
+- Closing the About/Information modal returns to the top-level Information / Settings entry menu.
+- Removed the duplicate About MyNewVoice button from the password-protected Settings dashboard.
+- Renamed the lower Settings dashboard section from "About and exit" to "Exit" and left only Return to App.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase row structure unchanged.
+- v50 tactile visual redesign and v51 Settings cog fix retained.
+
+
+--- V53_MAIN_MENU_WIDE_CROP_ALL_IMAGE_OPTIMISATION.txt ---
+MyNewVoice v53 - Main menu wide crop and all image optimisation
+
+Built from v52.
+
+Changes:
+- Main menu button images now use a wide rectangular crop target: 1792 x 1024 pixels.
+- Main menu crop is landscape/rectangular rather than square, for images intended to fill the main menu button area.
+- All newly imported or re-cropped images are resized/compressed before being stored locally.
+- Standard phrase images remain square at 600 x 600 pixels.
+- My People images keep the circular crop workflow and circular display behaviour, but are now stored as compressed JPEG output to reduce backup/storage size.
+- Image quality target is JPEG quality 0.80, balancing good display quality against smaller local storage and backup size.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing protected top-level backup fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio are not deleted by this update. Existing images remain as they are until re-imported or re-cropped.
+- Speech fallback behaviour unchanged.
+- Dad-facing menu/category/phrase structure unchanged.
+- v49 themes, v50 tactile visual redesign, v51 Settings cog fix, and v52 Information logic cleanup retained.
+
+
+--- V54_MAIN_MENU_CROP_MATCHES_VISIBLE_BUTTON_AREA.txt ---
+MyNewVoice v54 - Main menu crop matches visible button area
+
+This build is based on v53.
+
+Change made:
+- Adjusted the main menu image crop target so the cropper matches the current visible image area inside the existing main menu button layout.
+- The main menu button layout, size and structure were not changed.
+- Main menu images continue to be resized/compressed before local storage, but the crop shape now reflects the real menu-card image window rather than the previous 1792 x 1024 landscape target.
+- The crop screen now labels this as a menu-button visible-area crop.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Media/storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase structure unchanged.
+- Main menu button dimensions and layout unchanged.
+- Standard phrase images remain square.
+- My People phrase images remain circular.
+- v49 themes, v50 tactile redesign, v51 Settings cog fix, and v52 Information logic cleanup retained.
+
+
+--- V55_SETTINGS_SIMPLIFIED_ABOUT_STATS_OFFLINE.txt ---
+MyNewVoice v55 - Settings simplified, About stats and offline readiness
+
+Changes:
+- Simplified Settings wording and dashboard labels to reduce visual clutter.
+- Fixed About/Information version display so it is populated from CURRENT_APP_VERSION.
+- Added About/Information backup-size summary:
+  - estimated total complete .json/.mnvoice size
+  - total stored image size and count
+  - total stored audio size and count
+- Added Offline readiness summary in About/Information.
+- Added Settings > Offline section with:
+  - app/cache readiness check
+  - local photo/voice count
+  - storage protection status
+  - Check offline button
+  - Protect storage button
+
+Notes:
+- Offline use still requires the app to have been opened once while online so service-worker/cache files can be saved on the device.
+- This build does not yet add My People relationship dropdowns, media-size rows in editors, or media quality controls. Those are intended for later stages.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase structure unchanged.
+- v54 main-menu crop fix retained.
+
+
+--- V56_MY_PEOPLE_RELATIONSHIP_DROPDOWN.txt ---
+MyNewVoice v56 - My People relationship dropdown
+
+Changes:
+- Adds a simple Type dropdown to My People rows in the Settings content line editor.
+- Dropdown options: Not set, Family, Friend, Carer, Nurse, Doctor, Neighbour, Visitor, Other.
+- Stores the selected value in the existing phrase.relationship field.
+- Existing non-standard relationship values are preserved and shown as the selected value until changed.
+- Updating the dropdown immediately saves the My People item and refreshes the live My People submenu if it is open.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v55 simplified Settings/About/offline status retained.
+
+
+--- V57_MEDIA_SIZE_DISPLAY.txt ---
+MyNewVoice v57 - Media Size Display in Settings Editor
+
+Changes:
+- Adds image and audio size display to the Settings content line editor.
+- Main menu/topic rows now show stored main-menu image size where present.
+- Phrase rows now show phrase image size and recorded voice size where present.
+- Section phrase editor now shows a simple total media summary for the selected section: total media, images, and audio.
+- Selected section/phrase detail panels also show the relevant image/audio size summary.
+- Media size display uses existing local IndexedDB media records and does not change storage keys or backup structure.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted or recompressed by this build.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v55 simplified Settings/About/offline status retained.
+- v56 My People relationship dropdown retained.
+
+
+--- V58_MEDIA_QUALITY_TOOLS.txt ---
+MyNewVoice v58 - Media Quality Tools
+
+Adds a Storage section in Settings.
+
+New tools:
+- Check size: shows local image and audio storage totals.
+- Compress images: recompresses local saved images using a good-quality target after confirmation.
+- Make smaller: recompresses local saved images more aggressively after confirmation.
+
+The tool works on local saved image records only. It does not automatically alter audio recordings. Export a complete backup after compressing and checking the result.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v55 simplified Settings/About/offline status retained.
+- v56 My People relationship dropdown retained.
+- v57 media size display retained.
+
+
+--- V59_OFFLINE_MODE_HARDENING.txt ---
+MyNewVoice v59 - Offline Mode Hardening
+
+Changes:
+- Adds a Save offline button to Settings > Offline.
+- Save offline actively caches core app files while the device is online.
+- Offline status now checks how many core files are cached rather than only checking whether any MyNewVoice cache exists.
+- Offline status now shows app worker status, cached file count, storage protection status, last saved time, local photo count and local voice count.
+- About/Information uses the same improved offline status summary.
+- Service worker cache version updated to v59.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Media storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase row structure unchanged.
+- v55 simplified Settings/About/offline, v56 My People relationship dropdown, v57 media size display, and v58 media quality tools retained.
+
+Offline note:
+- This remains a web/PWA app, not a native iOS app.
+- Open the app online, tap Save offline, then test with Wi-Fi/mobile data off before relying on it away from home.
+
+
+--- V60_SETTINGS_BUTTON_LAYOUT_INFORMATION_SCROLL.txt ---
+MyNewVoice v60 - Settings button layout and Information scroll
+
+Changes:
+- Standardised Settings edit action rows so Back is placed on the left and Cancel/Save are grouped on the right.
+- Updated Content Editor topic and phrase footers to use the same Back / Cancel / Save placement.
+- Updated Introduction editor footer to use the same Back / Cancel / Save placement.
+- Changed the Information/About modal close button label to Back.
+- Improved Information/About scrolling with mouse wheel, trackpad, and touch scrolling inside the modal.
+- Updated app version, app-version.json, and service worker cache name to v60.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing menu/phrase row structure unchanged.
+- v59 offline mode hardening retained.
+
+
+--- V61_SETTINGS_TASK_RESTRUCTURE_STORAGE_HEALTH.txt ---
+MyNewVoice v61 - Settings task restructure and storage health
+
+Changes:
+- Reworked the password-protected Settings dashboard into shorter task-based sections.
+- Combined Offline and Storage tools into a wider Offline & Storage section.
+- Added Storage Health inspection showing total media, images, audio, unused media, largest images, and largest audio clips.
+- Added a Clear unused media action that removes orphaned local media records only after confirmation.
+- Retained the v60 Back / Cancel / Save action bar pattern and Information scrolling behaviour.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing protected top-level backup fields unchanged.
+- Phrase/category/media IDs and storage keys unchanged.
+- Local images/audio are not deleted automatically.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+
+
+--- V62_SETTINGS_TEST_MODE_TOOLS.txt ---
+MyNewVoice v62 - Settings test mode tools
+
+Changes:
+- Added a simple Test section to Settings.
+- New Speech test button speaks a short test phrase using the current device/app speech settings.
+- New Photos test button checks local saved images and recorded voices and reports counts/sizes.
+- New Offline test button checks service worker/cache readiness and reports status.
+- Updated app-version.json, CURRENT_APP_VERSION, offline cache name, and service worker cache name.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v61 task-based Settings and Storage Health retained.
+
+
+--- V63_UPDATE_REFRESH_FIX.txt ---
+MyNewVoice v63 - Update refresh fix
+
+Changes:
+- Replaced separate Check Update and Refresh App buttons with one Update App button plus a Version button.
+- Removed duplicate service-worker update prompt logic that could reload before the new worker finished activating.
+- Automatic update checks no longer show a blocking popup. They show a short message and direct the carer to Settings > Update App.
+- Update App now checks the website version, clears MyNewVoice caches, asks the service worker to update and skip waiting, refreshes cached app-shell files, and reloads with a cache-busting query.
+- If the website version already matches the device version, Update App can still refresh cached files after confirmation.
+- Added a post-reload version check to confirm whether the expected version actually loaded.
+- Updated service worker cache name to mynewvoice-v63-update-refresh-fix.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local photos and recorded voices not deleted.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v62 Test tools retained.
+
+Note:
+- The old separate Refresh App button is no longer needed because Update App now performs both update checking and safe cache refresh.
+
+
+--- V64_SETTINGS_FOOTER_BUTTON_SIMPLIFICATION.txt ---
+MyNewVoice v64 - Settings footer button simplification
+
+Changes:
+- Settings edit screens now use a compact single-line Cancel / Save footer.
+- Removed redundant Back buttons from edit footers where Cancel already means leave without saving and Save means save and return.
+- Read-only/information panels keep Back where it is the correct navigation action.
+- Preserves v63 single Update App path and all prior storage/offline/test tools.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local photos/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+
+
+--- V65_SETTINGS_DUPLICATION_CLEANUP.txt ---
+MyNewVoice v65 - Settings duplication cleanup
+
+Changes:
+- Removed the duplicate Offline check button from the Test section.
+- Kept offline checking in Offline & Storage only.
+- Shortened/clarified Offline & Storage labels:
+  - Save Offline: Download app files.
+  - Check Offline: Ready without internet?
+  - Storage Health: Images, voices, unused files.
+  - Compress Photos: Reduce backup size.
+  - Shrink Photos: Smaller, lower quality.
+  - Try Protect Storage: Device support varies.
+- Test section now focuses on Speech and Photos/Voices.
+- Preserved v64 compact Cancel / Save edit footers and v63 update refresh fix.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+
+
+--- V66_SETTINGS_MENU_GROUP_CLEANUP.txt ---
+MyNewVoice v66 - Settings menu group cleanup
+
+Changes:
+- Split the previous combined Offline & Storage area into clearer sections:
+  - Offline
+  - Storage
+  - Reduce Backup Size
+  - Advanced Storage
+- Kept Save Offline and Check Offline together.
+- Kept Storage Health as the storage-information action.
+- Kept Compress Photos and Shrink Photos together under Reduce Backup Size.
+- Moved Try Protect Storage into Advanced Storage.
+- Made the Clear section warning clearer: export a backup first, because those actions remove saved files from this device.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted automatically.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v65 Settings duplication cleanup retained.
+
+
+--- V67_SETTINGS_RATIONALISED_MENU.txt ---
+MyNewVoice v67 - Settings rationalised menu
+
+Changes:
+- Removed the visible App section from Settings:
+  - Update App removed.
+  - Version removed.
+- Removed the Updates Manual / Auto check selector from Settings.
+- Disabled the old auto-update check path so older saved auto-check settings do not keep prompting.
+- Removed Advanced Storage / Try Protect Storage from the visible Settings menu because device support varies and it added confusion.
+- Reorganised related Settings tools into clearer groups:
+  - Test: Speech, Photos & Voices.
+  - Offline Use: Save Offline, Check Offline.
+  - Backup Size: Storage Health, Compress Photos, Shrink Photos.
+  - Clear: Unused Media, Images, Audio.
+- Preserved update/status information in the About/Information screen instead of showing separate Version controls.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted automatically.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v66 Settings group cleanup retained.
+
+
+--- V68_SETTINGS_VOICE_OFFLINE_BACKUP_RESTRUCTURE.txt ---
+MyNewVoice v68 - Settings voice/offline/backup restructure
+
+Changes:
+- Moved voice-related controls into a Voice dropdown/foldout:
+  - Voice choice
+  - Speech speed
+  - Pitch
+  - Popup delay
+- Moved Offline Use into its own dropdown/foldout:
+  - Save Offline
+  - Check Offline
+- Tidied Backup Size into its own dropdown/foldout:
+  - Storage Health
+  - Compress Photos
+  - Shrink Photos
+- Clarified that Storage Health belongs under Backup Size because it shows images, voices, unused files, and what makes backups large.
+- Kept View, Theme, Tap setting, Introduction, Edit, Backup, Test, Clear and Exit in Settings.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted automatically.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v67 Settings rationalisation retained.
+
+
+--- V69_MAIN_MENU_IMAGE_FIT_AND_CARD_SIZE_ADJUSTMENT.txt ---
+MyNewVoice v69 - Main menu image fit and card size adjustment
+
+Changes:
+- Main menu card images now use object-fit: contain so the full chosen picture fits more cleanly within the image box beneath the title.
+- Added gentle inner padding to the image well so photos sit visibly within the box rather than feeling over-cropped.
+- Made main menu cards slightly wider by reducing side inset and letting each card fill a little more of the container width.
+- Made main menu cards slightly taller so the image area is roomier and easier to tap.
+
+Preserved:
+- Dad-facing menu structure unchanged.
+- Submenu phrase rows unchanged.
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local image/audio handling unchanged.
+- Speech fallback unchanged.
+
+
+--- V6_DEVICE_PHOTO_VOICE_SETUP.txt ---
+MyNewVoice v6 - Device Photo / Voice Setup
+
+What this version adds:
+- The gear button now opens a Settings screen.
+- Settings includes Photo / Voice Setup.
+- Photos can be chosen on the device for:
+  - top menu cards
+  - phrase-row images
+  - optional 4-second zoom images
+- A voice can be recorded for each phrase.
+- Saved private photos and recorded voices are stored locally on that device/browser using IndexedDB.
+- Private media is not uploaded to GitHub.
+
+Normal tap behaviour:
+- If a recorded voice exists for a phrase, the phrase plays the recorded voice.
+- If no recorded voice exists, the phrase uses browser text-to-speech.
+- If a local private image exists, the app uses it first.
+- If no local private image exists, the app checks the GitHub image file.
+- If no image exists, the fallback icon is shown.
+
+Important:
+- Voice recording normally requires the app to be opened from an HTTPS address, such as GitHub Pages.
+- Local private media may be lost if browser/site data is cleared.
+- After setting up photos and voices, use Export private backup.
+- Use Import private backup to move the private setup to another device.
+
+
+--- V70_MAIN_MENU_IMAGE_BUFFER_INTRO_HEADER_TIDY.txt ---
+MyNewVoice v70 - Main menu image buffer and intro header tidy
+
+Changes:
+- Removed the extra inner buffer added around main menu images in v69.
+- Main menu images now extend to the visible image well edges again.
+- Kept the larger/wider main menu card sizing from v69.
+- Kept the main-page top header introduction image/function, but made the header area less bulky where supported by the current markup.
+- Settings cog remains separate and visible.
+
+Preserved:
+- Main menu button structure unchanged.
+- Introduction button function unchanged.
+- Submenu phrase rows unchanged.
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+
+
+--- V71_AUDIT_AND_TIDY.txt ---
+MyNewVoice v71 - Audit and tidy
+
+Changes (no functional changes to app behaviour, data schema, or user experience):
+
+HTML (index.html):
+- Moved <meta charset="UTF-8"> to be the very first element inside <head>, before
+  the lz-string <script> tag. The charset declaration must appear within the first
+  1024 bytes and before any scripts to guarantee correct encoding detection.
+- Updated the hardcoded "Version: v60" fallback text in the About modal to "v71".
+  JavaScript overwrites this at runtime with CURRENT_APP_VERSION, but the static
+  HTML was nine versions out of date.
+- Removed the large block of dead static management panel HTML (Add Phrase, Remove
+  Phrase, Edit Phrase, Reorder, People Management, Quick Actions sections). These
+  elements are fully replaced by renderContentManagementPanel() innerHTML on every
+  open, so they were never actually seen or used. The managementOverlay and
+  managementPanel shell divs are retained, as are all dynamically rendered elements.
+
+JavaScript (script.js):
+- Removed the dead block of DOMContentLoaded event listeners that targeted elements
+  from the now-removed static management HTML (addPhrase, removePhrase, exportData,
+  importData/importFile, showAllPhrases, reloadApp, resetData, editCategorySelect,
+  editPhraseSelect, updatePhrase, reorderCategorySelect, saveOrder,
+  removeCategorySelect, and associated dropdown initialisation). None of these
+  elements survive the first renderContentManagementPanel() call.
+- Moved applyAppTheme() call out of the middle of the dead-code block to a clean
+  position at the top of the post-setup section where it logically belongs.
+- Cleaned up inconsistent indentation and blank lines around the management overlay
+  Escape-key listener.
+- Updated CURRENT_APP_VERSION to 'v71'.
+- Updated OFFLINE_CACHE_NAME to 'mynewvoice-offline-v71'.
+- Added v71 entry to the version history block at the top of the file.
+
+Service worker (sw.js):
+- Updated CACHE_NAME to 'mynewvoice-v71-audit-and-tidy' (triggers cache refresh on deploy).
+- Updated inline version comment.
+
+app-version.json:
+- Updated appVersion to "v71" and label to "Audit and tidy".
+
+Preserved:
+- All app behaviour, UX, and visual appearance unchanged.
+- Backup/export/import schema unchanged.
+- All storage keys unchanged.
+- All phrase, category, and media IDs unchanged.
+- Local images, audio, and speech fallback unchanged.
+- The legacy populateRemovePhraseOptions / populateEditPhraseOptions / populateReorderList
+  functions and related drag-and-drop helpers remain in script.js — they are not
+  currently called at runtime but are retained in case they are needed in future
+  or for reference.
+
+
+--- V73_ZOOM_LOCK_SETTINGS_FOOTER_FIX.txt ---
+MyNewVoice v73 - Zoom lock and Settings footer reachability
+
+Changes:
+- Updated mobile viewport to reduce accidental pinch/double-tap page zoom.
+- Added JavaScript gesture guards for iOS/Android-style pinch/two-finger zoom gestures.
+- Preserved one-finger scrolling and normal button taps.
+- Improved Settings/editor overlay height and safe-area padding.
+- Made bottom action rows such as Cancel / Save remain sticky and reachable above the phone bottom edge.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Local image/audio storage unchanged.
+- Speech/local-recording fallback unchanged.
+- Dad-facing menu categories and phrase content unchanged.
+
+
+--- V74_EQUAL_CANCEL_SAVE_BUTTONS.txt ---
+MyNewVoice v74 - Equal Cancel / Save Buttons
+
+Change made:
+- Made Cancel and Save buttons equal width in Settings/editor action rows.
+
+Preserved:
+- Dad-facing communication layout unchanged.
+- Button colours, labels and behaviour unchanged.
+- Speech output and local recording fallback unchanged.
+- Local images/audio storage unchanged.
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs and storage keys unchanged.
+- v73 mobile zoom lock and Settings footer reachability retained.
+
+
+--- V75_SINGLE_BUTTON_PRESS_GUARD.txt ---
+MyNewVoice v75 - Single Button Press Visual Guard
+
+Small UI-only touch interaction fix.
+
+Changed:
+- Added a central pressed-button visual guard so only one tappable control can show the depressed/pressed state at a time.
+- On touch devices, overlapping browser :active pressed styling is neutralised and replaced with a single .mnv-pressing visual state.
+- Updated app version, offline cache key, service worker cache name, and app-version.json to v75.
+
+Preserved:
+- No backup/export/import schema changes.
+- No phrase/category/media IDs changed.
+- No local media/storage reset behaviour changed.
+- No speech or fallback voice behaviour changed.
+- No content, menu structure, colours, layout, or button actions intentionally changed.
+
+
+--- V76_SETTINGS_ACCESS_CANCEL_EQUAL_WIDTH.txt ---
+MyNewVoice v76 - Settings Access / Cancel Equal Width
+
+Date: 23 May 2026
+
+Changes:
+- Made the first Settings password prompt Access and Cancel buttons equal width.
+- Corrected the static About modal fallback version text to v76.
+- Updated CURRENT_APP_VERSION, offline cache name, service worker cache name, and app-version.json to v76.
+
+Preserved:
+- No backup/export/import schema changes.
+- No phrase, category, media ID, storage key, or local media handling changes.
+- No speech or recorded-voice fallback behaviour changes.
+- No Dad-facing menu/content/layout changes outside the requested button width fix.
+
+
+--- V77_SMOOTH_MENU_SCROLLING_CLEANUP.txt ---
+MyNewVoice v77 - Smooth Menu Scrolling Cleanup
+
+Changes:
+- Removed the global non-passive touchmove zoom guard that could make mobile scrolling hesitate or feel jumpy.
+- Kept accidental zoom protection through the viewport setting and iOS gesture guards.
+- Updated the single-button pressed visual guard so it clears as soon as the finger moves into a scroll gesture.
+- Reintroduced smooth scrolling on menu, phrase list, settings, private setup, management, and About panels.
+- Added mobile-only CSS overrides so hover/pressed transforms do not fight finger scrolling.
+
+Preserved:
+- Dad-facing layout, category names, phrase data, speech fallback, local media storage, backup/export schema, and v76 equal-width buttons.
+
+
+--- V79_IPHONE_SAVE_CANCEL_FOOTER_AUDIT.txt ---
+MyNewVoice v79 - iPhone Save/Cancel footer audit
+
+Scope:
+- UI-only Settings/editor action-row visibility cleanup.
+- Consolidates mobile footer CSS for Save, Cancel, Access, and Back controls.
+- Ensures paired footer buttons use equal width and remain above iPhone safe-area edges.
+- Prevents broad Settings card grids from inheriting sticky footer behaviour.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local images/audio storage unchanged.
+- Speech and fallback speech behaviour unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v78 image preload flash fix retained.
+- v77 smooth scrolling cleanup retained.
+- v76 equal Access/Cancel sizing retained.
+
+
+--- V7_LOCKED_TITLE_PHRASE_POPUP.txt ---
+MyNewVoice v7 - locked title bar and spoken phrase popup
+
+Changes:
+- The top title/speech bar remains fixed in place.
+- On the main menu, the title bar says: Select a button to speak...
+- Inside a submenu, the title bar displays the selected menu name, such as Food & Drink or Comfort.
+- Only the menu cards / phrase rows scroll.
+- Tapping a phrase opens a large popup showing the selected sentence.
+- The app plays the locally recorded voice if one exists.
+- If no recorded voice exists, the device-generated voice is used.
+- Optional zoom images now appear inside the spoken phrase popup.
+- Existing image naming, local photo setup, local voice recording, backup/import, category colours, and stacked layout are retained.
+
+
+--- V80_PHRASE_IMAGE_PREVIEW_REFRESH.txt ---
+MyNewVoice v80 - Phrase image preview refresh fix
+
+Purpose:
+- Fixes a timing issue where a newly added local phrase photo could appear in the enlarged speak popup but not appear in the small submenu row preview until after the popup closed.
+
+Changes:
+- Local phrase/menu images are set to eager loading when private media is resolved.
+- The row image element is shown immediately once local media exists, while the fallback icon remains hidden to prevent fallback-icon flash.
+- Handles mobile cached-image timing by using onload, complete/naturalWidth, and decode() where available.
+
+Preserved:
+- Backup/export schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local media storage keys unchanged.
+- Speech and recorded voice fallback unchanged.
+- v79 iPhone save/cancel footer audit retained.
+- v78 main-menu image flash fix retained.
+
+
+--- V81_AUDIT_POPUP_EXPORT_ICONS.txt ---
+MyNewVoice v81 - Audit, popup close mode, export destination handling and expanded fallback icons
+
+Based on v80.
+
+Changes:
+- Added Settings > Voice > Message close behaviour with Timed close or Press anywhere to close.
+- Press-anywhere mode keeps the phrase/image popup visible until the user taps anywhere on the popup overlay.
+- Export complete backup now tries Save As picker where supported, then iOS/iPadOS share sheet where supported, then standard browser download fallback.
+- Expanded offline-safe fallback icon chooser with a larger curated emoji set covering comfort, health, food/drink, self-care, activities, people, outdoors, travel and hobbies.
+- Updated app/cache/version references to v81.
+
+Preserved:
+- Complete backup schema fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local IndexedDB images/audio unchanged.
+- Speech fallback behaviour unchanged.
+- Existing menu and phrase content unchanged.
+
+
+--- V82_DELETE_AND_IPHONE_SAFE_AREA_FIX.txt ---
+MyNewVoice v82 - Delete reliability and iPhone safe-area fix
+
+Changes:
+- Fixed submenu phrase Delete buttons so row deletion can fall back to the visible row index if the phrase ID is missing or stale.
+- Delete now also attempts to remove linked local phrase image and voice records before removing the phrase row.
+- Re-renders the active submenu immediately after deletion.
+- Added iPhone safe-area protection so the top header/back button stays below the status bar/notch area.
+
+Preserved:
+- Backup/export schema and protected top-level fields unchanged.
+- Phrase/category/media IDs and local storage keys unchanged.
+- Speech fallback, local media, offline behaviour, menu structure and Dad-facing layout preserved except for safer top spacing.
+
+
+--- V83_IMPORT_EXPORT_RELIABILITY.txt ---
+V83 import/export reliability fix
+
+- Complete backup export now has a single in-progress guard to prevent duplicate saves from double taps or duplicate events.
+- Export still uses Save Picker, Share Sheet, then download fallback, but only one path is used per export attempt.
+- Complete backup import now accepts valid MyNewVoice backups with missing mediaRecords by treating mediaRecords as an empty array for older/text-only backups.
+- Backup schema remains unchanged.
+- Preserved speech fallback, local media storage keys, category/phrase IDs, menus and Dad-facing layout.
+
+
+--- V84_IMPORT_FILE_PICKER_CHANGE_FIX.txt ---
+# V84 import file picker change fix
+
+- Fixes backup import not starting after a file is selected.
+- Moves fullBackupImportFile handling to a real change event listener instead of the click handler.
+- Removes the stale click-path import attempt that could clear the hidden file input.
+- Adds defensive skipping of incomplete mediaRecords while preserving the complete backup schema.
+- Updates app/cache/version references to v84.
+- Preserves menus, phrase IDs, category IDs, media storage keys, speech fallback, and backup top-level fields.
+
+
+--- V85_HEADER_SAFE_AREA_REBUILD.txt ---
+# V85 header safe-area rebuild
+
+- Rebuilds iPhone/iPad safe-area handling by moving the entire app shell below the status-bar/notch area.
+- Keeps the submenu back arrow vertically centred inside the title bar.
+- Keeps the Settings cog below the safe area.
+- Preserves v84 import picker fix, v83 import/export reliability, v82 delete reliability, menu structure, backup schema, media storage and speech behaviour.
+
+
+--- V86_HEADER_SPACING_CORRECTION.txt ---
+MyNewVoice v86 - Header spacing correction
+
+- Reverted the broad v85 body/container safe-area shift that made the app sit too far from the sides and bottom.
+- Applied a narrow iPhone/PWA top-control clearance to the title bar/back button and settings cog.
+- Preserved v84 import picker fix, v83 import/export reliability, schema, media storage, speech fallback, menu data and phrase IDs.
+
+
+--- V87_BACK_ARROW_TOUCH_TARGET_FIX.txt ---
+MyNewVoice v87 - Submenu back arrow touch target fix
+
+Based on v86.
+
+Changes:
+- Moves the submenu back arrow further inside the rounded title bar on iPhone/PWA screens.
+- Increases the back arrow tap target to approximately 60 x 60 px on mobile.
+- Adds left title padding so the button does not overlap the submenu title.
+- Keeps v86 iPhone safe-area correction and v84 import / v83 export fixes.
+
+Preserved:
+- Backup/export schema unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio, speech fallback, phrase content and menu order unchanged.
+
+
+--- V8_TITLEBAR_BACK_BUTTON.txt ---
+MyNewVoice v8 - Titlebar Back Button
+
+Changes:
+- Removed the redundant submenu title/header bar.
+- Moved the "← Main menu" button into the fixed top title bar when inside a submenu.
+- Main menu still shows "Select a button to speak..." with no back button.
+- Phrase list remains the only scrolling content inside a submenu.
+- Phrase popup, recorded voice playback, device voice fallback, photos, zoom images, settings, and backups are retained.
+
+
+--- V90_UI_AUDIT_AND_CONSOLIDATION.txt ---
+MyNewVoice v90 - UI audit and consolidation polish
+
+Scope:
+- CSS-only commercial polish foundation pass from v87.
+- Consolidates visual language for header, Settings cog, main menu cards, submenu phrase rows, popup card, modals and save/cancel action rows.
+- Improves safe-area-aware top controls while avoiding the broad body/frame spacing problem seen in v85.
+- Preserves Dad-facing menu and phrase structure.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing category IDs, phrase IDs, media IDs and storage keys unchanged.
+- Local images/audio unchanged.
+- Speech and fallback speech behaviour unchanged.
+- No content/category/phrase order changes.
+
+Version/cache:
+- CURRENT_APP_VERSION updated to v90.
+- app-version.json updated to v90.
+- Service worker/offline cache names updated to v90.
+
+
+--- V91_IPHONE_IPAD_QA_PASS.txt ---
+MyNewVoice v91 - iPhone/iPad QA pass
+
+Scope:
+- Reliability polish after v90 UI consolidation.
+- Preserves backup schema, phrase IDs, category IDs, speech behaviour, local media storage and menu content/order.
+
+Changes:
+- Updated app/cache/version references to v91.
+- Content backup export now uses the same single-path save/share/download helper as complete backup export, reducing duplicate export behaviour.
+- Added a duplicate-press guard for content backup export.
+- Added iPhone/iPad bottom safe-area padding to compact Save/Cancel action rows so controls remain above the home indicator.
+- Reduced horizontal overscroll jitter on main scroll containers while preserving vertical scrolling.
+
+Static QA performed:
+- JavaScript syntax check with node --check.
+- Version references checked in app-version.json, script.js, index.html and sw.js.
+- Import file input change handlers preserved for complete backup and content backup.
+
+
+--- V92_SETTINGS_REDESIGN.txt ---
+MyNewVoice v92 - Settings Redesign
+
+This build reorganises the carer-facing Settings dashboard into clearer commercial-style sections:
+- Information
+- Display & Touch
+- Voice & Message
+- Introduction Message
+- Photos, Voices & Phrases
+- Backup & Restore
+- Offline & Storage
+- Test Tools
+- Advanced / Clear Device Data
+
+Preserved:
+- Dad-facing menu and phrase screens
+- backup/export/import schema
+- phrase IDs and category IDs
+- local image/audio storage keys
+- speech fallback behaviour
+- v91 iPhone/iPad QA fixes
+
+
+--- V93_OFFLINE_ICON_LIBRARY.txt ---
+MyNewVoice v93 - Offline icon library
+
+Expanded the bundled fallback icon chooser with more offline-safe emoji icons for activities, comfort, hygiene, food/drink, health, people, transport, communication and hobbies.
+
+No backup schema change. Existing custom photos remain preferred over fallback icons. Icons remain local/offline because they are text/emoji characters rendered by the device; no internet icon library is required at runtime.
+
+Preserved: phrase IDs, category IDs, media keys, local image/audio storage, speech fallback, Dad-facing menu order and v92 Settings structure.
+
+
+--- V94_PHRASE_MESSAGE_POPUP_POLISH.txt ---
+MyNewVoice v94 - Phrase/message popup polish
+
+Changes:
+- Polished the spoken-message popup only.
+- Enlarged and centred the phrase image area.
+- Improved phrase text prominence and balance.
+- Made manual close instruction clearer: “Press anywhere to close this message.”
+- Improved popup image reveal for cached/local images.
+
+Preserved:
+- Backup/export schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local photos/audio unchanged.
+- Speech fallback unchanged.
+- Menus, submenu order and Settings structure unchanged.
+
+
+--- V95_CARER_WORKFLOW_POLISH.txt ---
+MyNewVoice v95 - Carer workflow polish
+
+Based on v94.
+
+Changes:
+- Clarified the Settings > Photos, Voices & Phrases workflow with a suggested editing order.
+- Added step guidance to the Content Editor: choose section, then edit phrases.
+- Added a phrase-photo behaviour note explaining that the row preview and spoken popup use the same saved phrase photo, with offline fallback icons if no photo is saved.
+- Renamed editor action buttons to Back to Settings / Back to Sections and Save Changes for clearer carer-facing workflow.
+- Slightly strengthened editor action-row touch targets.
+
+Preserved:
+- Backup/export schema unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing menu and submenu behaviour unchanged.
+
+
+--- V97_VERSION_ALIGNMENT_FIX.txt ---
+MyNewVoice v97
+
+Version alignment fix after v96 Apple visual refresh.
+
+Updated visible About fallback, app-version.json, CURRENT_APP_VERSION, offline cache name and service worker cache name so the app no longer reports v94/v96 inconsistently.
+
+No backup schema, phrase/category ID, speech, local media, import/export, or Dad-facing workflow changes.
+
+
+--- V98_APPLE_MENU_SUBMENU_IMAGE_FIT.txt ---
+MyNewVoice v98 - Apple-style main/submenu image-fit pass
+
+Changes:
+- Main menu cards updated toward an Apple-style image-led card presentation.
+- Submenu phrase rows simplified to reduce layered borders and visual clutter.
+- Spoken-message popup images now use object-fit: contain so the selected/cropped image fits within the popup area and is not cropped again.
+- Cropper header styling improved for iPhone readability.
+- Version/cache references updated to v98.
+
+Preserved:
+- Backup schema and protected top-level fields.
+- Phrase/category/media IDs and storage keys.
+- Local photos/audio storage.
+- Speech behaviour and fallback.
+- Menu content/order and phrase content.
+
+
+--- V99_CROP_EDITOR_AND_ICON_POLISH.txt ---
+MyNewVoice v99 - Crop Editor and Icon Polish
+
+Built from v98.
+
+Changes:
+- Refines crop editor as a safer iOS-style sheet with clearer title/instructions and sticky bottom actions.
+- Adds safer top/bottom spacing for iPhone Safari/PWA crop workflow.
+- Softens fallback emoji/icon tiles so they look less visually jarring beside custom photos.
+- Further simplifies submenu row framing while keeping the category colour accent.
+
+Preserved:
+- Backup/export schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local photos/audio storage unchanged.
+- Speech behaviour unchanged.
+- Menu content/order unchanged.
+
+
+--- V9_CONTENT_REFINEMENT.txt ---
+v9 content refinement
+
+Changes:
+- Reordered the main menu by communication priority: Quick Words, Health, Self Care, Food & Drink, Comfort, My People, Feelings, Daily Routine, Social Chat, Activities, Memories.
+- Added Quick Words with core yes/no/repair phrases.
+- Merged Entertainment into Activities and removed the separate Entertainment top-menu item.
+- Updated Food & Drink wording for clearer first-person phrases.
+- Expanded Feelings, Health, Daily Routine, Social Chat, Comfort and Memories with adult, first-person communication options.
+- Kept the existing layout, speech behaviour, photo setup, recorded voice setup, popup behaviour, and local backup/import system.
+- Bumped local phrase storage key so the new default phrase set appears after upload.
+--- v101 - Main menu image-first redesign ---
+- Redesigned main menu category cards so images/fallback icons are the dominant visual element.
+- Moved category labels into a cleaner lower card title area.
+- Reduced heavy borders and gradients on main menu cards.
+- Kept submenu screens, phrase data, speech, media storage, backup/import/export behaviour and schema unchanged.
+
+
+
+v102 - Submenu Apple-style simplification
+- Simplified Dad-facing submenu phrase rows.
+- Reduced layered borders and heavy visual framing.
+- Increased clean image/text hierarchy with softer Apple-style card treatment.
+- Preserved phrase content, order, IDs, speech, media storage, backups and import/export behaviour.
+
+
+v103 - Unified header polish
+- Added a shared Apple-style safe-area treatment for app headers.
+- Improved back button and settings cog touch targets.
+- Kept v101 main menu and v102 submenu visual changes intact.
+- Preserved backup schema, phrase/category/media IDs, local media, speech, import/export and menu content.
+
+
+v104 - Crop editor polish
+- Improved image crop/selection modal layout on iPhone-sized screens.
+- Kept crop Save/Cancel actions reachable above the home indicator.
+- Added more predictable contain-style image fitting in the crop workspace.
+- Preserved backup schema, media storage, speech, import/export and Dad-facing communication screens.
+
+
+v105 - Colour polish
+- Added restrained Apple-style colour refinements across headers, cards, submenu rows, popup, settings and crop editor surfaces.
+- Kept the visual language calm and adult-facing; no novelty theme or layout changes.
+- Preserved backup schema, phrase/category/media IDs, local media, speech, import/export and menu content.
+
+
+v106 - Settings and editor layout repair
+- Stopped normal Settings action buttons such as Edit Content, Export Backup and Import Backup from inheriting floating/sticky footer behaviour.
+- Repaired Content Editor Save/Cancel footer spacing so the Save button remains fully visible above iPhone Safari/PWA bottom controls.
+- Added extra editor bottom scroll padding so final rows are not hidden behind the action footer.
+- Preserved Dad-facing communication screens, backup schema, phrase/category/media IDs, local media, speech and import/export behaviour.
+
+
+v107 - Version and filename alignment
+- Aligned ZIP filename, visible app version, app-version.json, JavaScript app version, service worker cache name and offline cache name to v107.
+- Added a versioning rule for future builds: generated ZIP filename and internal app version references must match.
+- No UI, schema, phrase, media, speech, backup, import/export or menu behaviour changes.
+
+
+v108 - Modal layout restore
+- Fixed main menu skew/width drift after opening and closing Settings or other modals.
+- Added defensive modal close layout restore for iPhone Safari/PWA behaviour.
+- Prevented modal-open states from adding horizontal offset or width changes to the main app container.
+- Preserved backup schema, phrase/category/media IDs, local media, speech and import/export behaviour.
+
+
+v109 - Settings cog jump fix
+- Fixed a remaining iPhone layout jump that could occur when pressing the Settings cog.
+- Removed Settings entry/modal autofocus that could move the underlying screen.
+- Replaced Settings panel 100vw/100vh sizing with contained 100%/100dvh sizing.
+- Removed v108 modal-close re-render behaviour that could alter the current menu/submenu structure after closing Settings.
+- Preserved backup schema, phrase/category/media IDs, local media, speech and import/export behaviour.
+
+
+v110 - Settings dashboard layout restore
+- Fixed persistent Dad-facing screen size/layout jump after entering the password-protected Settings dashboard.
+- Isolated the Settings dashboard overlay so it scrolls internally without changing the main app frame.
+- Added hard layout restoration when leaving the Settings dashboard.
+- Preserved backup schema, phrase/category/media IDs, local media, speech, import/export and menu content.
+
+
+v111 - Settings screen refactor and code audit cleanup
+- Removed the accumulated v108-v110 observer/timer/body-style layout patches that were causing menu freezing and dimension drift.
+- Rebuilt Settings entry and password-protected Settings dashboard as contained full-screen app screens.
+- Pressing the Settings cog no longer changes Dad-facing screen dimensions.
+- Entering the password-protected Settings area no longer changes Dad-facing screen dimensions.
+- Internal ZIP folder and version naming now match v111.
+- Preserved backup schema, phrase/category/media IDs, local media, speech and import/export behaviour.

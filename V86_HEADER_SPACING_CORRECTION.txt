@@ -1,0 +1,5 @@
+MyNewVoice v86 - Header spacing correction
+
+- Reverted the broad v85 body/container safe-area shift that made the app sit too far from the sides and bottom.
+- Applied a narrow iPhone/PWA top-control clearance to the title bar/back button and settings cog.
+- Preserved v84 import picker fix, v83 import/export reliability, schema, media storage, speech fallback, menu data and phrase IDs.

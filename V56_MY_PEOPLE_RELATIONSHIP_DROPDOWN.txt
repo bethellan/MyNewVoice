@@ -1,0 +1,17 @@
+MyNewVoice v56 - My People relationship dropdown
+
+Changes:
+- Adds a simple Type dropdown to My People rows in the Settings content line editor.
+- Dropdown options: Not set, Family, Friend, Carer, Nurse, Doctor, Neighbour, Visitor, Other.
+- Stores the selected value in the existing phrase.relationship field.
+- Existing non-standard relationship values are preserved and shown as the selected value until changed.
+- Updating the dropdown immediately saves the My People item and refreshes the live My People submenu if it is open.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v55 simplified Settings/About/offline status retained.

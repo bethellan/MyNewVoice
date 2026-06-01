@@ -1,0 +1,20 @@
+MyNewVoice v53 - Main menu wide crop and all image optimisation
+
+Built from v52.
+
+Changes:
+- Main menu button images now use a wide rectangular crop target: 1792 x 1024 pixels.
+- Main menu crop is landscape/rectangular rather than square, for images intended to fill the main menu button area.
+- All newly imported or re-cropped images are resized/compressed before being stored locally.
+- Standard phrase images remain square at 600 x 600 pixels.
+- My People images keep the circular crop workflow and circular display behaviour, but are now stored as compressed JPEG output to reduce backup/storage size.
+- Image quality target is JPEG quality 0.80, balancing good display quality against smaller local storage and backup size.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing protected top-level backup fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio are not deleted by this update. Existing images remain as they are until re-imported or re-cropped.
+- Speech fallback behaviour unchanged.
+- Dad-facing menu/category/phrase structure unchanged.
+- v49 themes, v50 tactile visual redesign, v51 Settings cog fix, and v52 Information logic cleanup retained.

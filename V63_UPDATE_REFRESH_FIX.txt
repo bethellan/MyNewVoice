@@ -1,0 +1,22 @@
+MyNewVoice v63 - Update refresh fix
+
+Changes:
+- Replaced separate Check Update and Refresh App buttons with one Update App button plus a Version button.
+- Removed duplicate service-worker update prompt logic that could reload before the new worker finished activating.
+- Automatic update checks no longer show a blocking popup. They show a short message and direct the carer to Settings > Update App.
+- Update App now checks the website version, clears MyNewVoice caches, asks the service worker to update and skip waiting, refreshes cached app-shell files, and reloads with a cache-busting query.
+- If the website version already matches the device version, Update App can still refresh cached files after confirmation.
+- Added a post-reload version check to confirm whether the expected version actually loaded.
+- Updated service worker cache name to mynewvoice-v63-update-refresh-fix.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local photos and recorded voices not deleted.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v62 Test tools retained.
+
+Note:
+- The old separate Refresh App button is no longer needed because Update App now performs both update checking and safe cache refresh.

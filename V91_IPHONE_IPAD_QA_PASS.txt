@@ -1,0 +1,17 @@
+MyNewVoice v91 - iPhone/iPad QA pass
+
+Scope:
+- Reliability polish after v90 UI consolidation.
+- Preserves backup schema, phrase IDs, category IDs, speech behaviour, local media storage and menu content/order.
+
+Changes:
+- Updated app/cache/version references to v91.
+- Content backup export now uses the same single-path save/share/download helper as complete backup export, reducing duplicate export behaviour.
+- Added a duplicate-press guard for content backup export.
+- Added iPhone/iPad bottom safe-area padding to compact Save/Cancel action rows so controls remain above the home indicator.
+- Reduced horizontal overscroll jitter on main scroll containers while preserving vertical scrolling.
+
+Static QA performed:
+- JavaScript syntax check with node --check.
+- Version references checked in app-version.json, script.js, index.html and sw.js.
+- Import file input change handlers preserved for complete backup and content backup.

@@ -1,0 +1,18 @@
+MyNewVoice v46 - Themes Settings
+
+Changes:
+- Added a Theme selector in Settings.
+- Theme options: Default, Cyberpunk, Star Trek, Darth Vader, Sunny Day, Banana Split, Water, Earth, Fire.
+- Themes are colour-only and preserve the existing Dad-facing layout, button sizes, scrolling, phrase rows, speech behaviour, images and audio.
+- Theme preference is stored as optional appSettings.theme.
+
+Compatibility / preservation:
+- Backup/export/import schema unchanged.
+- Existing top-level backup fields remain unchanged: type, version, exportedAt, appVersion, buttonData, categoryConfig, mediaRecords.
+- appSettings remains optional and backward-compatible; older backups without appSettings.theme default to Default.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local photos and recorded voices unchanged.
+- Speech fallback unchanged.
+
+Build source:
+- Created from MyNewVoice v45 baseline.

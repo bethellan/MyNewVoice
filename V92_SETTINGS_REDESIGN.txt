@@ -1,0 +1,20 @@
+MyNewVoice v92 - Settings Redesign
+
+This build reorganises the carer-facing Settings dashboard into clearer commercial-style sections:
+- Information
+- Display & Touch
+- Voice & Message
+- Introduction Message
+- Photos, Voices & Phrases
+- Backup & Restore
+- Offline & Storage
+- Test Tools
+- Advanced / Clear Device Data
+
+Preserved:
+- Dad-facing menu and phrase screens
+- backup/export/import schema
+- phrase IDs and category IDs
+- local image/audio storage keys
+- speech fallback behaviour
+- v91 iPhone/iPad QA fixes

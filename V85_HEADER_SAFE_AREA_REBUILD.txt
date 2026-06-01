@@ -1,0 +1,6 @@
+# V85 header safe-area rebuild
+
+- Rebuilds iPhone/iPad safe-area handling by moving the entire app shell below the status-bar/notch area.
+- Keeps the submenu back arrow vertically centred inside the title bar.
+- Keeps the Settings cog below the safe area.
+- Preserves v84 import picker fix, v83 import/export reliability, v82 delete reliability, menu structure, backup schema, media storage and speech behaviour.

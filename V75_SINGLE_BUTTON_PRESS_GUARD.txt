@@ -1,0 +1,15 @@
+MyNewVoice v75 - Single Button Press Visual Guard
+
+Small UI-only touch interaction fix.
+
+Changed:
+- Added a central pressed-button visual guard so only one tappable control can show the depressed/pressed state at a time.
+- On touch devices, overlapping browser :active pressed styling is neutralised and replaced with a single .mnv-pressing visual state.
+- Updated app version, offline cache key, service worker cache name, and app-version.json to v75.
+
+Preserved:
+- No backup/export/import schema changes.
+- No phrase/category/media IDs changed.
+- No local media/storage reset behaviour changed.
+- No speech or fallback voice behaviour changed.
+- No content, menu structure, colours, layout, or button actions intentionally changed.

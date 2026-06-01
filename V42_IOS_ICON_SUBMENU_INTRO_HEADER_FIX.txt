@@ -1,0 +1,19 @@
+MyNewVoice v42 - iOS icon and submenu introduction header fix
+
+Changes:
+- Added polished MyNewVoice app icon assets based on the selected "Tap to Speak" concept.
+- Replaced the PWA 192x192 and 512x512 icon files.
+- Added apple-touch-icon.png for iPhone/iPad Add to Home Screen use.
+- Added favicon PNG files.
+- Updated manifest theme colour to match the new teal icon.
+- Updated app-version.json to v42.
+- Updated the service worker cache name to v42.
+- Strengthened the top-bar logic so the introduction picture/icon/text is strictly main-menu-only.
+- In menu display mode, lower-level submenus now show only the submenu title/back controls in the top bar, not the introduction picture.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local photos and recorded voices unchanged.
+- Speech fallback behaviour unchanged.
+- Dad-facing menu/phrase layout unchanged except for removing the unwanted introduction header picture from submenu top bars.

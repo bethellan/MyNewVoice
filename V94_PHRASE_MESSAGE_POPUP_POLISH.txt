@@ -1,0 +1,15 @@
+MyNewVoice v94 - Phrase/message popup polish
+
+Changes:
+- Polished the spoken-message popup only.
+- Enlarged and centred the phrase image area.
+- Improved phrase text prominence and balance.
+- Made manual close instruction clearer: “Press anywhere to close this message.”
+- Improved popup image reveal for cached/local images.
+
+Preserved:
+- Backup/export schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local photos/audio unchanged.
+- Speech fallback unchanged.
+- Menus, submenu order and Settings structure unchanged.

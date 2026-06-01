@@ -1,0 +1,24 @@
+MyNewVoice v67 - Settings rationalised menu
+
+Changes:
+- Removed the visible App section from Settings:
+  - Update App removed.
+  - Version removed.
+- Removed the Updates Manual / Auto check selector from Settings.
+- Disabled the old auto-update check path so older saved auto-check settings do not keep prompting.
+- Removed Advanced Storage / Try Protect Storage from the visible Settings menu because device support varies and it added confusion.
+- Reorganised related Settings tools into clearer groups:
+  - Test: Speech, Photos & Voices.
+  - Offline Use: Save Offline, Check Offline.
+  - Backup Size: Storage Health, Compress Photos, Shrink Photos.
+  - Clear: Unused Media, Images, Audio.
+- Preserved update/status information in the About/Information screen instead of showing separate Version controls.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted automatically.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v66 Settings group cleanup retained.

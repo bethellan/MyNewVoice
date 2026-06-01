@@ -1,0 +1,22 @@
+MyNewVoice v54 - Main menu crop matches visible button area
+
+This build is based on v53.
+
+Change made:
+- Adjusted the main menu image crop target so the cropper matches the current visible image area inside the existing main menu button layout.
+- The main menu button layout, size and structure were not changed.
+- Main menu images continue to be resized/compressed before local storage, but the crop shape now reflects the real menu-card image window rather than the previous 1792 x 1024 landscape target.
+- The crop screen now labels this as a menu-button visible-area crop.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Media/storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase structure unchanged.
+- Main menu button dimensions and layout unchanged.
+- Standard phrase images remain square.
+- My People phrase images remain circular.
+- v49 themes, v50 tactile redesign, v51 Settings cog fix, and v52 Information logic cleanup retained.

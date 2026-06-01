@@ -1,0 +1,15 @@
+MyNewVoice v44 - Settings save returns previous level
+
+Built from v43.
+
+Changes:
+- In the Settings introduction editor, Save introduction now saves the values, closes the introduction edit panel, and returns focus to the prior Settings level.
+- Cancel in the introduction editor now also closes the edit panel and returns to the prior Settings level.
+- Existing content-editor Save behaviour is preserved: saving phrase rows returns to the topic list, and saving the topic list returns to Settings.
+
+Preserved:
+- Backup/export/import JSON schema unchanged.
+- Phrase IDs, category IDs, media IDs, and storage keys unchanged.
+- Local photos and recorded voices unchanged.
+- Speech fallback behaviour unchanged.
+- Dad-facing menu and phrase layout unchanged.

@@ -1,0 +1,14 @@
+MyNewVoice v76 - Settings Access / Cancel Equal Width
+
+Date: 23 May 2026
+
+Changes:
+- Made the first Settings password prompt Access and Cancel buttons equal width.
+- Corrected the static About modal fallback version text to v76.
+- Updated CURRENT_APP_VERSION, offline cache name, service worker cache name, and app-version.json to v76.
+
+Preserved:
+- No backup/export/import schema changes.
+- No phrase, category, media ID, storage key, or local media handling changes.
+- No speech or recorded-voice fallback behaviour changes.
+- No Dad-facing menu/content/layout changes outside the requested button width fix.

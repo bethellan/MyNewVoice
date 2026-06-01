@@ -1,0 +1,15 @@
+MyNewVoice v69 - Main menu image fit and card size adjustment
+
+Changes:
+- Main menu card images now use object-fit: contain so the full chosen picture fits more cleanly within the image box beneath the title.
+- Added gentle inner padding to the image well so photos sit visibly within the box rather than feeling over-cropped.
+- Made main menu cards slightly wider by reducing side inset and letting each card fill a little more of the container width.
+- Made main menu cards slightly taller so the image area is roomier and easier to tap.
+
+Preserved:
+- Dad-facing menu structure unchanged.
+- Submenu phrase rows unchanged.
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Local image/audio handling unchanged.
+- Speech fallback unchanged.

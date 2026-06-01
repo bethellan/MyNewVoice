@@ -1,0 +1,16 @@
+MyNewVoice v73 - Zoom lock and Settings footer reachability
+
+Changes:
+- Updated mobile viewport to reduce accidental pinch/double-tap page zoom.
+- Added JavaScript gesture guards for iOS/Android-style pinch/two-finger zoom gestures.
+- Preserved one-finger scrolling and normal button taps.
+- Improved Settings/editor overlay height and safe-area padding.
+- Made bottom action rows such as Cancel / Save remain sticky and reachable above the phone bottom edge.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Local image/audio storage unchanged.
+- Speech/local-recording fallback unchanged.
+- Dad-facing menu categories and phrase content unchanged.

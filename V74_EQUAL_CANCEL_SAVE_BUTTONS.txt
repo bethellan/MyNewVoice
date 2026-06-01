@@ -1,0 +1,13 @@
+MyNewVoice v74 - Equal Cancel / Save Buttons
+
+Change made:
+- Made Cancel and Save buttons equal width in Settings/editor action rows.
+
+Preserved:
+- Dad-facing communication layout unchanged.
+- Button colours, labels and behaviour unchanged.
+- Speech output and local recording fallback unchanged.
+- Local images/audio storage unchanged.
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs and storage keys unchanged.
+- v73 mobile zoom lock and Settings footer reachability retained.

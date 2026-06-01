@@ -1,0 +1,16 @@
+MyNewVoice v52 - Information button logic cleanup
+
+Changes:
+- Top-level Information button now hides the Settings entry overlay and opens the About/Information modal directly.
+- Closing the About/Information modal returns to the top-level Information / Settings entry menu.
+- Removed the duplicate About MyNewVoice button from the password-protected Settings dashboard.
+- Renamed the lower Settings dashboard section from "About and exit" to "Exit" and left only Return to App.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase row structure unchanged.
+- v50 tactile visual redesign and v51 Settings cog fix retained.

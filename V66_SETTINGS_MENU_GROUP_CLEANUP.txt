@@ -1,0 +1,22 @@
+MyNewVoice v66 - Settings menu group cleanup
+
+Changes:
+- Split the previous combined Offline & Storage area into clearer sections:
+  - Offline
+  - Storage
+  - Reduce Backup Size
+  - Advanced Storage
+- Kept Save Offline and Check Offline together.
+- Kept Storage Health as the storage-information action.
+- Kept Compress Photos and Shrink Photos together under Reduce Backup Size.
+- Moved Try Protect Storage into Advanced Storage.
+- Made the Clear section warning clearer: export a backup first, because those actions remove saved files from this device.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted automatically.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v65 Settings duplication cleanup retained.

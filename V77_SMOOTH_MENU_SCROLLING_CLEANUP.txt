@@ -1,0 +1,11 @@
+MyNewVoice v77 - Smooth Menu Scrolling Cleanup
+
+Changes:
+- Removed the global non-passive touchmove zoom guard that could make mobile scrolling hesitate or feel jumpy.
+- Kept accidental zoom protection through the viewport setting and iOS gesture guards.
+- Updated the single-button pressed visual guard so it clears as soon as the finger moves into a scroll gesture.
+- Reintroduced smooth scrolling on menu, phrase list, settings, private setup, management, and About panels.
+- Added mobile-only CSS overrides so hover/pressed transforms do not fight finger scrolling.
+
+Preserved:
+- Dad-facing layout, category names, phrase data, speech fallback, local media storage, backup/export schema, and v76 equal-width buttons.

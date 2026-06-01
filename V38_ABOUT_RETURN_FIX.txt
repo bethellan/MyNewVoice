@@ -1,0 +1,12 @@
+MyNewVoice v38 - About return fix
+
+Changes:
+- About MyNewVoice closes back to the Settings menu.
+- Return to App remains the direct exit from Settings to the communication app.
+- About box includes Version: v38.
+- Protected backup/export schema unchanged.
+
+Sub-folders to upload:
+- assets/ contains the app icons and README for sounds.
+- images/ contains placeholder/reference folders and README files.
+Upload these folders with the root files to preserve the GitHub Pages app structure.

@@ -1,0 +1,18 @@
+MyNewVoice v45 - My People Round Submenu Images
+
+Built from: MyNewVoice v44 settings save returns previous level
+
+Change summary:
+- Fixed My People submenu image rendering so every My People phrase row uses a circular photo/icon holder.
+- Newly added My People entries now display circular images even when relationship/person details are blank.
+- Preserved the existing circular crop workflow.
+- Added a CSS safety guard so My People row images and fallback icons remain circular.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Phrase IDs unchanged.
+- Category IDs unchanged.
+- Media IDs/storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.
+- Dad-facing phrase row layout otherwise unchanged.

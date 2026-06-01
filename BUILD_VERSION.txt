@@ -1,0 +1,11 @@
+MyNewVoice build version
+========================
+
+Version: v111
+ZIP filename: MyNewVoice_v111_settings_screen_refactor.zip
+App label: MyNewVoice v111
+Service worker cache: mynewvoice-v111-settings-screen-refactor
+Offline cache: mynewvoice-offline-v111
+
+Internal folder: MyNewVoice_v111_settings_screen_refactor
+Naming rule: ZIP filename, internal app version, cache names, BUILD_VERSION and changelog entry must match the build version.

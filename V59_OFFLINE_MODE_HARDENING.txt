@@ -1,0 +1,23 @@
+MyNewVoice v59 - Offline Mode Hardening
+
+Changes:
+- Adds a Save offline button to Settings > Offline.
+- Save offline actively caches core app files while the device is online.
+- Offline status now checks how many core files are cached rather than only checking whether any MyNewVoice cache exists.
+- Offline status now shows app worker status, cached file count, storage protection status, last saved time, local photo count and local voice count.
+- About/Information uses the same improved offline status summary.
+- Service worker cache version updated to v59.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Media storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase row structure unchanged.
+- v55 simplified Settings/About/offline, v56 My People relationship dropdown, v57 media size display, and v58 media quality tools retained.
+
+Offline note:
+- This remains a web/PWA app, not a native iOS app.
+- Open the app online, tap Save offline, then test with Wi-Fi/mobile data off before relying on it away from home.

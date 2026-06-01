@@ -1,0 +1,20 @@
+MyNewVoice v57 - Media Size Display in Settings Editor
+
+Changes:
+- Adds image and audio size display to the Settings content line editor.
+- Main menu/topic rows now show stored main-menu image size where present.
+- Phrase rows now show phrase image size and recorded voice size where present.
+- Section phrase editor now shows a simple total media summary for the selected section: total media, images, and audio.
+- Selected section/phrase detail panels also show the relevant image/audio size summary.
+- Media size display uses existing local IndexedDB media records and does not change storage keys or backup structure.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted or recompressed by this build.
+- Speech fallback unchanged.
+- Dad-facing menu and phrase row structure unchanged.
+- v55 simplified Settings/About/offline status retained.
+- v56 My People relationship dropdown retained.

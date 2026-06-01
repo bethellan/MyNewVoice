@@ -1,0 +1,31 @@
+V87 MENU LAYOUT IMPROVEMENTS
+==============================
+No behaviour, schema, media storage, phrase data or speech changes.
+UI/layout only.
+
+CHANGES:
+
+1. SETTINGS DASHBOARD — 2-column grid (560px+)
+   Groups now pair up left/right: Edit | Backup at top, Clear | Exit at bottom.
+   Wide sections (Test, Offline Use, Backup Size) continue to span full width.
+   Result: the Settings page is ~40% shorter on phones in landscape and tablets.
+
+2. VOICE FOLDOUT BODY — 2-col label/control layout
+   The Voice section inside Settings Preferences now uses the same horizontal
+   label ↔ control layout as the outer preferences rows (added in v72).
+   Speech rate, pitch, popup delay, voice picker and close mode all sit in tidy
+   left-label / right-control rows instead of a tall stacked column.
+
+3. SETTINGS PANEL — max-width cap on wide screens (900px+)
+   On large tablets and desktops the Settings panel now caps at 900px and
+   centres within the overlay rather than stretching to full viewport width.
+   Restores the modal feel without sacrificing the full-screen layout on phones.
+
+4. TAB CARDS — slightly taller at 2-col breakpoint (580–959px)
+   At 2-column layout, cards are narrower; min-height raised from 174px to
+   clamp(180px, 30vw, 260px) so cards stay comfortably proportioned rather
+   than feeling flat and wide.
+
+5. SETTINGS ENTRY OVERLAY — tightened header spacing
+   "Choose an option." intro text removed (buttons are self-explanatory).
+   Panel top padding reduced from 22px to 18px. Minor spacing tightening.

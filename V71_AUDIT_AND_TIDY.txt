@@ -1,0 +1,49 @@
+MyNewVoice v71 - Audit and tidy
+
+Changes (no functional changes to app behaviour, data schema, or user experience):
+
+HTML (index.html):
+- Moved <meta charset="UTF-8"> to be the very first element inside <head>, before
+  the lz-string <script> tag. The charset declaration must appear within the first
+  1024 bytes and before any scripts to guarantee correct encoding detection.
+- Updated the hardcoded "Version: v60" fallback text in the About modal to "v71".
+  JavaScript overwrites this at runtime with CURRENT_APP_VERSION, but the static
+  HTML was nine versions out of date.
+- Removed the large block of dead static management panel HTML (Add Phrase, Remove
+  Phrase, Edit Phrase, Reorder, People Management, Quick Actions sections). These
+  elements are fully replaced by renderContentManagementPanel() innerHTML on every
+  open, so they were never actually seen or used. The managementOverlay and
+  managementPanel shell divs are retained, as are all dynamically rendered elements.
+
+JavaScript (script.js):
+- Removed the dead block of DOMContentLoaded event listeners that targeted elements
+  from the now-removed static management HTML (addPhrase, removePhrase, exportData,
+  importData/importFile, showAllPhrases, reloadApp, resetData, editCategorySelect,
+  editPhraseSelect, updatePhrase, reorderCategorySelect, saveOrder,
+  removeCategorySelect, and associated dropdown initialisation). None of these
+  elements survive the first renderContentManagementPanel() call.
+- Moved applyAppTheme() call out of the middle of the dead-code block to a clean
+  position at the top of the post-setup section where it logically belongs.
+- Cleaned up inconsistent indentation and blank lines around the management overlay
+  Escape-key listener.
+- Updated CURRENT_APP_VERSION to 'v71'.
+- Updated OFFLINE_CACHE_NAME to 'mynewvoice-offline-v71'.
+- Added v71 entry to the version history block at the top of the file.
+
+Service worker (sw.js):
+- Updated CACHE_NAME to 'mynewvoice-v71-audit-and-tidy' (triggers cache refresh on deploy).
+- Updated inline version comment.
+
+app-version.json:
+- Updated appVersion to "v71" and label to "Audit and tidy".
+
+Preserved:
+- All app behaviour, UX, and visual appearance unchanged.
+- Backup/export/import schema unchanged.
+- All storage keys unchanged.
+- All phrase, category, and media IDs unchanged.
+- Local images, audio, and speech fallback unchanged.
+- The legacy populateRemovePhraseOptions / populateEditPhraseOptions / populateReorderList
+  functions and related drag-and-drop helpers remain in script.js — they are not
+  currently called at runtime but are retained in case they are needed in future
+  or for reference.

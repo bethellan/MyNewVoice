@@ -1,0 +1,7 @@
+MyNewVoice v93 - Offline icon library
+
+Expanded the bundled fallback icon chooser with more offline-safe emoji icons for activities, comfort, hygiene, food/drink, health, people, transport, communication and hobbies.
+
+No backup schema change. Existing custom photos remain preferred over fallback icons. Icons remain local/offline because they are text/emoji characters rendered by the device; no internet icon library is required at runtime.
+
+Preserved: phrase IDs, category IDs, media keys, local image/audio storage, speech fallback, Dad-facing menu order and v92 Settings structure.

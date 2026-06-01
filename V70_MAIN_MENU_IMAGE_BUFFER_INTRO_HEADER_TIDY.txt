@@ -1,0 +1,18 @@
+MyNewVoice v70 - Main menu image buffer and intro header tidy
+
+Changes:
+- Removed the extra inner buffer added around main menu images in v69.
+- Main menu images now extend to the visible image well edges again.
+- Kept the larger/wider main menu card sizing from v69.
+- Kept the main-page top header introduction image/function, but made the header area less bulky where supported by the current markup.
+- Settings cog remains separate and visible.
+
+Preserved:
+- Main menu button structure unchanged.
+- Introduction button function unchanged.
+- Submenu phrase rows unchanged.
+- Backup/export/import schema unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio unchanged.
+- Speech fallback unchanged.

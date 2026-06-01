@@ -1,0 +1,14 @@
+MyNewVoice v87 - Submenu back arrow touch target fix
+
+Based on v86.
+
+Changes:
+- Moves the submenu back arrow further inside the rounded title bar on iPhone/PWA screens.
+- Increases the back arrow tap target to approximately 60 x 60 px on mobile.
+- Adds left title padding so the button does not overlap the submenu title.
+- Keeps v86 iPhone safe-area correction and v84 import / v83 export fixes.
+
+Preserved:
+- Backup/export schema unchanged.
+- Phrase IDs, category IDs, media IDs and storage keys unchanged.
+- Local images/audio, speech fallback, phrase content and menu order unchanged.

@@ -1,0 +1,19 @@
+MyNewVoice v90 - UI audit and consolidation polish
+
+Scope:
+- CSS-only commercial polish foundation pass from v87.
+- Consolidates visual language for header, Settings cog, main menu cards, submenu phrase rows, popup card, modals and save/cancel action rows.
+- Improves safe-area-aware top controls while avoiding the broad body/frame spacing problem seen in v85.
+- Preserves Dad-facing menu and phrase structure.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Existing category IDs, phrase IDs, media IDs and storage keys unchanged.
+- Local images/audio unchanged.
+- Speech and fallback speech behaviour unchanged.
+- No content/category/phrase order changes.
+
+Version/cache:
+- CURRENT_APP_VERSION updated to v90.
+- app-version.json updated to v90.
+- Service worker/offline cache names updated to v90.

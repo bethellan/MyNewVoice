@@ -1,0 +1,30 @@
+MyNewVoice v55 - Settings simplified, About stats and offline readiness
+
+Changes:
+- Simplified Settings wording and dashboard labels to reduce visual clutter.
+- Fixed About/Information version display so it is populated from CURRENT_APP_VERSION.
+- Added About/Information backup-size summary:
+  - estimated total complete .json/.mnvoice size
+  - total stored image size and count
+  - total stored audio size and count
+- Added Offline readiness summary in About/Information.
+- Added Settings > Offline section with:
+  - app/cache readiness check
+  - local photo/voice count
+  - storage protection status
+  - Check offline button
+  - Protect storage button
+
+Notes:
+- Offline use still requires the app to have been opened once while online so service-worker/cache files can be saved on the device.
+- This build does not yet add My People relationship dropdowns, media-size rows in editors, or media quality controls. Those are intended for later stages.
+
+Preserved:
+- Backup/export/import schema unchanged.
+- Protected top-level backup fields unchanged.
+- Phrase/category/media IDs unchanged.
+- Storage keys unchanged.
+- Local images/audio not deleted.
+- Speech fallback unchanged.
+- Dad-facing category/menu/phrase structure unchanged.
+- v54 main-menu crop fix retained.
