@@ -1,11 +1,13 @@
-MyNewVoice build version
-========================
+MyNewVoice build metadata
 
-Version: v113
-ZIP filename: MyNewVoice_v113_settings_screen_refactor.zip
-Internal folder name: MyNewVoice_v113_settings_screen_refactor
-App label: MyNewVoice v113
-Service worker cache: mynewvoice-v113-settings-screen-refactor
-Offline cache: mynewvoice-offline-v113
+Version: v114
+ZIP filename: MyNewVoice_v114_locked_main_viewport.zip
+Internal folder name: MyNewVoice_v114_locked_main_viewport
+App label: MyNewVoice v114
+Service worker cache: mynewvoice-v114-locked-main-viewport
+Offline cache: mynewvoice-offline-v114
 
-Built from: MyNewVoice_v112_emergency_restore.zip
+Build note:
+- Locks the Dad-facing communication shell to a stable app viewport height.
+- Prevents iPhone Safari dynamic viewport recalculation during Settings/password/about overlays from changing the main menu size or vertical position after returning to the app.
+- Settings and modal overlays now scroll internally and use the same locked viewport height.

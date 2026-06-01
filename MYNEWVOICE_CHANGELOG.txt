@@ -1691,7 +1691,7 @@ v112 - Emergency restore
 - No feature, schema, media, phrase, speech or import/export changes were intentionally made.
 
 
-v113 - Settings full-screen refactor (settings-screen-refactor)
+v114 - Locked main viewport after Settings (settings-screen-refactor)
 
 Built from: v112 emergency restore.
 
@@ -1736,10 +1736,10 @@ What was changed:
 - hideSettingsEntryOverlay(): removed viewport restore call.
 - hideSettingsOverlay(): removed both restore function calls.
 - showManagementPanel(): removed setTimeout firstButton.focus() to prevent iOS scroll.
-- CURRENT_APP_VERSION: v112 -> v113.
-- OFFLINE_CACHE_NAME: mynewvoice-offline-v112 -> mynewvoice-offline-v113.
-- sw.js CACHE_NAME: mynewvoice-v112-emergency-restore -> mynewvoice-v113-settings-screen-refactor.
-- app-version.json, index.html About version text, BUILD_VERSION.txt: all updated to v113.
+- CURRENT_APP_VERSION: v112 -> v114.
+- OFFLINE_CACHE_NAME: mynewvoice-offline-v112 -> mynewvoice-offline-v114.
+- sw.js CACHE_NAME: mynewvoice-v112-emergency-restore -> mynewvoice-v114-settings-screen-refactor.
+- app-version.json, index.html About version text, BUILD_VERSION.txt: all updated to v114.
 
 What was preserved:
 - All phrase IDs, category IDs, media IDs and storage keys unchanged.
@@ -1779,3 +1779,9 @@ Manual QA checklist:
 [ ] Save/Cancel buttons visible above iPhone home indicator.
 [ ] Rotating device (portrait<->landscape) does not cause layout jump.
 [ ] App works fully offline after Save Offline pressed once.
+
+v114_locked_main_viewport
+- Fixed remaining main-screen size/position change after entering Settings on iPhone/Safari.
+- Added a stable --mnv-app-height set at startup and reused by body, container, Settings, password and About overlays.
+- Added guarded viewport relock only for genuine orientation/large-width changes when no overlay or form input is active.
+- Updated internal version/cache/build naming to v114.

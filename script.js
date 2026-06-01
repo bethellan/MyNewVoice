@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v113: restoreMainMenuLayoutAfterModal removed – Settings are full-screen fixed screens that do not alter body geometry. */
+/* v114: restoreMainMenuLayoutAfterModal removed – Settings are full-screen fixed screens that do not alter body geometry. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -65,6 +65,68 @@ v8_titlebar_back_button - Removed the redundant submenu header and moved the Mai
    v78_smooth_menu_scrolling_cleanup - Reduced touch-scroll jumpiness by removing the global non-passive touchmove zoom guard, clearing pressed visuals on scroll movement, and restoring smooth menu/settings scrolling.
 */
 
+
+
+// ============================================================================
+// v114 LOCKED MAIN VIEWPORT
+// ============================================================================
+let mnvLockedViewportWidth = 0;
+let mnvLockedViewportHeight = 0;
+let mnvViewportRelockTimer = null;
+
+function mnvReadStableViewportHeight() {
+    const visualHeight = window.visualViewport && Number.isFinite(window.visualViewport.height)
+        ? Math.round(window.visualViewport.height)
+        : 0;
+    const innerHeight = Number.isFinite(window.innerHeight) ? Math.round(window.innerHeight) : 0;
+    const clientHeight = document.documentElement && Number.isFinite(document.documentElement.clientHeight)
+        ? Math.round(document.documentElement.clientHeight)
+        : 0;
+    return Math.max(visualHeight, innerHeight, clientHeight, 320);
+}
+
+function mnvAnyViewportOverlayOpen() {
+    const ids = ['settingsEntryOverlay', 'settingsOverlay', 'passwordModal', 'aboutModal', 'managementOverlay'];
+    return ids.some(id => {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+    });
+}
+
+function mnvLockMainViewport(reason = 'lock') {
+    const height = mnvReadStableViewportHeight();
+    const width = Math.round(window.visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || 0);
+    if (!height) return;
+    mnvLockedViewportHeight = height;
+    mnvLockedViewportWidth = width;
+    document.documentElement.style.setProperty('--mnv-app-height', `${height}px`);
+    document.body?.style.setProperty('--mnv-app-height', `${height}px`);
+    document.documentElement.dataset.mnvViewportLock = reason;
+}
+
+function mnvMaybeRelockMainViewport(reason = 'resize') {
+    clearTimeout(mnvViewportRelockTimer);
+    mnvViewportRelockTimer = setTimeout(() => {
+        if (mnvAnyViewportOverlayOpen()) return;
+        const active = document.activeElement;
+        if (active && /^(INPUT|TEXTAREA|SELECT)$/i.test(active.tagName || '')) return;
+        const currentWidth = Math.round(window.visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || 0);
+        const widthChangedSubstantially = Math.abs(currentWidth - mnvLockedViewportWidth) > 80;
+        if (!mnvLockedViewportHeight || widthChangedSubstantially) mnvLockMainViewport(reason);
+    }, 250);
+}
+
+function mnvInstallLockedMainViewport() {
+    mnvLockMainViewport('startup');
+    window.addEventListener('orientationchange', () => setTimeout(() => mnvMaybeRelockMainViewport('orientation'), 450), { passive: true });
+    window.addEventListener('resize', () => mnvMaybeRelockMainViewport('window-resize'), { passive: true });
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => mnvMaybeRelockMainViewport('visual-resize'), { passive: true });
+    }
+}
+
 // ============================================================================
 // DATA PERSISTENCE FUNCTIONS
 // ============================================================================
@@ -105,7 +167,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v113';
+const CURRENT_APP_VERSION = 'v114';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -114,7 +176,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v113';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v114';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -910,13 +972,13 @@ function getPhraseFilenameForSetup(category, phrase) {
 
 /* v112: preserve visible app position around Settings cog/modal open.
    This avoids iPhone Safari viewport recalculation shifting the main menu/submenu behind Settings. */
-/* v113: mnvSettingsSavedViewport removed */
+/* v114: mnvSettingsSavedViewport removed */
 /* v112: hard reset for protected Settings dashboard layout effects. */
-/* v113: mnvHardRestoreAfterSettingsDashboard removed – contained fixed overlay no longer requires body layout restore. */
+/* v114: mnvHardRestoreAfterSettingsDashboard removed – contained fixed overlay no longer requires body layout restore. */
 
-/* v113: mnvCaptureViewportBeforeSettings removed – no viewport capture/restore needed with contained fixed overlays. */
+/* v114: mnvCaptureViewportBeforeSettings removed – no viewport capture/restore needed with contained fixed overlays. */
 
-/* v113: mnvRestoreViewportAfterSettings removed. */
+/* v114: mnvRestoreViewportAfterSettings removed. */
 
 function ensureSettingsEntryOverlay() {
     let overlay = document.getElementById('settingsEntryOverlay');
@@ -7228,6 +7290,7 @@ function exportButtonData() {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('MyNewVoice app initializing...');
+    mnvInstallLockedMainViewport();
     installTouchInteractionLock();
 installSingleButtonPressVisualGuard();
     
@@ -7342,11 +7405,11 @@ if ('serviceWorker' in navigator) {
 }
 
 
-/* v113: broad delegated close-button layout restore removed – Settings are now contained fixed screens. */
+/* v114: broad delegated close-button layout restore removed – Settings are now contained fixed screens. */
 
 
 
 
-/* v113: dashboard-specific restore click listener removed. */
+/* v114: dashboard-specific restore click listener removed. */
 
-/* v113: MutationObserver on document.body removed – it caused feedback loops when settings visibility changed. */
+/* v114: MutationObserver on document.body removed – it caused feedback loops when settings visibility changed. */

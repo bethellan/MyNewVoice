@@ -8190,3 +8190,75 @@ body,
 #settingsOverlay button {
   font-size: max(16px, 1rem);
 }
+
+/* ============================================================================
+   v114 LOCKED MAIN VIEWPORT
+   ----------------------------------------------------------------------------
+   Root cause fixed: the communication shell must not resize when iOS Safari
+   recalculates 100dvh after the Settings/password route. JavaScript writes a
+   stable --mnv-app-height once at startup and only refreshes it on genuine
+   orientation/width changes when no modal/settings overlay is open.
+   ============================================================================ */
+:root {
+  --mnv-app-height: 100vh;
+}
+
+html,
+body {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: var(--mnv-app-height) !important;
+  height: var(--mnv-app-height) !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed !important;
+  inset: 0 !important;
+  box-sizing: border-box !important;
+  padding: var(--space-md) !important;
+}
+
+.container {
+  height: calc(var(--mnv-app-height) - (var(--space-md) * 2)) !important;
+  min-height: 0 !important;
+  max-height: calc(var(--mnv-app-height) - (var(--space-md) * 2)) !important;
+  box-sizing: border-box !important;
+}
+
+/* Settings/password/about overlays use the same locked height and scroll only
+   inside their own panels. They must not force a new document viewport. */
+#settingsEntryOverlay.settings-overlay,
+#settingsOverlay.settings-overlay,
+#passwordModal.modal,
+#aboutModal.modal {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: var(--mnv-app-height) !important;
+  min-height: var(--mnv-app-height) !important;
+  max-height: var(--mnv-app-height) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+}
+
+#settingsEntryOverlay.settings-overlay.show,
+#settingsOverlay.settings-overlay.show {
+  height: var(--mnv-app-height) !important;
+  min-height: var(--mnv-app-height) !important;
+  max-height: var(--mnv-app-height) !important;
+}
+
+#settingsEntryOverlay.settings-overlay.show .settings-panel,
+#settingsOverlay.settings-overlay.show .settings-panel {
+  max-height: calc(var(--mnv-app-height) - max(36px, env(safe-area-inset-top, 0px)) - max(36px, env(safe-area-inset-bottom, 0px))) !important;
+}
+
+#passwordModal .modal-content,
+#aboutModal .modal-content {
+  max-height: calc(var(--mnv-app-height) - max(36px, env(safe-area-inset-top, 0px)) - max(36px, env(safe-area-inset-bottom, 0px))) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
