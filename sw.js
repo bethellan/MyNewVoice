@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v127: Content Editor picture cells open image edit/import menu; v125 title-above-image, v124 real-screen Settings, v123 Content Editor screen and v114 locked viewport retained.
-const CACHE_NAME = 'mynewvoice-v127_content_editor_picture_options_restore';
+// v128: Content Editor picture options open immediately from a single delegated picture-cell target; stale pending popups are cancelled on navigation.
+const CACHE_NAME = 'mynewvoice-v128_picture_options_async_audit_fix';
 const urlsToCache = [
   './',
   './index.html',

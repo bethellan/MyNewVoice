@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v127: Reinstalls robust picture/placeholder tap handling in the Content Editor and restyles the picture options panel to match the current real-screen Settings layout. Retains v126 table layout, v125 title-above-image, v124 real-screen Settings, v123 Content Editor screen and v114 locked viewport. No schema, speech or media-storage changes. */
+/* v128: Audits and fixes delayed Content Editor picture options. Uses one delegated picture-cell click path, opens picture options immediately before media lookup, cancels stale pending lookups on navigation, and keeps the real-screen Settings/Content Editor layout. No schema, speech or media-storage changes. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -167,7 +167,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v127';
+const CURRENT_APP_VERSION = 'v128';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -176,7 +176,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v127';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v128';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -1990,6 +1990,7 @@ function showSettingsOverlay() {
 }
 
 function hideSettingsOverlay() {
+    closeManagementImageOptionsOverlay();
     const overlay = document.getElementById('settingsOverlay');
     if (!overlay) return;
     overlay.classList.remove('show');
@@ -2487,6 +2488,17 @@ async function choosePrivateImage(key, label = '', text = '') {
 }
 
 
+function closeManagementImageOptionsOverlay() {
+    const overlay = document.getElementById('managementImageOptionsOverlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+        overlay.style.display = 'none';
+    }
+    window.__mnvImageOptions = null;
+    window.__mnvImageOptionsRequestToken = (window.__mnvImageOptionsRequestToken || 0) + 1;
+}
+
+
 function ensureManagementImageOptionsOverlay() {
     let overlay = document.getElementById('managementImageOptionsOverlay');
     if (overlay) return overlay;
@@ -2520,16 +2532,12 @@ function ensureManagementImageOptionsOverlay() {
         const state = window.__mnvImageOptions;
         if (!state) return;
         if (event.target.closest('[data-image-options-cancel]')) {
-            overlay.classList.remove('show');
-            overlay.style.display = 'none';
-            window.__mnvImageOptions = null;
+            closeManagementImageOptionsOverlay();
             return;
         }
         if (event.target.closest('[data-image-options-load]')) {
-            overlay.classList.remove('show');
-            overlay.style.display = 'none';
+            closeManagementImageOptionsOverlay();
             choosePrivateImage(state.key, state.label, state.text);
-            window.__mnvImageOptions = null;
             return;
         }
         if (event.target.closest('[data-image-options-edit]')) {
@@ -2538,8 +2546,7 @@ function ensureManagementImageOptionsOverlay() {
                 showToast('No picture is saved in this box yet.', 'warning');
                 return;
             }
-            overlay.classList.remove('show');
-            overlay.style.display = 'none';
+            closeManagementImageOptionsOverlay();
             try {
                 const cropConfig = getCropConfigForKey(state.key);
                 const croppedBlob = await openImageCropper(record.blob, {
@@ -2558,48 +2565,67 @@ function ensureManagementImageOptionsOverlay() {
                 console.error(error);
                 showToast('Could not edit picture', 'error');
             }
-            window.__mnvImageOptions = null;
             return;
         }
         if (event.target.closest('[data-image-options-delete]')) {
             if (!confirm('Delete this saved picture from this device?')) return;
             await deletePrivateMediaRecord(state.key);
-            overlay.classList.remove('show');
-            overlay.style.display = 'none';
-            window.__mnvImageOptions = null;
+            closeManagementImageOptionsOverlay();
             showToast('Picture deleted', 'success');
             refreshAfterPrivateMediaChange();
             return;
         }
         if (event.target.closest('[data-image-options-icon]')) {
-            overlay.classList.remove('show');
-            overlay.style.display = 'none';
+            closeManagementImageOptionsOverlay();
             showFallbackIconMenu(state.kind, state.id, state.category || contentSetupPhraseCategory);
-            window.__mnvImageOptions = null;
         }
     });
     document.body.appendChild(overlay);
     return overlay;
 }
 
-async function showManagementImageOptions(kind, id, category = '') {
-    const key = getPrivateMediaKey(kind, kind === 'menu' ? id : { id });
-    const record = await getPrivateMediaRecord(key);
+function showManagementImageOptions(kind, id, category = '') {
     const overlay = ensureManagementImageOptionsOverlay();
     const textEl = overlay.querySelector('#managementImageOptionsText');
     const titleEl = overlay.querySelector('#managementImageOptionsTitle');
     const editBtn = overlay.querySelector('[data-image-options-edit]');
     const deleteBtn = overlay.querySelector('[data-image-options-delete]');
-    const label = kind === 'menu' ? `${getCategoryMeta(id).label} main menu button picture` : `${(findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || id} phrase picture`;
-    const phraseText = kind === 'menu' ? '' : ((findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || '');
-    window.__mnvImageOptions = { kind, id, category, key, label, text: phraseText };
+    const resolvedCategory = category || contentSetupPhraseCategory;
+    const key = getPrivateMediaKey(kind, kind === 'menu' ? id : { id });
+    const label = kind === 'menu'
+        ? `${getCategoryMeta(id).label} main menu button picture`
+        : `${(findPhraseById(resolvedCategory, id) || {}).text || id} phrase picture`;
+    const phraseText = kind === 'menu' ? '' : ((findPhraseById(resolvedCategory, id) || {}).text || '');
+    const requestToken = (window.__mnvImageOptionsRequestToken || 0) + 1;
+    window.__mnvImageOptionsRequestToken = requestToken;
+    window.__mnvImageOptions = { kind, id, category: resolvedCategory, key, label, text: phraseText, requestToken };
+
     if (titleEl) titleEl.textContent = label;
-    if (textEl) textEl.textContent = record ? 'Saved picture found. You can replace it, crop it again, delete it, or use a fallback icon.' : 'No saved picture yet. Add/take a picture, or choose a fallback icon.';
-    if (editBtn) editBtn.disabled = !record;
-    if (deleteBtn) deleteBtn.disabled = !record;
+    if (textEl) textEl.textContent = 'Checking saved picture… You can add or replace a picture now.';
+    if (editBtn) editBtn.disabled = true;
+    if (deleteBtn) deleteBtn.disabled = true;
+
     overlay.style.display = 'flex';
     void overlay.offsetWidth;
     overlay.classList.add('show');
+
+    getPrivateMediaRecord(key).then(record => {
+        if (window.__mnvImageOptionsRequestToken !== requestToken) return;
+        if (!window.__mnvImageOptions || window.__mnvImageOptions.key !== key) return;
+        if (textEl) {
+            textEl.textContent = record
+                ? 'Saved picture found. You can replace it, crop it again, delete it, or use a fallback icon.'
+                : 'No saved picture yet. Add/take a picture, or choose a fallback icon.';
+        }
+        if (editBtn) editBtn.disabled = !record;
+        if (deleteBtn) deleteBtn.disabled = !record;
+    }).catch(error => {
+        console.error(error);
+        if (window.__mnvImageOptionsRequestToken !== requestToken) return;
+        if (textEl) textEl.textContent = 'Could not check the saved picture yet. You can still add or replace the picture.';
+        if (editBtn) editBtn.disabled = true;
+        if (deleteBtn) deleteBtn.disabled = true;
+    });
 }
 
 function ensureFallbackIconOverlay() {
@@ -4204,6 +4230,7 @@ function showManagementPanel() {
 }
 
 function hideManagementPanel() {
+    closeManagementImageOptionsOverlay();
     const overlay = document.getElementById('managementOverlay');
     const panel = document.getElementById('managementPanel');
     
@@ -4240,28 +4267,8 @@ function renderContentManagementPanel() {
     panel.onclick = handleContentManagementClick;
     panel.onchange = handleContentManagementChange;
     applyPrivateImagesIn(panel);
-    bindContentEditorPictureTriggers(panel);
 }
 
-function bindContentEditorPictureTriggers(panel) {
-    if (!panel) return;
-    panel.querySelectorAll('[data-management-image-options]').forEach(el => {
-        if (el.dataset.pictureTriggerBound === '1') return;
-        el.dataset.pictureTriggerBound = '1';
-        const open = (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const kind = el.dataset.kind;
-            const id = el.dataset.id;
-            const category = el.dataset.category || contentSetupPhraseCategory;
-            showManagementImageOptions(kind, id, category);
-        };
-        el.addEventListener('click', open);
-        el.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') open(event);
-        });
-    });
-}
 
 function renderContentTopicsScreen(panel, allCategories) {
     panel.innerHTML = `
@@ -4320,7 +4327,7 @@ function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = 
     const roundClass = people ? ' people-thumb' : '';
     const iconText = fallbackIcon || (kind === 'menu' ? getCategoryMeta(id).icon : '🖼️');
     return `
-        <button type="button" class="management-media-thumb${roundClass}" data-management-image-options data-key="${escapeHtml(key)}" data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-category="${escapeHtml(category)}" data-people="${people ? '1' : '0'}" aria-label="Edit or import picture">
+        <button type="button" class="management-media-thumb${roundClass}" tabindex="-1" aria-hidden="true">
             <img alt="" data-private-media-key="${escapeHtml(key)}" style="display:none;">
             <span class="management-thumb-fallback" data-management-thumb-key="${escapeHtml(key)}">${escapeHtml(iconText)}</span>
         </button>

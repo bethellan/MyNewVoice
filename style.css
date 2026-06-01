@@ -10644,7 +10644,7 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay.show .setting
 }
 
 
-/* v127: robust picture edit/import targets and current-screen picture options panel. */
+/* v128: single delegated picture-cell target and immediate picture options panel. */
 #managementOverlay .one-row-editor-table .picture-cell-action,
 #managementOverlay .one-row-editor-table .picture-cell-action * {
   cursor: pointer !important;
@@ -10654,8 +10654,35 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay.show .setting
   -webkit-tap-highlight-color: rgba(47,127,86,.18) !important;
 }
 #managementOverlay .one-row-editor-table .picture-cell-action .management-media-thumb {
-  pointer-events: auto !important;
+  pointer-events: none !important;
 }
+
+#managementOverlay .one-row-editor-table .picture-cell-action:active {
+  background: rgba(47, 127, 86, 0.12) !important;
+}
+#managementOverlay .one-row-editor-table .picture-cell-action::after {
+  content: 'Tap picture to edit';
+  display: block;
+  margin-top: 3px;
+  font-size: .78rem;
+  line-height: 1.1;
+  color: #2f7f56;
+  font-weight: 800;
+}
+@media (max-width: 760px) {
+  .picture-options-panel-v127 {
+    width: 100vw !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+  .image-options-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+}
+
 .picture-options-panel-v127 {
   width: min(560px, calc(100vw - 24px)) !important;
   max-height: calc(100dvh - 32px) !important;
