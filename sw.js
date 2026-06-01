@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v117: Content Editor mobile-fit card layout; v115 Settings menu rewrite and v114 locked viewport retained; schema, media and speech unchanged.
-const CACHE_NAME = 'mynewvoice-v117-content-editor-mobile-fit';
+// v120: Content Editor phrase cards; v119 section cards and v114 locked viewport retained; schema, media and speech unchanged.
+const CACHE_NAME = 'mynewvoice-v120-content-editor-phrase-card-layout';
 const urlsToCache = [
   './',
   './index.html',

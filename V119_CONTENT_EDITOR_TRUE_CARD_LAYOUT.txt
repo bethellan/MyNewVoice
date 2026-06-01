@@ -1,0 +1,19 @@
+MyNewVoice v119 - Content Editor true card layout
+
+Built from v118.
+
+Changes:
+- Replaced the Step 1 Content Editor section table renderer with real section cards.
+- Removed the Step 1 desktop column headers and sideways-scroll hint.
+- Removed the redundant Step 1 icon picker / Choose control from the section list.
+- Kept Edit Content as the primary section action.
+- Kept title editing, image thumbnail editing, move up/down, hide and delete available from the section card.
+- Updated CURRENT_APP_VERSION, offline cache name, service worker cache, app-version.json and BUILD_VERSION.txt to v119.
+
+Preserved:
+- Dad-facing main screen.
+- Phrase/category/media IDs.
+- Backup/export/import schema including buttonData, categoryConfig and mediaRecords.
+- Local image/audio storage keys.
+- Speech and fallback behaviour.
+- v114 locked viewport fix, v115 Settings rewrite, and v116-v118 compacting work.

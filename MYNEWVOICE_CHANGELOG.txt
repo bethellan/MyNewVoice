@@ -1823,3 +1823,19 @@ V117_CONTENT_EDITOR_MOBILE_FIT
 - Reduced title bar, helper text, media thumbnail and button sizing inside Content Editor only.
 - Retained v114 locked main viewport and v115 Settings rewrite.
 - No backup/export schema, phrase/category IDs, media storage, local photos/audio, or speech behaviour changed.
+
+
+## v119 - Content Editor true card layout
+- Replaced the Step 1 Content Editor desktop table renderer with real section cards.
+- Removed Step 1 column headers, sideways-scroll hint, icon picker field and Choose button from the section list.
+- Kept Edit Content as the primary action; retained title edit, image thumbnail edit, move up/down, hide and delete.
+- Preserved Dad-facing UI, speech, local media, backup schema, IDs and storage keys.
+- Updated version/cache metadata to v119.
+
+## v120 - Content Editor phrase card layout
+- Replaced the submenu/phrase editor desktop table with real mobile phrase cards.
+- Removed phrase column headers and sideways-scroll behaviour from the phrase screen.
+- Kept phrase text, image, voice, move, hide and delete controls wired to existing data attributes.
+- Retained v119 section cards and v114 locked viewport fix.
+- No backup schema, phrase ID, media ID, storage key, speech, image or audio behaviour changes.
+
