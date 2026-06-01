@@ -1,7 +1,0 @@
-MyNewVoice v97
-
-Version alignment fix after v96 Apple visual refresh.
-
-Updated visible About fallback, app-version.json, CURRENT_APP_VERSION, offline cache name and service worker cache name so the app no longer reports v94/v96 inconsistently.
-
-No backup schema, phrase/category ID, speech, local media, import/export, or Dad-facing workflow changes.

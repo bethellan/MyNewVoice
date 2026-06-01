@@ -1,7 +1,0 @@
-V83 import/export reliability fix
-
-- Complete backup export now has a single in-progress guard to prevent duplicate saves from double taps or duplicate events.
-- Export still uses Save Picker, Share Sheet, then download fallback, but only one path is used per export attempt.
-- Complete backup import now accepts valid MyNewVoice backups with missing mediaRecords by treating mediaRecords as an empty array for older/text-only backups.
-- Backup schema remains unchanged.
-- Preserved speech fallback, local media storage keys, category/phrase IDs, menus and Dad-facing layout.

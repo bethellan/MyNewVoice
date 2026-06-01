@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v128: Audits and fixes delayed Content Editor picture options. Uses one delegated picture-cell click path, opens picture options immediately before media lookup, cancels stale pending lookups on navigation, and keeps the real-screen Settings/Content Editor layout. No schema, speech or media-storage changes. */
+/* v124: Makes the main Settings dashboard a true full-screen body-level screen rather than a floating modal panel. Content Editor remains a real screen with one-row tables and internal scrolling. v114 viewport lock retained. No schema, speech or media-storage changes. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -142,6 +142,20 @@ const INTRODUCTION_IMAGE_KEY = 'intro:image';
 const INTRODUCTION_VOICE_KEY = 'voice:introduction';
 const CLICK_SOUND = new Audio('assets/sounds/click.mp3');
 CLICK_SOUND.volume = 0.3; // keep it gentle
+let clickSoundAvailable = true;
+
+function playOptionalClickSound() {
+    if (!clickSoundAvailable || typeof CLICK_SOUND === 'undefined' || !CLICK_SOUND) return;
+    try {
+        CLICK_SOUND.currentTime = 0;
+        const playPromise = CLICK_SOUND.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => { clickSoundAvailable = false; });
+        }
+    } catch (error) {
+        clickSoundAvailable = false;
+    }
+}
 
 const ZOOM_IMAGE_FOLDER = 'images/zoom';
 const MENU_IMAGE_FOLDER = 'images/menu';
@@ -167,7 +181,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v128';
+const CURRENT_APP_VERSION = 'v124';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -176,12 +190,13 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v128';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v124';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
     './style.css',
     './script.js',
+    './assets/vendor/lz-string-1.5.0.min.js',
     './manifest.json',
     './app-version.json',
     './assets/icon-192.png',
@@ -462,9 +477,34 @@ async function getPrivateMediaObjectUrl(id) {
 
 async function applyPrivateImageToElement(img, privateKey, fallbackElement) {
     if (!img || !privateKey) return false;
+    const mediaShell = img.closest('.private-media-shell');
+
+    img.dataset.privateMediaState = 'pending';
+    img.classList.add('private-media-pending');
+    if (mediaShell) {
+        mediaShell.dataset.privateMediaState = 'pending';
+        mediaShell.classList.add('private-media-pending');
+    }
+    if (fallbackElement) {
+        fallbackElement.hidden = true;
+        fallbackElement.style.display = 'none';
+    }
 
     const localUrl = await getPrivateMediaObjectUrl(privateKey);
-    if (!localUrl) return false;
+    if (!localUrl) {
+        img.dataset.privateMediaState = 'fallback';
+        img.classList.remove('loaded', 'media-ready', 'private-media-pending');
+        img.style.display = 'none';
+        if (mediaShell) {
+            mediaShell.dataset.privateMediaState = 'fallback';
+            mediaShell.classList.remove('private-media-pending');
+        }
+        if (fallbackElement) {
+            fallbackElement.hidden = false;
+            fallbackElement.style.display = '';
+        }
+        return false;
+    }
 
     // v80: Phrase-row previews must become visible as soon as local media is resolved.
     // Some mobile browsers defer lazy IMG load events inside newly shown scroll areas until
@@ -476,7 +516,13 @@ async function applyPrivateImageToElement(img, privateKey, fallbackElement) {
     img.decoding = 'async';
 
     const showResolvedImage = () => {
+        img.dataset.privateMediaState = 'resolved';
         img.classList.add('loaded', 'media-ready');
+        img.classList.remove('private-media-pending');
+        if (mediaShell) {
+            mediaShell.dataset.privateMediaState = 'resolved';
+            mediaShell.classList.remove('private-media-pending');
+        }
         img.style.display = '';
         if (fallbackElement) {
             fallbackElement.hidden = true;
@@ -485,7 +531,13 @@ async function applyPrivateImageToElement(img, privateKey, fallbackElement) {
     };
 
     const showFallback = () => {
+        img.dataset.privateMediaState = 'fallback';
         img.classList.remove('loaded', 'media-ready');
+        img.classList.remove('private-media-pending');
+        if (mediaShell) {
+            mediaShell.dataset.privateMediaState = 'fallback';
+            mediaShell.classList.remove('private-media-pending');
+        }
         img.style.display = 'none';
         if (fallbackElement) {
             fallbackElement.hidden = false;
@@ -906,10 +958,7 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
     try {
         window.speechSynthesis.cancel();
 
-        if (typeof CLICK_SOUND !== 'undefined' && CLICK_SOUND) {
-            CLICK_SOUND.currentTime = 0;
-            CLICK_SOUND.play().catch(() => {});
-        }
+        playOptionalClickSound();
 
         if (buttonElement) buttonElement.classList.add('speaking');
 
@@ -1120,11 +1169,12 @@ function ensureSettingsOverlay() {
                         </select>
                         <label for="settingsTheme">Theme</label>
                         <select id="settingsTheme" class="settings-select">
-                            <option value="default">Default</option>
-                            <option value="gentle-morning">Gentle Morning</option>
-                            <option value="deep-ocean">Deep Ocean</option>
-                            <option value="earth-sage">Earth &amp; Sage</option>
-                            <option value="midnight">Midnight</option>
+                            <option value="default">Classic</option>
+                            <option value="sunny-day">Sunny Day</option>
+                            <option value="ocean-calm">Ocean Calm</option>
+                            <option value="soft-garden">Soft Garden</option>
+                            <option value="sci-fi">Sci-Fi Console</option>
+                            <option value="high-contrast">High Contrast</option>
                         </select>
                         <label for="settingsPressActivation">Tap response</label>
                         <select id="settingsPressActivation" class="settings-select">
@@ -1359,7 +1409,7 @@ function ensureSettingsOverlay() {
         if (event.target && event.target.id === 'settingsTheme') {
             appSettings.theme = THEMES.has(event.target.value) ? event.target.value : DEFAULT_APP_SETTINGS.theme;
             saveAppSettings({ render: true });
-            showToast(`Theme saved: ${THEME_LABELS[appSettings.theme] || 'Default'}`, 'success');
+            showToast(`Theme saved: ${THEME_LABELS[appSettings.theme] || 'Classic'}`, 'success');
             return;
         }
         if (event.target && event.target.id === 'settingsPressActivation') {
@@ -1990,7 +2040,6 @@ function showSettingsOverlay() {
 }
 
 function hideSettingsOverlay() {
-    closeManagementImageOptionsOverlay();
     const overlay = document.getElementById('settingsOverlay');
     if (!overlay) return;
     overlay.classList.remove('show');
@@ -2488,17 +2537,6 @@ async function choosePrivateImage(key, label = '', text = '') {
 }
 
 
-function closeManagementImageOptionsOverlay() {
-    const overlay = document.getElementById('managementImageOptionsOverlay');
-    if (overlay) {
-        overlay.classList.remove('show');
-        overlay.style.display = 'none';
-    }
-    window.__mnvImageOptions = null;
-    window.__mnvImageOptionsRequestToken = (window.__mnvImageOptionsRequestToken || 0) + 1;
-}
-
-
 function ensureManagementImageOptionsOverlay() {
     let overlay = document.getElementById('managementImageOptionsOverlay');
     if (overlay) return overlay;
@@ -2508,23 +2546,18 @@ function ensureManagementImageOptionsOverlay() {
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.innerHTML = `
-        <div class="image-options-panel picture-options-panel-v127">
-            <div class="image-options-header-v127">
-                <div>
-                    <h3>Picture</h3>
-                    <p id="managementImageOptionsTitle">Edit this picture box</p>
-                </div>
-                <button type="button" class="settings-close picture-options-close-v127" data-image-options-cancel aria-label="Close picture options">×</button>
+        <div class="image-options-panel">
+            <div class="settings-header">
+                <h3>Picture options</h3>
+                <button type="button" class="settings-close" data-image-options-cancel aria-label="Cancel picture options">×</button>
             </div>
-            <p class="settings-note picture-options-note-v127" id="managementImageOptionsText">Choose what to do with this picture box.</p>
-            <div class="picture-options-actions-v127">
-                <button type="button" class="settings-action-btn picture-option-primary-v127" data-image-options-load>📷 Add / replace picture</button>
-                <button type="button" class="settings-action-btn" data-image-options-edit>✂️ Crop current picture</button>
-                <button type="button" class="settings-action-btn" data-image-options-icon>⭐ Fallback icon</button>
+            <p class="settings-note" id="managementImageOptionsText">Choose what to do with this picture box.</p>
+            <div class="settings-actions settings-actions-compact">
+                <button type="button" class="settings-action-btn" data-image-options-edit>✂️ Edit / re-crop current picture</button>
+                <button type="button" class="settings-action-btn" data-image-options-load>📷 Load or take new picture</button>
+                <button type="button" class="settings-action-btn" data-image-options-icon>⭐ Choose fallback icon</button>
                 <button type="button" class="settings-action-btn danger-settings-btn" data-image-options-delete>🗑️ Delete picture</button>
-            </div>
-            <div class="picture-options-footer-v127">
-                <button type="button" class="management-btn" data-image-options-cancel>Cancel</button>
+                <button type="button" class="settings-action-btn" data-image-options-cancel>Cancel</button>
             </div>
         </div>
     `;
@@ -2532,12 +2565,16 @@ function ensureManagementImageOptionsOverlay() {
         const state = window.__mnvImageOptions;
         if (!state) return;
         if (event.target.closest('[data-image-options-cancel]')) {
-            closeManagementImageOptionsOverlay();
+            overlay.classList.remove('show');
+            overlay.style.display = 'none';
+            window.__mnvImageOptions = null;
             return;
         }
         if (event.target.closest('[data-image-options-load]')) {
-            closeManagementImageOptionsOverlay();
+            overlay.classList.remove('show');
+            overlay.style.display = 'none';
             choosePrivateImage(state.key, state.label, state.text);
+            window.__mnvImageOptions = null;
             return;
         }
         if (event.target.closest('[data-image-options-edit]')) {
@@ -2546,7 +2583,8 @@ function ensureManagementImageOptionsOverlay() {
                 showToast('No picture is saved in this box yet.', 'warning');
                 return;
             }
-            closeManagementImageOptionsOverlay();
+            overlay.classList.remove('show');
+            overlay.style.display = 'none';
             try {
                 const cropConfig = getCropConfigForKey(state.key);
                 const croppedBlob = await openImageCropper(record.blob, {
@@ -2565,67 +2603,46 @@ function ensureManagementImageOptionsOverlay() {
                 console.error(error);
                 showToast('Could not edit picture', 'error');
             }
+            window.__mnvImageOptions = null;
             return;
         }
         if (event.target.closest('[data-image-options-delete]')) {
             if (!confirm('Delete this saved picture from this device?')) return;
             await deletePrivateMediaRecord(state.key);
-            closeManagementImageOptionsOverlay();
+            overlay.classList.remove('show');
+            overlay.style.display = 'none';
+            window.__mnvImageOptions = null;
             showToast('Picture deleted', 'success');
             refreshAfterPrivateMediaChange();
             return;
         }
         if (event.target.closest('[data-image-options-icon]')) {
-            closeManagementImageOptionsOverlay();
+            overlay.classList.remove('show');
+            overlay.style.display = 'none';
             showFallbackIconMenu(state.kind, state.id, state.category || contentSetupPhraseCategory);
+            window.__mnvImageOptions = null;
         }
     });
     document.body.appendChild(overlay);
     return overlay;
 }
 
-function showManagementImageOptions(kind, id, category = '') {
+async function showManagementImageOptions(kind, id, category = '') {
+    const key = getPrivateMediaKey(kind, kind === 'menu' ? id : { id });
+    const record = await getPrivateMediaRecord(key);
     const overlay = ensureManagementImageOptionsOverlay();
     const textEl = overlay.querySelector('#managementImageOptionsText');
-    const titleEl = overlay.querySelector('#managementImageOptionsTitle');
     const editBtn = overlay.querySelector('[data-image-options-edit]');
     const deleteBtn = overlay.querySelector('[data-image-options-delete]');
-    const resolvedCategory = category || contentSetupPhraseCategory;
-    const key = getPrivateMediaKey(kind, kind === 'menu' ? id : { id });
-    const label = kind === 'menu'
-        ? `${getCategoryMeta(id).label} main menu button picture`
-        : `${(findPhraseById(resolvedCategory, id) || {}).text || id} phrase picture`;
-    const phraseText = kind === 'menu' ? '' : ((findPhraseById(resolvedCategory, id) || {}).text || '');
-    const requestToken = (window.__mnvImageOptionsRequestToken || 0) + 1;
-    window.__mnvImageOptionsRequestToken = requestToken;
-    window.__mnvImageOptions = { kind, id, category: resolvedCategory, key, label, text: phraseText, requestToken };
-
-    if (titleEl) titleEl.textContent = label;
-    if (textEl) textEl.textContent = 'Checking saved picture… You can add or replace a picture now.';
-    if (editBtn) editBtn.disabled = true;
-    if (deleteBtn) deleteBtn.disabled = true;
-
+    const label = kind === 'menu' ? `${getCategoryMeta(id).label} main menu button picture` : `${(findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || id} phrase picture`;
+    const phraseText = kind === 'menu' ? '' : ((findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || '');
+    window.__mnvImageOptions = { kind, id, category, key, label, text: phraseText };
+    if (textEl) textEl.textContent = record ? 'This picture box already has a saved picture. You can crop it again, replace it, delete it, or choose a fallback icon.' : 'This picture box does not yet have a saved picture. You can load/take a picture or choose a fallback icon.';
+    if (editBtn) editBtn.disabled = !record;
+    if (deleteBtn) deleteBtn.disabled = !record;
     overlay.style.display = 'flex';
     void overlay.offsetWidth;
     overlay.classList.add('show');
-
-    getPrivateMediaRecord(key).then(record => {
-        if (window.__mnvImageOptionsRequestToken !== requestToken) return;
-        if (!window.__mnvImageOptions || window.__mnvImageOptions.key !== key) return;
-        if (textEl) {
-            textEl.textContent = record
-                ? 'Saved picture found. You can replace it, crop it again, delete it, or use a fallback icon.'
-                : 'No saved picture yet. Add/take a picture, or choose a fallback icon.';
-        }
-        if (editBtn) editBtn.disabled = !record;
-        if (deleteBtn) deleteBtn.disabled = !record;
-    }).catch(error => {
-        console.error(error);
-        if (window.__mnvImageOptionsRequestToken !== requestToken) return;
-        if (textEl) textEl.textContent = 'Could not check the saved picture yet. You can still add or replace the picture.';
-        if (editBtn) editBtn.disabled = true;
-        if (deleteBtn) deleteBtn.disabled = true;
-    });
 }
 
 function ensureFallbackIconOverlay() {
@@ -3117,7 +3134,7 @@ async function confirmAndClearAllAudio() {
 // v46: Added optional visual theme setting as appSettings.theme.
 // v47: Modernised button styling and expanded theme colours across cards, rows, settings and popups.
 // v48: Reworked theme list into modern material-style themes and removed entry-menu chevrons.
-// v49: Replaced material theme list with uploaded design-concept colour systems: Gentle Morning, Deep Ocean, Earth & Sage, Midnight.
+// v49/v124: Theme choices are normalized here so older saved names keep working after visual refreshes.
 // v50: CSS-only tactile/soft-3D visual redesign for cards, phrase rows, settings, popup and controls.
 // v51: Restored fixed circular Settings cog after v50 tactile redesign broad button styling.
 // v52: Cleaned Information/About navigation; top-level Information opens immediately and lower Settings About button removed.
@@ -3147,38 +3164,46 @@ const DEFAULT_APP_SETTINGS = {
     }
 };
 const DISPLAY_MODES = new Set(['menu', 'simple-list']);
-const THEMES = new Set(['default', 'gentle-morning', 'deep-ocean', 'earth-sage', 'midnight']);
+const THEMES = new Set(['default', 'sunny-day', 'ocean-calm', 'soft-garden', 'sci-fi', 'high-contrast']);
 const LEGACY_THEME_ALIASES = {
-    sunrise: 'gentle-morning',
-    ocean: 'deep-ocean',
-    sage: 'earth-sage',
+    'gentle-morning': 'sunny-day',
+    'deep-ocean': 'ocean-calm',
+    'earth-sage': 'soft-garden',
+    midnight: 'sci-fi',
+    sunrise: 'sunny-day',
+    ocean: 'ocean-calm',
+    sage: 'soft-garden',
     metallic: 'default',
     photoreal: 'default',
     realistic: 'default',
     marble: 'default',
-    metal: 'midnight',
-    water: 'deep-ocean',
-    cyberpunk: 'midnight',
+    metal: 'sci-fi',
+    water: 'ocean-calm',
+    cyberpunk: 'sci-fi',
     starTrek: 'default',
     'star-trek': 'default',
-    darthVader: 'midnight',
-    'darth-vader': 'midnight',
-    sunny: 'gentle-morning',
-    'sunny-day': 'gentle-morning',
-    banana: 'gentle-morning',
-    'banana-split': 'gentle-morning',
-    earth: 'earth-sage',
-    fire: 'gentle-morning'
+    darthVader: 'sci-fi',
+    'darth-vader': 'sci-fi',
+    sunny: 'sunny-day',
+    banana: 'sunny-day',
+    'banana-split': 'sunny-day',
+    earth: 'soft-garden',
+    fire: 'sunny-day',
+    highcontrast: 'high-contrast',
+    'high contrast': 'high-contrast',
+    scifi: 'sci-fi',
+    'sci fi': 'sci-fi'
 };
 const THEME_LABELS = {
-    default: 'Default',
-    'gentle-morning': 'Gentle Morning',
-    'deep-ocean': 'Deep Ocean',
-    'earth-sage': 'Earth & Sage',
-    midnight: 'Midnight'
+    default: 'Classic',
+    'sunny-day': 'Sunny Day',
+    'ocean-calm': 'Ocean Calm',
+    'soft-garden': 'Soft Garden',
+    'sci-fi': 'Sci-Fi Console',
+    'high-contrast': 'High Contrast'
 };
 const THEME_CATEGORY_PALETTES = {
-    'gentle-morning': {
+    'sunny-day': {
         quick: { colour: '#E09B30', dark: '#7B4B00', soft: '#FFF3CD' },
         health: { colour: '#E05050', dark: '#7B1515', soft: '#FFE8E8' },
         selfcare: { colour: '#9B59B6', dark: '#5B0F8F', soft: '#F8E8FF' },
@@ -3191,7 +3216,7 @@ const THEME_CATEGORY_PALETTES = {
         activities: { colour: '#5DAE4A', dark: '#2D641B', soft: '#ECF8E8' },
         memories: { colour: '#B97848', dark: '#68401F', soft: '#F7E7D8' }
     },
-    'deep-ocean': {
+    'ocean-calm': {
         quick: { colour: '#3B82F6', dark: '#1E3A8A', soft: '#DBEAFE' },
         health: { colour: '#10B981', dark: '#064E3B', soft: '#D1FAE5' },
         selfcare: { colour: '#7C3AED', dark: '#3B0764', soft: '#EDE9FE' },
@@ -3204,7 +3229,7 @@ const THEME_CATEGORY_PALETTES = {
         activities: { colour: '#059669', dark: '#064E3B', soft: '#D1FAE5' },
         memories: { colour: '#64748B', dark: '#334155', soft: '#E2E8F0' }
     },
-    'earth-sage': {
+    'soft-garden': {
         quick: { colour: '#43A047', dark: '#1B5E20', soft: '#E8F5E9' },
         health: { colour: '#FFB300', dark: '#7B4B00', soft: '#FFF8E1' },
         selfcare: { colour: '#8E24AA', dark: '#4A148C', soft: '#F3E5F5' },
@@ -3217,18 +3242,31 @@ const THEME_CATEGORY_PALETTES = {
         activities: { colour: '#2F8F5B', dark: '#15492E', soft: '#E3F3EA' },
         memories: { colour: '#8D6E63', dark: '#4E342E', soft: '#EFEBE9' }
     },
-    midnight: {
-        quick: { colour: '#7B8FE8', dark: '#C0CCFF', soft: '#252D4A' },
-        health: { colour: '#4CAF50', dark: '#A5D6A7', soft: '#1E3128' },
-        selfcare: { colour: '#CE93D8', dark: '#E1BEE7', soft: '#2D1E40' },
-        food: { colour: '#FFB74D', dark: '#FFE0B2', soft: '#3A2A18' },
-        environment: { colour: '#4FC3F7', dark: '#B3E5FC', soft: '#1A2B3A' },
-        MyPeople: { colour: '#7B8FE8', dark: '#C5D0FF', soft: '#252D4A' },
-        feelings: { colour: '#F48FB1', dark: '#FCE4EC', soft: '#3B1E2B' },
-        routine: { colour: '#80CBC4', dark: '#D6FFFA', soft: '#183531' },
-        social: { colour: '#90CAF9', dark: '#E3F2FD', soft: '#1A2B3A' },
-        activities: { colour: '#AED581', dark: '#F1F8E9', soft: '#25361D' },
-        memories: { colour: '#BCAAA4', dark: '#EFEBE9', soft: '#302521' }
+    'sci-fi': {
+        quick: { colour: '#25D6A2', dark: '#D8FFF3', soft: '#102A25' },
+        health: { colour: '#FF6B6B', dark: '#FFE1E1', soft: '#341717' },
+        selfcare: { colour: '#B98CFF', dark: '#F0E7FF', soft: '#24183A' },
+        food: { colour: '#FFC857', dark: '#FFF1C2', soft: '#302514' },
+        environment: { colour: '#4DD0E1', dark: '#D7FAFF', soft: '#102A31' },
+        MyPeople: { colour: '#25D6A2', dark: '#D8FFF3', soft: '#102A25' },
+        feelings: { colour: '#FF8FB8', dark: '#FFE2EF', soft: '#351626' },
+        routine: { colour: '#7BE3C8', dark: '#E0FFF7', soft: '#132D28' },
+        social: { colour: '#7AA7FF', dark: '#E0EAFF', soft: '#17233B' },
+        activities: { colour: '#9BE564', dark: '#EDFFD7', soft: '#1F3116' },
+        memories: { colour: '#B7C1CC', dark: '#F2F6FA', soft: '#202832' }
+    },
+    'high-contrast': {
+        quick: { colour: '#005FCC', dark: '#001F4D', soft: '#EAF2FF' },
+        health: { colour: '#C00000', dark: '#3B0000', soft: '#FFEAEA' },
+        selfcare: { colour: '#6F1AB6', dark: '#250044', soft: '#F4E8FF' },
+        food: { colour: '#007A3D', dark: '#003316', soft: '#E8FFF1' },
+        environment: { colour: '#B85C00', dark: '#402000', soft: '#FFF1E0' },
+        MyPeople: { colour: '#005FCC', dark: '#001F4D', soft: '#EAF2FF' },
+        feelings: { colour: '#B0005B', dark: '#3A001E', soft: '#FFE8F4' },
+        routine: { colour: '#006C70', dark: '#002C2E', soft: '#E5FEFF' },
+        social: { colour: '#3D2BB8', dark: '#140C48', soft: '#EFECFF' },
+        activities: { colour: '#4F7800', dark: '#1F3000', soft: '#F2FFD8' },
+        memories: { colour: '#5E4634', dark: '#23160F', soft: '#F5EEE8' }
     }
 };
 function normaliseThemeName(value) {
@@ -4230,7 +4268,6 @@ function showManagementPanel() {
 }
 
 function hideManagementPanel() {
-    closeManagementImageOptionsOverlay();
     const overlay = document.getElementById('managementOverlay');
     const panel = document.getElementById('managementPanel');
     
@@ -4268,7 +4305,6 @@ function renderContentManagementPanel() {
     panel.onchange = handleContentManagementChange;
     applyPrivateImagesIn(panel);
 }
-
 
 function renderContentTopicsScreen(panel, allCategories) {
     panel.innerHTML = `
@@ -4322,12 +4358,12 @@ function renderContentPhraseScreen(panel, category) {
 }
 
 
-function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = '', category = '') {
+function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = '') {
     const key = getPrivateMediaKey(kind, kind === 'menu' ? id : { id });
     const roundClass = people ? ' people-thumb' : '';
     const iconText = fallbackIcon || (kind === 'menu' ? getCategoryMeta(id).icon : '🖼️');
     return `
-        <button type="button" class="management-media-thumb${roundClass}" tabindex="-1" aria-hidden="true">
+        <button type="button" class="management-media-thumb${roundClass}" data-management-image-options data-key="${escapeHtml(key)}" data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-people="${people ? '1' : '0'}" aria-label="Edit picture">
             <img alt="" data-private-media-key="${escapeHtml(key)}" style="display:none;">
             <span class="management-thumb-fallback" data-management-thumb-key="${escapeHtml(key)}">${escapeHtml(iconText)}</span>
         </button>
@@ -4341,8 +4377,8 @@ function renderContentCategoryRows(allCategories) {
         const selected = contentSetupSelected?.type === 'category' && contentSetupSelected.category === category;
         return `
             <tr class="management-table-row ${selected ? 'selected-row' : ''}" data-topic-row="${escapeHtml(category)}">
-                <td class="picture-cell picture-cell-action" data-management-image-options data-key="${escapeHtml(getPrivateMediaKey('menu', category))}" data-kind="menu" data-id="${escapeHtml(category)}" data-people="0" title="Edit or import this section picture">
-                    ${renderMediaThumbForManagement('menu', category, false, meta.icon || '🗂️', category)}
+                <td class="picture-cell">
+                    ${renderMediaThumbForManagement('menu', category, false, meta.icon || '🗂️')}
                     ${renderMediaSizeLine(getPrivateMediaKey('menu', category), 'Image')}
                 </td>
                 <td class="title-cell">
@@ -4411,8 +4447,8 @@ function renderContentPhraseRows(category, phrases) {
         const fallbackIcon = phrase.icon || getFallbackIcon(category, phrase.text || '');
         return `
             <tr class="management-table-row ${active ? 'selected-row' : ''}" data-phrase-row="${escapeHtml(phrase.id || '')}">
-                <td class="picture-cell picture-cell-action" data-management-image-options data-key="${escapeHtml(getPrivateMediaKey('phrase', phrase))}" data-kind="phrase" data-id="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" data-people="${people ? '1' : '0'}" title="Edit or import this phrase picture">
-                    ${renderMediaThumbForManagement('phrase', phrase.id || '', people, fallbackIcon, category)}
+                <td class="picture-cell">
+                    ${renderMediaThumbForManagement('phrase', phrase.id || '', people, fallbackIcon)}
                     ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), 'Image')}
                 </td>
                 <td class="title-cell phrase-text-cell">
@@ -4580,12 +4616,9 @@ async function handleContentManagementClick(event) {
 
     const imageOptionsButton = target.closest('[data-management-image-options]');
     if (imageOptionsButton) {
-        event.preventDefault();
-        event.stopPropagation();
         const kind = imageOptionsButton.dataset.kind;
         const id = imageOptionsButton.dataset.id;
-        const category = imageOptionsButton.dataset.category || contentSetupPhraseCategory;
-        showManagementImageOptions(kind, id, category);
+        showManagementImageOptions(kind, id, contentSetupPhraseCategory);
         return;
     }
 
@@ -5972,9 +6005,9 @@ function renderCategoryMenuCards() {
         tab.style.setProperty('--tab-soft', meta.soft);
         tab.innerHTML = `
             <span class="menu-card-title">${escapeHtml(meta.label)}</span>
-            <span class="menu-card-image-shell">
-                <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(meta.label)}" loading="lazy" data-private-media-key="${escapeHtml(getPrivateMediaKey('menu', category))}" onload="this.classList.add('loaded'); this.nextElementSibling.hidden=true;" onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
-                <span class="menu-card-fallback" aria-hidden="true">${meta.icon}</span>
+            <span class="menu-card-image-shell private-media-shell private-media-pending">
+                <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(meta.label)}" loading="lazy" data-private-media-key="${escapeHtml(getPrivateMediaKey('menu', category))}" data-private-media-state="pending" class="private-media-pending" onload="this.classList.add('loaded'); this.nextElementSibling.hidden=true;" onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                <span class="menu-card-fallback" aria-hidden="true" hidden style="display:none;">${meta.icon}</span>
             </span>
         `;
         tab.addEventListener('click', () => showCategorySubmenu(category));
@@ -6068,9 +6101,9 @@ function createButtonMediaHTML(buttonInfo, category, extraClass = '') {
     const initialStyle = imagePath ? '' : 'style="display:none;"';
 
     return `
-        <div class="button-media ${extraClass}">
-            <img ${safeSrc} ${initialStyle} alt="${safeAlt}" loading="lazy" data-private-media-key="${escapeHtml(privateKey)}" onload="this.classList.add('loaded'); this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <span class="button-fallback-icon" aria-hidden="true">${icon}</span>
+        <div class="button-media private-media-shell private-media-pending ${extraClass}">
+            <img ${safeSrc} ${initialStyle} alt="${safeAlt}" loading="lazy" data-private-media-key="${escapeHtml(privateKey)}" data-private-media-state="pending" class="private-media-pending" onload="this.classList.add('loaded'); this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <span class="button-fallback-icon" aria-hidden="true" hidden style="display:none;">${icon}</span>
         </div>
     `;
 }
@@ -6717,10 +6750,7 @@ function speakText(text, buttonElement, options = {}) {
   const popupToken = options.popupToken || (options.showPopup === false ? null : showPhrasePopup(spokenText));
 
   // --- Click sound ---
-  if (typeof CLICK_SOUND !== 'undefined' && CLICK_SOUND) {
-    CLICK_SOUND.currentTime = 0;
-    CLICK_SOUND.play().catch(() => {});
-  }
+  playOptionalClickSound();
 
   // --- Button highlight ---
   if (buttonElement) {

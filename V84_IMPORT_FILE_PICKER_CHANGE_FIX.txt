@@ -1,8 +1,0 @@
-# V84 import file picker change fix
-
-- Fixes backup import not starting after a file is selected.
-- Moves fullBackupImportFile handling to a real change event listener instead of the click handler.
-- Removes the stale click-path import attempt that could clear the hidden file input.
-- Adds defensive skipping of incomplete mediaRecords while preserving the complete backup schema.
-- Updates app/cache/version references to v84.
-- Preserves menus, phrase IDs, category IDs, media storage keys, speech fallback, and backup top-level fields.

@@ -4,13 +4,14 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v128: Content Editor picture options open immediately from a single delegated picture-cell target; stale pending popups are cancelled on navigation.
-const CACHE_NAME = 'mynewvoice-v128_picture_options_async_audit_fix';
+// v124: Settings dashboard and Content Editor are true full-screen screens with internal scrolling; v114 locked viewport retained; schema, media and speech unchanged.
+const CACHE_NAME = 'mynewvoice-v124-settings-fullscreen-real-screen';
 const urlsToCache = [
   './',
   './index.html',
   './style.css',
   './script.js',
+  './assets/vendor/lz-string-1.5.0.min.js',
   './manifest.json',
   './app-version.json',
   './assets/icon-192.png',

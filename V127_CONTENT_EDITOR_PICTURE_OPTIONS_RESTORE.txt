@@ -1,1 +1,0 @@
-v127 restores reliable picture/placeholder tap handling in Content Editor table rows and restyles the picture options panel for the real-screen Settings layout. No backup schema, media key, speech, ID, or Dad-facing behaviour changes.

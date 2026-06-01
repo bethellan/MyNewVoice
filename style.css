@@ -1834,7 +1834,7 @@ body[data-theme="dark"] .private-media-main code {
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 3200;
+    z-index: 100600;
     padding: clamp(10px, 3vw, 24px);
 }
 
@@ -2512,7 +2512,7 @@ body:not(.submenu-open) #messageBar {
 }
 
 .management-overlay.show .management-panel {
-  width: 100vw;
+  width: 100%;
   max-width: none;
   height: 100vh;
   max-height: none;
@@ -2596,7 +2596,7 @@ body:not(.submenu-open) #messageBar {
 .image-options-overlay {
   position: fixed;
   inset: 0;
-  z-index: 3200;
+  z-index: 100500;
   display: none;
   align-items: center;
   justify-content: center;
@@ -2616,6 +2616,39 @@ body:not(.submenu-open) #messageBar {
   border-radius: 18px;
   box-shadow: 0 24px 90px rgba(0,0,0,.34);
   padding: 18px;
+}
+
+.image-options-panel .settings-header {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.image-options-panel .settings-note {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.image-options-panel .settings-actions-compact {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.image-options-panel .settings-action-btn {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 0.96rem;
+  line-height: 1.2;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08);
+}
+
+.image-options-panel .settings-action-btn:disabled {
+  opacity: 0.52;
+  box-shadow: none;
 }
 
 .fallback-icon-grid {
@@ -3073,7 +3106,7 @@ body:not(.submenu-open) #messageBar {
 .management-overlay.show {
   position: fixed !important;
   inset: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: 100vh !important;
   height: 100dvh !important;
   display: flex !important;
@@ -8271,7 +8304,7 @@ body {
 #settingsOverlay.settings-overlay {
   position: fixed !important;
   inset: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: var(--app-height, 100vh) !important;
   padding: max(0.55rem, env(safe-area-inset-top)) max(0.55rem, env(safe-area-inset-right)) max(0.55rem, env(safe-area-inset-bottom)) max(0.55rem, env(safe-area-inset-left)) !important;
   box-sizing: border-box !important;
@@ -9637,8 +9670,8 @@ min-height:auto !important;
   position: relative !important;
   inset: auto !important;
   transform: none !important;
-  width: min(1500px, calc(100vw - 16px)) !important;
-  max-width: calc(100vw - 16px) !important;
+  width: min(1500px, calc(100% - 16px)) !important;
+  max-width: calc(100% - 16px) !important;
   height: calc(var(--locked-app-height, 100vh) - max(16px, env(safe-area-inset-top, 0px)) - max(16px, env(safe-area-inset-bottom, 0px))) !important;
   max-height: calc(var(--locked-app-height, 100vh) - max(16px, env(safe-area-inset-top, 0px)) - max(16px, env(safe-area-inset-bottom, 0px))) !important;
   margin: 0 !important;
@@ -9957,8 +9990,8 @@ min-height:auto !important;
   }
 
   #managementOverlay.management-overlay.show .management-panel {
-    width: calc(100vw - 12px) !important;
-    max-width: calc(100vw - 12px) !important;
+    width: calc(100% - 12px) !important;
+    max-width: calc(100% - 12px) !important;
     height: calc(var(--locked-app-height, 100vh) - 12px) !important;
     max-height: calc(var(--locked-app-height, 100vh) - 12px) !important;
     padding: 6px !important;
@@ -10025,7 +10058,7 @@ min-height:auto !important;
 #managementOverlay.management-overlay.show {
   position: fixed !important;
   inset: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: var(--locked-app-height, 100vh) !important;
   min-height: var(--locked-app-height, 100vh) !important;
   max-height: var(--locked-app-height, 100vh) !important;
@@ -10042,7 +10075,7 @@ min-height:auto !important;
 #managementOverlay.management-overlay.show .management-panel {
   display: grid !important;
   grid-template-rows: auto minmax(0, 1fr) auto !important;
-  width: 100vw !important;
+  width: 100% !important;
   max-width: none !important;
   height: var(--locked-app-height, 100vh) !important;
   max-height: var(--locked-app-height, 100vh) !important;
@@ -10250,7 +10283,7 @@ body.content-editor-open #managementOverlay.management-overlay,
   position: fixed !important;
   inset: 0 !important;
   display: block !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: var(--mnv-app-height, 100vh) !important;
   min-height: var(--mnv-app-height, 100vh) !important;
   max-height: var(--mnv-app-height, 100vh) !important;
@@ -10271,7 +10304,7 @@ body.content-editor-open #managementOverlay.management-overlay.show .management-
   inset: 0 !important;
   display: grid !important;
   grid-template-rows: auto minmax(0, 1fr) auto !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: var(--mnv-app-height, 100vh) !important;
   min-height: 0 !important;
   max-height: var(--mnv-app-height, 100vh) !important;
@@ -10601,158 +10634,1552 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay.show .setting
   }
 }
 
-/* ============================================================================
-   v125 MAIN MENU TITLE ABOVE IMAGE
-   Scope: Dad-facing main menu card layout only. Moves the category label above
-   the image within each existing menu card. Does not change submenu rows,
-   settings screens, content editor, speech, media storage, backup schema, IDs,
-   or image crop/storage behaviour.
-   ============================================================================ */
-.tab {
-  grid-template-rows: auto minmax(126px, 1fr) !important;
+/* v124 follow-up: picture-option dialogs must sit above full-screen editor surfaces. */
+.image-options-overlay {
+  z-index: 100500 !important;
 }
 
-.menu-card-title {
-  grid-row: 1 !important;
-  border-top: 0 !important;
-  border-bottom: 4px solid var(--tab-color, #4CAF50) !important;
+.image-crop-overlay {
+  z-index: 100600 !important;
 }
 
-.menu-card-image-shell {
-  grid-row: 2 !important;
-  border-top: 0 !important;
-  border-bottom: 0 !important;
+.image-options-panel {
+  width: min(560px, calc(100% - 24px)) !important;
+  padding: 14px !important;
+  border-radius: 14px !important;
 }
 
-@media (max-width: 520px) {
-  .tab {
-    grid-template-rows: auto minmax(116px, 1fr) !important;
-  }
+.image-options-panel .settings-header {
+  margin-bottom: 8px !important;
+  padding-bottom: 8px !important;
 }
 
-
-/* v126: Make the whole left picture cell in Content Editor act as the image edit/import trigger. */
-#managementOverlay .one-row-editor-table .picture-cell-action {
-  cursor: pointer !important;
-  touch-action: manipulation !important;
-}
-#managementOverlay .one-row-editor-table .picture-cell-action:hover {
-  background: rgba(47, 127, 86, 0.08) !important;
-}
-#managementOverlay .one-row-editor-table .picture-cell-action .management-media-thumb {
-  pointer-events: none !important;
+.image-options-panel .settings-note {
+  margin: 0 0 10px !important;
+  font-size: 0.93rem !important;
+  line-height: 1.32 !important;
 }
 
-
-/* v128: single delegated picture-cell target and immediate picture options panel. */
-#managementOverlay .one-row-editor-table .picture-cell-action,
-#managementOverlay .one-row-editor-table .picture-cell-action * {
-  cursor: pointer !important;
-}
-#managementOverlay .one-row-editor-table .picture-cell-action {
-  touch-action: manipulation !important;
-  -webkit-tap-highlight-color: rgba(47,127,86,.18) !important;
-}
-#managementOverlay .one-row-editor-table .picture-cell-action .management-media-thumb {
-  pointer-events: none !important;
+.image-options-panel .settings-actions-compact {
+  grid-template-columns: 1fr !important;
+  gap: 7px !important;
 }
 
-#managementOverlay .one-row-editor-table .picture-cell-action:active {
-  background: rgba(47, 127, 86, 0.12) !important;
-}
-#managementOverlay .one-row-editor-table .picture-cell-action::after {
-  content: 'Tap picture to edit';
-  display: block;
-  margin-top: 3px;
-  font-size: .78rem;
-  line-height: 1.1;
-  color: #2f7f56;
-  font-weight: 800;
-}
-@media (max-width: 760px) {
-  .picture-options-panel-v127 {
-    width: 100vw !important;
-    min-height: 100dvh !important;
-    max-height: 100dvh !important;
-    border-radius: 0 !important;
-  }
-  .image-options-overlay {
-    padding: 0 !important;
-    align-items: stretch !important;
-    justify-content: stretch !important;
-  }
+.image-options-panel .settings-action-btn {
+  display: block !important;
+  flex: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 42px !important;
+  padding: 9px 11px !important;
+  border-radius: 10px !important;
+  border-left-width: 4px !important;
+  text-align: left !important;
+  font-size: 0.94rem !important;
+  line-height: 1.18 !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08) !important;
 }
 
-.picture-options-panel-v127 {
-  width: min(560px, calc(100vw - 24px)) !important;
-  max-height: calc(100dvh - 32px) !important;
-  border-radius: 22px !important;
-  padding: 0 !important;
+.image-options-panel .settings-action-btn:disabled {
+  opacity: 0.5 !important;
+  box-shadow: none !important;
+}
+
+.private-media-shell.private-media-pending img[data-private-media-key],
+img[data-private-media-key].private-media-pending {
+  opacity: 0 !important;
+}
+
+.private-media-shell.private-media-pending .menu-card-fallback,
+.private-media-shell.private-media-pending .button-fallback-icon,
+.private-media-shell.private-media-pending .profile-fallback-icon,
+.private-media-shell.private-media-pending .management-thumb-fallback {
+  visibility: hidden !important;
+}
+
+.private-media-shell.private-media-pending {
+  position: relative !important;
   overflow: hidden !important;
-  background: #f8fcf9 !important;
-  border: 1px solid rgba(47,127,86,.26) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,255,255,0.16)),
+    linear-gradient(145deg, color-mix(in srgb, var(--tab-soft, var(--theme-card-surface-2, #eef8f2)) 72%, white), var(--theme-button-surface, #ffffff)) !important;
 }
-.image-options-header-v127 {
+
+.private-media-shell.private-media-pending::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.34) 48%, transparent 100%),
+    radial-gradient(circle at 24% 28%, rgba(255,255,255,0.36), transparent 24%),
+    radial-gradient(circle at 74% 68%, rgba(255,255,255,0.24), transparent 28%) !important;
+  opacity: 0.58 !important;
+}
+
+body[data-theme="sci-fi"] .private-media-shell.private-media-pending::after {
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(216,255,243,0.16) 48%, transparent 100%),
+    radial-gradient(circle at 24% 28%, rgba(37,214,162,0.16), transparent 24%),
+    radial-gradient(circle at 74% 68%, rgba(77,208,225,0.12), transparent 28%) !important;
+}
+
+/* v124 follow-up: main menu cards use a title-first modern card composition. */
+body:not(.submenu-open) .tab-container {
+  background: rgba(255, 255, 255, 0.64) !important;
+  border: 1px solid rgba(44, 91, 61, 0.16) !important;
+  border-radius: clamp(22px, 4vw, 34px) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 12px 28px rgba(31,45,61,0.08) !important;
+  padding: clamp(12px, 2vw, 18px) !important;
+  gap: clamp(14px, 2.6vw, 22px) !important;
+}
+
+body:not(.submenu-open) .tab {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  min-height: clamp(218px, 35vw, 320px) !important;
+  border: 1px solid color-mix(in srgb, var(--tab-color, #4a7c59) 34%, white) !important;
+  border-radius: clamp(20px, 3.2vw, 30px) !important;
+  background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--tab-soft, #eef8f2) 34%, #ffffff) 100%) !important;
+  box-shadow: 0 10px 24px rgba(31,45,61,0.09) !important;
+  overflow: hidden !important;
+}
+
+body:not(.submenu-open) .menu-card-title {
+  grid-row: 1 !important;
+  min-height: clamp(54px, 7vw, 72px) !important;
+  padding: clamp(9px, 1.8vw, 13px) clamp(14px, 3vw, 22px) !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-  padding: 16px 18px !important;
-  background: linear-gradient(135deg, #5aaa78, #23583f) !important;
-  color: white !important;
+  justify-content: center !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.18)),
+    linear-gradient(135deg, color-mix(in srgb, var(--tab-color, #4a7c59) 88%, white), var(--tab-dark, #255f3e)) !important;
+  color: #ffffff !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--tab-dark, #255f3e) 25%, white) !important;
+  font-size: clamp(1.22rem, 3.9vw, 2rem) !important;
+  font-weight: 950 !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0 !important;
+  text-align: center !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
 }
-.image-options-header-v127 h3 {
-  margin: 0 !important;
-  font-size: clamp(1.45rem, 5vw, 2rem) !important;
-  line-height: 1.05 !important;
+
+body:not(.submenu-open) .menu-card-image-shell {
+  grid-row: 2 !important;
+  min-height: clamp(152px, 26vw, 238px) !important;
+  border-bottom: 0 !important;
+  background: color-mix(in srgb, var(--tab-soft, #eef8f2) 76%, white) !important;
 }
-.image-options-header-v127 p {
-  margin: 4px 0 0 !important;
-  font-size: clamp(.9rem, 3.5vw, 1.05rem) !important;
-  line-height: 1.25 !important;
-  color: rgba(255,255,255,.92) !important;
+
+body:not(.submenu-open) .menu-card-image-shell img {
+  object-fit: cover !important;
+  object-position: center center !important;
 }
-.picture-options-close-v127 {
-  flex: 0 0 auto !important;
-  width: 48px !important;
-  height: 48px !important;
-  border-radius: 16px !important;
-  background: rgba(255,255,255,.96) !important;
-  color: #17432f !important;
+
+#messageBar:not(.submenu-titlebar) {
+  min-height: clamp(76px, 11vw, 112px) !important;
 }
-.picture-options-note-v127 {
-  margin: 14px 16px 8px !important;
-  padding: 12px 14px !important;
-  border-radius: 14px !important;
-  background: white !important;
-  border: 1px solid rgba(47,127,86,.18) !important;
-  color: #244436 !important;
+
+#messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only {
+  width: clamp(72px, 10vw, 104px) !important;
+  height: clamp(72px, 10vw, 104px) !important;
+  min-width: clamp(72px, 10vw, 104px) !important;
+  min-height: clamp(72px, 10vw, 104px) !important;
+  padding: 6px !important;
+  border-radius: 18px !important;
 }
-.picture-options-actions-v127 {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 10px !important;
-  padding: 8px 16px 14px !important;
-}
-.picture-options-actions-v127 .settings-action-btn {
+
+#messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only .introduction-header-image {
   width: 100% !important;
-  min-height: 56px !important;
-  justify-content: flex-start !important;
-  text-align: left !important;
-  border-radius: 16px !important;
-  font-size: 1.05rem !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: 14px !important;
 }
-.picture-option-primary-v127 {
-  border-color: rgba(47,127,86,.35) !important;
-  background: linear-gradient(180deg, #ffffff, #eef8f1) !important;
+
+/* v124 follow-up: refreshed theme choices, driven by the existing Settings theme owner. */
+body[data-theme="sunny-day"] {
+  --theme-page-surface: linear-gradient(180deg, #FFFDF7, #F1FAFF);
+  --theme-page-border: rgba(241, 174, 60, 0.48);
+  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #FFF4D8);
+  --theme-card-surface-2: #FFF3CD;
+  --theme-phrase-surface: #FFFFFF;
+  --theme-phrase-surface-2: #FFF7E6;
+  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #FFF5DE);
+  --theme-button-surface: #FFFFFF;
+  --theme-button-surface-2: #FFF4D8;
+  --theme-button-text: #5E3A00;
+  --theme-muted-text: #76562C;
+  --theme-border-strong: rgba(224, 123, 42, 0.66);
+  --theme-border-soft: rgba(224, 123, 42, 0.20);
+  --theme-glow: rgba(241, 174, 60, 0.22);
+  --theme-card-shadow: 0 14px 30px rgba(123, 61, 0, 0.12);
+  --theme-card-shadow-hover: 0 18px 38px rgba(123, 61, 0, 0.18);
+}
+
+body[data-theme="ocean-calm"] {
+  --theme-page-surface: linear-gradient(180deg, #F7FDFF, #EFF8FA);
+  --theme-page-border: rgba(50, 148, 166, 0.44);
+  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #E4F7FA);
+  --theme-card-surface-2: #DDF4F8;
+  --theme-phrase-surface: #FFFFFF;
+  --theme-phrase-surface-2: #EAF8FB;
+  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #E6F7FA);
+  --theme-button-surface: #FFFFFF;
+  --theme-button-surface-2: #E4F7FA;
+  --theme-button-text: #073B4C;
+  --theme-muted-text: #38606D;
+  --theme-border-strong: rgba(24, 118, 145, 0.64);
+  --theme-border-soft: rgba(24, 118, 145, 0.20);
+  --theme-glow: rgba(50, 148, 166, 0.20);
+  --theme-card-shadow: 0 14px 30px rgba(7, 59, 76, 0.12);
+  --theme-card-shadow-hover: 0 18px 38px rgba(7, 59, 76, 0.18);
+}
+
+body[data-theme="soft-garden"] {
+  --theme-page-surface: linear-gradient(180deg, #FCFFFB, #F2F8F0);
+  --theme-page-border: rgba(89, 142, 86, 0.44);
+  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #ECF8E8);
+  --theme-card-surface-2: #E8F5E9;
+  --theme-phrase-surface: #FFFFFF;
+  --theme-phrase-surface-2: #F0F7EA;
+  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #EEF7EA);
+  --theme-button-surface: #FFFFFF;
+  --theme-button-surface-2: #ECF8E8;
+  --theme-button-text: #1E4B31;
+  --theme-muted-text: #536B59;
+  --theme-border-strong: rgba(59, 122, 87, 0.64);
+  --theme-border-soft: rgba(59, 122, 87, 0.20);
+  --theme-glow: rgba(89, 142, 86, 0.20);
+  --theme-card-shadow: 0 14px 30px rgba(27, 77, 53, 0.11);
+  --theme-card-shadow-hover: 0 18px 38px rgba(27, 77, 53, 0.17);
+}
+
+body[data-theme="sci-fi"] {
+  --theme-page-surface: linear-gradient(180deg, #121A1C, #1B2120);
+  --theme-page-border: rgba(37, 214, 162, 0.34);
+  --theme-card-surface: linear-gradient(145deg, #182426, #11191B);
+  --theme-card-surface-2: #203033;
+  --theme-phrase-surface: #121A1C;
+  --theme-phrase-surface-2: #1B2829;
+  --theme-settings-surface: linear-gradient(180deg, #162123, #101819);
+  --theme-button-surface: #182426;
+  --theme-button-surface-2: #203033;
+  --theme-button-text: #D8FFF3;
+  --theme-muted-text: #A8D9CE;
+  --theme-border-strong: rgba(37, 214, 162, 0.66);
+  --theme-border-soft: rgba(216, 255, 243, 0.16);
+  --theme-glow: rgba(37, 214, 162, 0.22);
+  --theme-card-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  --theme-card-shadow-hover: 0 18px 42px rgba(0, 0, 0, 0.40);
+}
+
+body[data-theme="high-contrast"] {
+  --theme-page-surface: linear-gradient(180deg, #FFFFFF, #F2F4F7);
+  --theme-page-border: rgba(0, 0, 0, 0.44);
+  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #EEF2F6);
+  --theme-card-surface-2: #F2F4F7;
+  --theme-phrase-surface: #FFFFFF;
+  --theme-phrase-surface-2: #F4F6F8;
+  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #F2F4F7);
+  --theme-button-surface: #FFFFFF;
+  --theme-button-surface-2: #F1F3F5;
+  --theme-button-text: #101820;
+  --theme-muted-text: #2C3640;
+  --theme-border-strong: rgba(0, 0, 0, 0.72);
+  --theme-border-soft: rgba(0, 0, 0, 0.22);
+  --theme-glow: rgba(0, 95, 204, 0.18);
+  --theme-card-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+  --theme-card-shadow-hover: 0 18px 36px rgba(0, 0, 0, 0.24);
+}
+
+body[data-theme="sunny-day"] .tab,
+body[data-theme="sunny-day"] .grid-button,
+body[data-theme="sunny-day"] .settings-action-btn,
+body[data-theme="ocean-calm"] .tab,
+body[data-theme="ocean-calm"] .grid-button,
+body[data-theme="ocean-calm"] .settings-action-btn,
+body[data-theme="soft-garden"] .tab,
+body[data-theme="soft-garden"] .grid-button,
+body[data-theme="soft-garden"] .settings-action-btn,
+body[data-theme="sci-fi"] .tab,
+body[data-theme="sci-fi"] .grid-button,
+body[data-theme="sci-fi"] .settings-action-btn,
+body[data-theme="high-contrast"] .tab,
+body[data-theme="high-contrast"] .grid-button,
+body[data-theme="high-contrast"] .settings-action-btn {
+  background-image: linear-gradient(145deg, var(--theme-button-surface), var(--theme-button-surface-2)) !important;
+}
+
+body[data-theme="sci-fi"] .container {
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(216, 255, 243, 0.06) !important;
+}
+
+body[data-theme="sci-fi"] #messageBar,
+body[data-theme="sci-fi"] .settings-v115-panel,
+body[data-theme="sci-fi"] .image-options-panel {
+  color: var(--theme-button-text) !important;
+}
+
+body[data-theme="sci-fi"] #messageBar:not(.submenu-titlebar) {
+  background: linear-gradient(145deg, #182426, #11191B) !important;
+}
+
+body[data-theme="high-contrast"] .tab,
+body[data-theme="high-contrast"] .grid-button,
+body[data-theme="high-contrast"] .settings-action-btn {
+  border-width: 2px !important;
+}
+
+/* ============================================================================
+   v124 professional UI shell
+   ----------------------------------------------------------------------------
+   Visual-only consolidation layer. Keeps existing render flow and screen
+   structure, but gives Dad-facing screens, Settings and Content Editor one
+   shared app language.
+   ============================================================================ */
+:root {
+  --mnv-ui-bg: var(--theme-page-surface, #f5f8fb);
+  --mnv-ui-panel: var(--theme-button-surface, #ffffff);
+  --mnv-ui-panel-strong: var(--theme-button-surface, #ffffff);
+  --mnv-ui-line: color-mix(in srgb, var(--theme-border-strong, #4a7c59) 22%, rgba(15,23,42,0.16));
+  --mnv-ui-line-soft: color-mix(in srgb, var(--theme-border-soft, rgba(15,23,42,0.12)) 72%, transparent);
+  --mnv-ui-text: var(--theme-button-text, var(--text-dark, #233042));
+  --mnv-ui-muted: var(--theme-muted-text, #627084);
+  --mnv-ui-shadow: 0 14px 32px rgba(15, 23, 42, 0.10);
+  --mnv-ui-shadow-soft: 0 7px 18px rgba(15, 23, 42, 0.08);
+  --mnv-ui-shadow-hover: 0 18px 38px rgba(15, 23, 42, 0.15);
+  --mnv-ui-radius: 8px;
+  --mnv-ui-gap: 14px;
+  --mnv-ui-control-height: 50px;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--primary-color, #4caf50) 10%, transparent), transparent 30%),
+    radial-gradient(circle at 88% 22%, color-mix(in srgb, var(--secondary-color, #2196f3) 9%, transparent), transparent 28%),
+    var(--app-body-bg) !important;
+  color: var(--mnv-ui-text) !important;
+  font-family: Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+.container {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.38)),
+    var(--theme-page-surface, #ffffff) !important;
+  border: 1px solid var(--mnv-ui-line) !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.16) !important;
+  gap: var(--mnv-ui-gap) !important;
+}
+
+#messageBar {
+  border: 1px solid var(--mnv-ui-line) !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.42)),
+    var(--theme-card-surface, var(--message-bar-bg)) !important;
+  box-shadow: var(--mnv-ui-shadow-soft) !important;
+}
+
+#messageBar p,
+#messageBarText {
+  color: var(--mnv-ui-text) !important;
+  font-weight: 850 !important;
+  letter-spacing: 0 !important;
+}
+
+#messageBar.submenu-titlebar {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0)),
+    linear-gradient(135deg, var(--category-color, var(--primary-color)), var(--category-dark, var(--primary-dark))) !important;
+  color: #ffffff !important;
+}
+
+#messageBar.submenu-titlebar #messageBarText,
+#messageBar.submenu-titlebar p {
+  color: #ffffff !important;
+}
+
+.management-toggle,
+.settings-v115-close,
+.title-back-to-menu,
+.back-to-menu {
+  border-radius: var(--mnv-ui-radius) !important;
+  border: 1px solid var(--mnv-ui-line) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.62)),
+    var(--theme-button-surface, #ffffff) !important;
+  color: var(--mnv-ui-text) !important;
+  box-shadow: var(--mnv-ui-shadow-soft) !important;
+}
+
+body:not(.submenu-open) .tab-container {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.30)),
+    color-mix(in srgb, var(--theme-card-surface-2, #eef8f2) 44%, #ffffff) !important;
+  border: 1px solid var(--mnv-ui-line-soft) !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), var(--mnv-ui-shadow-soft) !important;
+}
+
+body:not(.submenu-open) .tab {
+  border: 1px solid color-mix(in srgb, var(--tab-color, var(--primary-color)) 32%, rgba(15,23,42,0.14)) !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.58)),
+    var(--theme-button-surface, #ffffff) !important;
+  box-shadow: var(--mnv-ui-shadow-soft) !important;
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease !important;
+}
+
+body:not(.submenu-open) .tab:hover,
+body:not(.submenu-open) .tab:focus-visible {
+  border-color: color-mix(in srgb, var(--tab-color, var(--primary-color)) 58%, rgba(15,23,42,0.18)) !important;
+  box-shadow: var(--mnv-ui-shadow-hover) !important;
+  transform: translateY(-2px) !important;
+}
+
+body:not(.submenu-open) .menu-card-title {
+  min-height: 64px !important;
+  padding: 12px 16px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0)),
+    linear-gradient(135deg, var(--tab-color, var(--primary-color)), var(--tab-dark, var(--primary-dark))) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.22) !important;
+  color: #ffffff !important;
+  font-size: 1.45rem !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0 !important;
+}
+
+body:not(.submenu-open) .menu-card-image-shell {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.08)),
+    color-mix(in srgb, var(--tab-soft, #eef8f2) 72%, #ffffff) !important;
+}
+
+.grid-button {
+  border-radius: var(--mnv-ui-radius) !important;
+  border: 1px solid var(--mnv-ui-line-soft) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.62)),
+    var(--theme-button-surface, #ffffff) !important;
+  box-shadow: var(--mnv-ui-shadow-soft) !important;
+  color: var(--mnv-ui-text) !important;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease !important;
+}
+
+.grid-button:hover,
+.grid-button:focus-visible {
+  border-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 45%, rgba(15,23,42,0.16)) !important;
+  box-shadow: var(--mnv-ui-shadow-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+.grid-button > span {
+  color: var(--mnv-ui-text) !important;
+  font-weight: 850 !important;
+  letter-spacing: 0 !important;
+}
+
+.grid-button .button-media,
+.button-media,
+.management-media-thumb,
+.menu-card-image-shell {
+  border-radius: var(--mnv-ui-radius) !important;
+  border-color: var(--mnv-ui-line-soft) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.64) !important;
+}
+
+.grid-button .button-media img,
+.button-media img,
+.management-media-thumb img,
+.menu-card-image-shell img {
+  border-radius: calc(var(--mnv-ui-radius) - 2px) !important;
+}
+
+#settingsOverlay.settings-overlay.show,
+#managementOverlay.management-overlay.show,
+body.content-editor-open #managementOverlay.management-overlay,
+body.settings-real-screen-active #settingsOverlay.settings-overlay {
+  background:
+    radial-gradient(circle at 8% 4%, color-mix(in srgb, var(--primary-color, #4caf50) 10%, transparent), transparent 28%),
+    var(--theme-page-surface, #f8fffb) !important;
+}
+
+#settingsOverlay .settings-v115-panel,
+#managementOverlay.management-overlay.show .management-panel {
+  background: transparent !important;
+}
+
+#settingsOverlay .settings-v115-header,
+#managementOverlay .table-editor-header,
+#managementOverlay .content-setup-header.editor-style-header.compact-editor-header.table-editor-header {
+  border: 1px solid var(--mnv-ui-line) !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0)),
+    linear-gradient(135deg, var(--primary-color, #3f9b5f), var(--primary-dark, #2f7d4c)) !important;
+  color: #ffffff !important;
+  box-shadow: var(--mnv-ui-shadow-soft) !important;
+}
+
+#settingsOverlay .settings-v115-header h3,
+#managementOverlay .table-editor-header h3,
+#managementOverlay #managementPanelTitle {
+  color: #ffffff !important;
+  letter-spacing: 0 !important;
   font-weight: 900 !important;
 }
-.picture-options-footer-v127 {
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) !important;
-  border-top: 1px solid rgba(47,127,86,.16) !important;
-  background: rgba(255,255,255,.86) !important;
+
+#settingsOverlay .settings-v115-subtitle,
+#managementOverlay .table-editor-header .editor-header-subtitle {
+  color: rgba(255,255,255,0.86) !important;
 }
-.picture-options-footer-v127 .management-btn {
+
+#settingsOverlay .settings-v115-dashboard {
+  gap: var(--mnv-ui-gap) !important;
+}
+
+#settingsOverlay .settings-v115-card,
+.settings-v115-card,
+#managementOverlay .table-editor-body,
+#managementOverlay .editor-table-wrap.one-row-table-wrap,
+#managementOverlay .editor-table-wrap,
+.image-options-panel,
+.image-crop-panel {
+  border: 1px solid var(--mnv-ui-line-soft) !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.66)),
+    var(--theme-button-surface, #ffffff) !important;
+  box-shadow: var(--mnv-ui-shadow-soft) !important;
+  color: var(--mnv-ui-text) !important;
+}
+
+#settingsOverlay .settings-v115-card h4,
+#settingsOverlay .settings-v115-card summary span,
+#managementOverlay .table-editor-body .editor-section-title {
+  color: var(--mnv-ui-text) !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+}
+
+#settingsOverlay .settings-v115-card p,
+#settingsOverlay .settings-v115-card small,
+#settingsOverlay .settings-help,
+#managementOverlay .table-editor-body .editor-workflow-note,
+#managementOverlay .table-editor-body .carer-workflow-note,
+#managementOverlay .table-editor-body .content-media-summary,
+.image-options-panel .settings-note {
+  color: var(--mnv-ui-muted) !important;
+}
+
+.settings-action-btn,
+.management-btn,
+.small-management-btn,
+.management-add-line,
+.image-options-panel .settings-action-btn,
+#managementOverlay .one-row-editor-table .management-btn,
+#managementOverlay .one-row-editor-table .small-management-btn {
+  min-height: var(--mnv-ui-control-height) !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  border: 1px solid var(--mnv-ui-line) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.62)),
+    var(--theme-button-surface, #ffffff) !important;
+  color: var(--mnv-ui-text) !important;
+  box-shadow: var(--mnv-ui-shadow-soft) !important;
+  font-weight: 850 !important;
+  letter-spacing: 0 !important;
+}
+
+.settings-action-btn:hover,
+.settings-action-btn:focus-visible,
+.management-btn:hover,
+.management-btn:focus-visible,
+.small-management-btn:hover,
+.small-management-btn:focus-visible,
+.management-add-line:hover,
+.management-add-line:focus-visible {
+  box-shadow: var(--mnv-ui-shadow-hover) !important;
+  border-color: color-mix(in srgb, var(--primary-color, #4caf50) 42%, rgba(15,23,42,0.16)) !important;
+}
+
+.settings-v115-primary-action,
+.save-private-setup,
+.primary-table-btn {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0)),
+    linear-gradient(135deg, var(--primary-color, #3f9b5f), var(--primary-dark, #2f7d4c)) !important;
+  color: #ffffff !important;
+  border-color: color-mix(in srgb, var(--primary-dark, #2f7d4c) 55%, rgba(255,255,255,0.24)) !important;
+}
+
+.remove-btn,
+.danger-settings-btn {
+  border-color: rgba(190, 18, 60, 0.38) !important;
+  color: #8f1234 !important;
+  background: linear-gradient(180deg, #fff8fa, #ffe9ef) !important;
+}
+
+.settings-select,
+.settings-textarea,
+.settings-icon-input,
+.management-input,
+#managementOverlay .table-title-input,
+#managementOverlay .management-editor-table input[type="text"],
+#managementOverlay .management-editor-table select {
+  border-radius: var(--mnv-ui-radius) !important;
+  border: 1px solid var(--mnv-ui-line-soft) !important;
+  background: var(--mnv-ui-panel-strong) !important;
+  color: var(--mnv-ui-text) !important;
+  box-shadow: inset 0 1px 2px rgba(15,23,42,0.06) !important;
+}
+
+.settings-select:focus,
+.settings-textarea:focus,
+.settings-icon-input:focus,
+.management-input:focus,
+#managementOverlay .management-editor-table input[type="text"]:focus,
+#managementOverlay .management-editor-table select:focus {
+  outline: 3px solid color-mix(in srgb, var(--primary-color, #4caf50) 24%, transparent) !important;
+  border-color: color-mix(in srgb, var(--primary-color, #4caf50) 52%, rgba(15,23,42,0.20)) !important;
+}
+
+#managementOverlay .one-row-editor-table thead th {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.72)),
+    color-mix(in srgb, var(--theme-card-surface-2, #eef4f8) 72%, #ffffff) !important;
+  color: var(--mnv-ui-muted) !important;
+  border-bottom: 1px solid var(--mnv-ui-line-soft) !important;
+  font-weight: 850 !important;
+}
+
+#managementOverlay .one-row-editor-table td,
+#managementOverlay .management-editor-table td {
+  background: rgba(255,255,255,0.82) !important;
+  border-bottom: 1px solid rgba(15,23,42,0.08) !important;
+}
+
+#managementOverlay .one-row-editor-table .selected-row td,
+#managementOverlay .management-editor-table .selected-row td {
+  background: color-mix(in srgb, var(--primary-color, #4caf50) 10%, #ffffff) !important;
+}
+
+#managementOverlay .table-editor-footer {
+  border-top: 1px solid var(--mnv-ui-line-soft) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.92)),
+    var(--theme-page-surface, #f8fffb) !important;
+}
+
+body[data-theme="sci-fi"] {
+  --mnv-ui-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+  --mnv-ui-shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.26);
+  --mnv-ui-shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.42);
+}
+
+body[data-theme="sci-fi"] .settings-select,
+body[data-theme="sci-fi"] .settings-textarea,
+body[data-theme="sci-fi"] .settings-icon-input,
+body[data-theme="sci-fi"] .management-input {
+  background: #101819 !important;
+}
+
+body[data-theme="sci-fi"] .remove-btn,
+body[data-theme="sci-fi"] .danger-settings-btn {
+  color: #ffdce4 !important;
+  background: linear-gradient(180deg, #351a22, #241018) !important;
+}
+
+body[data-theme="high-contrast"] {
+  --mnv-ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  --mnv-ui-shadow-soft: 0 5px 14px rgba(0, 0, 0, 0.14);
+  --mnv-ui-shadow-hover: 0 14px 30px rgba(0, 0, 0, 0.24);
+}
+
+@media (max-width: 720px) {
+  :root {
+    --mnv-ui-gap: 10px;
+    --mnv-ui-control-height: 48px;
+  }
+
+  body:not(.submenu-open) .menu-card-title {
+    min-height: 58px !important;
+    font-size: 1.2rem !important;
+    padding: 10px 12px !important;
+  }
+
+  .grid-button > span {
+    font-size: 1.08rem !important;
+  }
+
+  #settingsOverlay .settings-v115-card,
+  .settings-v115-card {
+    padding: 12px !important;
+  }
+}
+
+/* v124 professional Settings and Content Editor polish. */
+#settingsOverlay .settings-v115-panel {
+  padding: clamp(10px, 1.8vw, 18px) !important;
+  gap: clamp(10px, 1.6vw, 16px) !important;
+}
+
+#settingsOverlay .settings-v115-header {
+  padding: clamp(12px, 1.8vw, 18px) clamp(14px, 2.4vw, 24px) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+#settingsOverlay .settings-v115-title-wrap h3 {
+  font-size: clamp(1.4rem, 2.3vw, 2rem) !important;
+  line-height: 1 !important;
+}
+
+#settingsOverlay .settings-v115-subtitle {
+  margin-top: 5px !important;
+  font-size: clamp(0.86rem, 1.25vw, 1rem) !important;
+  line-height: 1.25 !important;
+}
+
+#settingsOverlay .settings-v115-close {
+  min-height: 48px !important;
+  padding: 0 18px !important;
+  white-space: nowrap !important;
+}
+
+#settingsOverlay .settings-v115-dashboard {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)) !important;
+  align-content: start !important;
+  padding: clamp(6px, 1.2vw, 12px) clamp(4px, 1vw, 10px) calc(1.2rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+#settingsOverlay .settings-v115-card {
+  padding: clamp(14px, 1.8vw, 20px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+#settingsOverlay .settings-v115-priority-card,
+#settingsOverlay .settings-section-backup {
+  grid-column: span 1 !important;
+}
+
+#settingsOverlay .settings-v115-card-head {
+  display: grid !important;
+  grid-template-columns: 46px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-bottom: 12px !important;
+}
+
+#settingsOverlay .settings-v115-card-icon {
+  width: 46px !important;
+  height: 46px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  border: 1px solid color-mix(in srgb, var(--primary-color, #4caf50) 24%, rgba(15,23,42,0.12)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.52)),
+    color-mix(in srgb, var(--primary-color, #4caf50) 12%, #ffffff) !important;
+  color: var(--primary-dark, #2f7d4c) !important;
+  font-size: 1.2rem !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70) !important;
+}
+
+#settingsOverlay .settings-v115-card h4 {
+  margin: 0 !important;
+  font-size: clamp(1.02rem, 1.45vw, 1.22rem) !important;
+  line-height: 1.1 !important;
+}
+
+#settingsOverlay .settings-v115-card p {
+  margin-top: 4px !important;
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem) !important;
+  line-height: 1.32 !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 4px !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary::marker {
+  color: var(--primary-color, #4caf50) !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary span {
+  font-size: clamp(1rem, 1.35vw, 1.18rem) !important;
+  line-height: 1.1 !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary small {
+  font-size: clamp(0.78rem, 1vw, 0.9rem) !important;
+  line-height: 1.25 !important;
+}
+
+#settingsOverlay .settings-v115-form-grid {
+  display: grid !important;
+  grid-template-columns: minmax(118px, 0.42fr) minmax(0, 1fr) !important;
+  gap: 10px 12px !important;
+  align-items: center !important;
+  margin-top: 14px !important;
+}
+
+#settingsOverlay .settings-v115-form-grid label {
+  color: var(--mnv-ui-muted) !important;
+  font-size: 0.86rem !important;
+  font-weight: 850 !important;
+  line-height: 1.2 !important;
+}
+
+#settingsOverlay .settings-v115-wide,
+#settingsOverlay .settings-help {
+  grid-column: 1 / -1 !important;
+}
+
+#settingsOverlay .settings-v115-inline {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+#settingsOverlay .settings-v115-actions-two {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)) !important;
+  gap: 10px !important;
+}
+
+#settingsOverlay .settings-action-btn {
+  justify-content: flex-start !important;
+  text-align: left !important;
+  padding: 12px 14px !important;
+}
+
+#settingsOverlay .settings-card-text strong {
+  display: block !important;
+  margin-bottom: 3px !important;
+  font-size: 0.98rem !important;
+  line-height: 1.08 !important;
+}
+
+#settingsOverlay .settings-card-text small {
+  display: block !important;
+  font-size: 0.78rem !important;
+  line-height: 1.25 !important;
+}
+
+#settingsOverlay .settings-status-panel {
+  margin: 10px 0 !important;
+  padding: 10px 12px !important;
+  border-radius: var(--mnv-ui-radius) !important;
+  border: 1px solid var(--mnv-ui-line-soft) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.46)),
+    color-mix(in srgb, var(--theme-card-surface-2, #eef4f8) 54%, #ffffff) !important;
+  color: var(--mnv-ui-muted) !important;
+  font-size: 0.84rem !important;
+  line-height: 1.3 !important;
+}
+
+#settingsOverlay .settings-range {
+  accent-color: var(--primary-color, #4caf50) !important;
+}
+
+#managementOverlay.management-overlay.show .management-panel {
+  gap: 10px !important;
+  padding: max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)) !important;
+}
+
+#managementOverlay .table-editor-header {
+  padding: 12px 16px !important;
+  display: grid !important;
+  align-content: center !important;
+}
+
+#managementOverlay .table-editor-header h3,
+#managementOverlay #managementPanelTitle {
+  font-size: clamp(1.2rem, 2vw, 1.7rem) !important;
+}
+
+#managementOverlay .table-editor-body {
+  padding: 12px !important;
+  gap: 9px !important;
+}
+
+#managementOverlay .table-editor-body .editor-section-title {
+  font-size: clamp(1rem, 1.5vw, 1.18rem) !important;
+  padding: 0 2px !important;
+}
+
+#managementOverlay .table-editor-body .content-media-summary,
+#managementOverlay .table-editor-body .editor-workflow-note,
+#managementOverlay .table-editor-body .carer-workflow-note {
+  padding: 8px 10px !important;
+  border: 1px solid var(--mnv-ui-line-soft) !important;
+  background: color-mix(in srgb, var(--theme-card-surface-2, #eef4f8) 54%, #ffffff) !important;
+  font-size: 0.8rem !important;
+  line-height: 1.25 !important;
+}
+
+#managementOverlay .editor-table-wrap.one-row-table-wrap,
+#managementOverlay .editor-table-wrap {
+  border-radius: var(--mnv-ui-radius) !important;
+  padding-bottom: 8px !important;
+}
+
+#managementOverlay .one-row-editor-table {
+  border-spacing: 0 !important;
+}
+
+#managementOverlay .one-row-editor-table thead th {
+  padding: 10px 9px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: 0.78rem !important;
+}
+
+#managementOverlay .one-row-editor-table td {
+  padding: 9px !important;
+}
+
+#managementOverlay .one-row-editor-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--primary-color, #4caf50) 7%, #ffffff) !important;
+}
+
+#managementOverlay .one-row-editor-table .management-media-thumb {
+  width: 70px !important;
+  height: 70px !important;
+  min-width: 70px !important;
+  min-height: 70px !important;
+}
+
+#managementOverlay .one-row-editor-table .management-btn,
+#managementOverlay .one-row-editor-table .small-management-btn {
+  min-height: 38px !important;
+  padding: 7px 9px !important;
+  font-size: 0.8rem !important;
+  line-height: 1.1 !important;
+}
+
+#managementOverlay .one-row-editor-table .table-button-stack,
+#managementOverlay .one-row-editor-table .move-button-stack,
+#managementOverlay .one-row-editor-table .voice-buttons {
+  gap: 6px !important;
+}
+
+#managementOverlay .table-editor-footer {
+  border-radius: var(--mnv-ui-radius) !important;
+  padding: 10px !important;
+  gap: 10px !important;
+}
+
+#managementOverlay .table-editor-footer .management-btn {
+  min-height: 48px !important;
+  height: 48px !important;
+  max-height: 48px !important;
+  border-radius: var(--mnv-ui-radius) !important;
+}
+
+@media (min-width: 1100px) {
+  #settingsOverlay .settings-v115-priority-card,
+  #settingsOverlay .settings-section-backup {
+    grid-column: span 2 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  #settingsOverlay .settings-v115-panel {
+    padding: 8px !important;
+  }
+
+  #settingsOverlay .settings-v115-header {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 12px !important;
+  }
+
+  #settingsOverlay .settings-v115-close {
+    width: 100% !important;
+  }
+
+  #settingsOverlay .settings-v115-dashboard {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  #settingsOverlay .settings-v115-form-grid,
+  #settingsOverlay .settings-v115-inline {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  #managementOverlay.management-overlay.show .management-panel {
+    padding: max(6px, env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-right, 0px)) max(6px, env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px)) !important;
+    gap: 6px !important;
+  }
+
+  #managementOverlay .table-editor-header,
+  #managementOverlay .table-editor-body,
+  #managementOverlay .table-editor-footer {
+    padding: 8px !important;
+  }
+}
+
+/* v124 hotfix: Settings polish must not clip real controls. */
+#settingsOverlay .settings-v115-dashboard {
+  grid-auto-rows: auto !important;
+  align-items: start !important;
+}
+
+#settingsOverlay .settings-v115-card,
+#settingsOverlay .settings-v115-priority-card,
+#settingsOverlay .settings-section-backup,
+#settingsOverlay .settings-v115-foldout {
+  height: auto !important;
+  min-height: fit-content !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#settingsOverlay .settings-v115-card-head,
+#settingsOverlay .settings-v115-actions-two,
+#settingsOverlay .settings-v115-button-row,
+#settingsOverlay .settings-v115-save-row {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#settingsOverlay .settings-v115-priority-card .settings-v115-primary-action,
+#settingsOverlay .settings-section-backup .settings-v115-actions-two,
+#settingsOverlay .settings-v115-card .settings-v115-actions-two {
+  margin-top: 12px !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  min-height: 46px !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary > small {
+  grid-column: 1 / -1 !important;
+  padding-right: 44px !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary::after {
+  grid-column: 2 !important;
+  grid-row: 1 / span 2 !important;
+  align-self: center !important;
+  justify-self: end !important;
+}
+
+#settingsOverlay .settings-action-btn,
+#settingsOverlay .settings-v115-primary-action,
+#settingsOverlay .management-btn,
+#settingsOverlay .small-management-btn {
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* v124 hotfix: Settings dashboard uses a stable contained list until the old grid layers are consolidated. */
+#settingsOverlay .settings-v115-dashboard {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  grid-template-columns: none !important;
+  grid-auto-rows: unset !important;
+  gap: 14px !important;
+  padding: 10px 10px calc(1.3rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+#settingsOverlay .settings-v115-card,
+#settingsOverlay .settings-v115-priority-card,
+#settingsOverlay .settings-section-backup,
+#settingsOverlay .settings-v115-foldout {
+  display: block !important;
   width: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  contain: layout paint !important;
+}
+
+#settingsOverlay .settings-v115-card > *,
+#settingsOverlay .settings-v115-foldout > * {
+  max-width: 100% !important;
+}
+
+#settingsOverlay .settings-v115-card-head {
+  margin-bottom: 14px !important;
+}
+
+#settingsOverlay .settings-v115-priority-card .settings-v115-primary-action,
+#settingsOverlay .settings-v115-actions-two,
+#settingsOverlay .settings-v115-button-row,
+#settingsOverlay .settings-v115-save-row,
+#settingsOverlay .settings-v115-form-grid {
+  clear: both !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#settingsOverlay .settings-v115-priority-card .settings-v115-primary-action {
+  display: flex !important;
+  margin-top: 12px !important;
+  width: 100% !important;
+}
+
+#settingsOverlay .settings-v115-actions-two {
+  margin-top: 12px !important;
+}
+
+#settingsOverlay .settings-v115-foldout > summary {
+  margin-bottom: 0 !important;
+}
+
+#settingsOverlay .settings-v115-foldout[open] > summary {
+  margin-bottom: 14px !important;
+}
+
+@media (min-width: 980px) {
+  #settingsOverlay .settings-v115-dashboard {
+    max-width: 1180px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  #settingsOverlay .settings-v115-card {
+    padding: 20px 24px !important;
+  }
+
+  #settingsOverlay .settings-v115-actions-two {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  }
+}
+
+/* v124 hotfix: Settings cards must grow with their real content. */
+#settingsOverlay .settings-v115-card,
+#settingsOverlay .settings-v115-priority-card,
+#settingsOverlay .settings-section-backup,
+#settingsOverlay .settings-v115-foldout {
+  box-sizing: border-box !important;
+  height: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  contain: none !important;
+}
+
+#settingsOverlay .settings-v115-priority-card,
+#settingsOverlay .settings-section-backup {
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  row-gap: 12px !important;
+}
+
+#settingsOverlay .settings-v115-priority-card .settings-v115-card-head,
+#settingsOverlay .settings-section-backup .settings-v115-card-head {
+  margin-bottom: 0 !important;
+}
+
+#settingsOverlay .settings-v115-priority-card .settings-v115-primary-action,
+#settingsOverlay .settings-section-backup .settings-v115-actions-two {
+  margin-top: 0 !important;
+}
+
+#settingsOverlay .settings-v115-foldout[open] {
+  display: block !important;
+}
+
+#settingsOverlay .settings-v115-foldout[open] > .settings-v115-form-grid,
+#settingsOverlay .settings-v115-foldout[open] > .settings-v115-actions-two,
+#settingsOverlay .settings-v115-foldout[open] > .settings-status-panel,
+#settingsOverlay .settings-v115-foldout[open] > .introduction-settings-panel {
+  margin-top: 12px !important;
+}
+
+/* v124 hotfix: crop editor uses separate header, workspace and footer rows. */
+#imageCropOverlay.image-crop-overlay,
+.image-crop-overlay.show {
+  align-items: stretch !important;
+  justify-content: center !important;
+  padding: max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)) !important;
+  overflow: hidden !important;
+}
+
+#imageCropOverlay .image-crop-panel {
+  width: min(1440px, 100%) !important;
+  height: calc(var(--mnv-app-height, 100vh) - max(20px, env(safe-area-inset-top, 0px)) - max(20px, env(safe-area-inset-bottom, 0px))) !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+  padding: clamp(10px, 1.5vw, 18px) !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+  gap: clamp(8px, 1.2vw, 14px) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+#imageCropOverlay .image-crop-header {
+  grid-row: 1 !important;
+  margin: 0 !important;
+  padding: clamp(10px, 1.5vw, 16px) !important;
+  border-radius: var(--mnv-ui-radius, 8px) !important;
+  min-height: 0 !important;
+}
+
+#imageCropOverlay .image-crop-header h3 {
+  font-size: clamp(1.35rem, 3vw, 2.35rem) !important;
+  line-height: 1.05 !important;
+}
+
+#imageCropOverlay .image-crop-header p {
+  max-width: 68rem !important;
+  font-size: clamp(0.9rem, 1.6vw, 1.25rem) !important;
+  line-height: 1.28 !important;
+}
+
+#imageCropOverlay .image-crop-mode-row {
+  grid-row: 2 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+}
+
+#imageCropOverlay .crop-shape-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: var(--mnv-ui-radius, 8px) !important;
+  font-size: clamp(1rem, 2vw, 1.35rem) !important;
+}
+
+#imageCropOverlay .image-crop-stage {
+  grid-row: 3 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 220px !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: var(--mnv-ui-radius, 8px) !important;
+}
+
+#imageCropOverlay .image-crop-actions {
+  grid-row: 4 !important;
+  position: static !important;
+  inset: auto !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 10px 0 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--mnv-ui-line-soft, rgba(15,23,42,0.12)) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  z-index: 3 !important;
+}
+
+#imageCropOverlay .image-crop-actions .management-btn {
+  width: 100% !important;
+  min-width: 0 !important;
   min-height: 52px !important;
+  margin: 0 !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+@media (max-width: 720px) {
+  #imageCropOverlay .image-crop-panel {
+    grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+    gap: 8px !important;
+  }
+
+  #imageCropOverlay .image-crop-header {
+    padding: 10px !important;
+  }
+
+  #imageCropOverlay .image-crop-header p {
+    font-size: 0.88rem !important;
+  }
+
+#imageCropOverlay .image-crop-actions {
+    gap: 8px !important;
+    padding-top: 8px !important;
+  }
+}
+
+/* v124 professional phrase/submenu screen polish. */
+body.submenu-open .grid {
+  gap: clamp(10px, 1.7vw, 16px) !important;
+  padding: clamp(8px, 1.5vw, 14px) clamp(6px, 1.2vw, 12px) calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.56), rgba(255,255,255,0.20)),
+    color-mix(in srgb, var(--theme-card-surface-2, #eef8f2) 32%, transparent) !important;
+  border-radius: var(--mnv-ui-radius, 8px) !important;
+}
+
+body.submenu-open .grid-button {
+  display: grid !important;
+  grid-template-columns: clamp(82px, 12vw, 116px) minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  column-gap: clamp(13px, 2.2vw, 22px) !important;
+  row-gap: 3px !important;
+  align-items: center !important;
+  min-height: clamp(104px, 12vw, 136px) !important;
+  padding: clamp(11px, 1.7vw, 16px) clamp(13px, 2vw, 20px) !important;
+  border: 1px solid color-mix(in srgb, var(--category-color, var(--primary-color)) 32%, rgba(15,23,42,0.14)) !important;
+  border-left: 7px solid var(--category-color, var(--primary-color)) !important;
+  border-radius: var(--mnv-ui-radius, 8px) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.68)),
+    color-mix(in srgb, var(--category-soft, #eef8f2) 38%, var(--theme-button-surface, #ffffff)) !important;
+  color: var(--mnv-ui-text, #233042) !important;
+  box-shadow: 0 7px 18px rgba(15,23,42,0.08) !important;
+  transform: none !important;
+  overflow: hidden !important;
+}
+
+body.submenu-open .grid-button:hover,
+body.submenu-open .grid-button:focus-visible {
+  border-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 54%, rgba(15,23,42,0.16)) !important;
+  border-left-color: var(--category-dark, var(--primary-dark)) !important;
+  box-shadow: 0 12px 26px rgba(15,23,42,0.13) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.submenu-open .grid-button:active,
+body.submenu-open .grid-button.mnv-pressing,
+body.submenu-open .grid-button.press-waiting {
+  transform: scale(0.992) !important;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.10) !important;
+}
+
+body.submenu-open .grid-button.speaking {
+  border-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 70%, #ffffff) !important;
+  border-left-color: var(--category-dark, var(--primary-dark)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.48)),
+    color-mix(in srgb, var(--category-soft, #eef8f2) 78%, #ffffff) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--category-color, var(--primary-color)) 18%, transparent), 0 10px 24px rgba(15,23,42,0.13) !important;
+}
+
+body.submenu-open .grid-button.press-waiting::after {
+  border-radius: inherit !important;
+  background: color-mix(in srgb, var(--category-color, var(--primary-color)) 14%, transparent) !important;
+}
+
+body.submenu-open .grid-button .button-media,
+body.submenu-open .button-media {
+  grid-column: 1 !important;
+  grid-row: 1 / span 2 !important;
+  width: clamp(78px, 12vw, 108px) !important;
+  height: clamp(78px, 12vw, 108px) !important;
+  border-radius: var(--mnv-ui-radius, 8px) !important;
+  border: 1px solid color-mix(in srgb, var(--category-color, var(--primary-color)) 20%, rgba(15,23,42,0.12)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.76), rgba(255,255,255,0.34)),
+    color-mix(in srgb, var(--category-soft, #eef8f2) 62%, #ffffff) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 4px 10px rgba(15,23,42,0.07) !important;
+  overflow: hidden !important;
+}
+
+body.submenu-open .grid-button .button-media img,
+body.submenu-open .button-media img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  border-radius: calc(var(--mnv-ui-radius, 8px) - 2px) !important;
+}
+
+body.submenu-open .button-fallback-icon {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--category-dark, var(--primary-dark)) !important;
+  font-size: clamp(2rem, 4.2vw, 2.8rem) !important;
+  line-height: 1 !important;
+}
+
+body.submenu-open .grid-button > span {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-height: 0 !important;
+  display: block !important;
+  align-self: end !important;
+  color: var(--mnv-ui-text, #233042) !important;
+  font-size: clamp(1.24rem, 3.1vw, 1.72rem) !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+body.submenu-open .person-details {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  align-self: start !important;
+  margin: 4px 0 0 !important;
+  gap: 3px !important;
+}
+
+body.submenu-open .person-details small {
+  color: var(--mnv-ui-muted, #53606d) !important;
+  font-size: clamp(0.82rem, 1.8vw, 1rem) !important;
+  line-height: 1.2 !important;
+}
+
+body.submenu-open .grid-button[data-category="MyPeople"] .button-media,
+body.submenu-open .grid-button[data-category="MyPeople"] .button-media img,
+body.submenu-open .grid-button[data-category="MyPeople"] .button-fallback-icon,
+body.submenu-open [data-category="MyPeople"] .grid-button .button-media,
+body.submenu-open [data-category="MyPeople"] .grid-button .button-media img,
+body.submenu-open [data-category="MyPeople"] .grid-button .button-fallback-icon {
+  border-radius: 50% !important;
+}
+
+@media (max-width: 640px) {
+  body.submenu-open .grid {
+    gap: 9px !important;
+    padding: 8px 6px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.submenu-open .grid-button {
+    grid-template-columns: 74px minmax(0, 1fr) !important;
+    min-height: 94px !important;
+    column-gap: 11px !important;
+    padding: 10px 11px !important;
+    border-left-width: 6px !important;
+  }
+
+  body.submenu-open .grid-button .button-media,
+  body.submenu-open .button-media {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  body.submenu-open .grid-button > span {
+    font-size: clamp(1.05rem, 5vw, 1.34rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  body.submenu-open .person-details small {
+    font-size: 0.78rem !important;
+  }
+}
+
+/* v124 hotfix: submenu photos and text alignment. */
+body.submenu-open .button-fallback-icon[hidden],
+body.submenu-open .button-media img.loaded + .button-fallback-icon,
+body.submenu-open .button-media img[style*="display: none"] + .button-fallback-icon[hidden] {
+  display: none !important;
+}
+
+body.submenu-open .button-fallback-icon:not([hidden]) {
+  display: flex !important;
+}
+
+body.submenu-open .grid-button:not([data-category="MyPeople"]) {
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+body.submenu-open .grid-button:not([data-category="MyPeople"]) > span {
+  grid-row: 1 !important;
+  align-self: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 100% !important;
+  width: 100% !important;
+  text-align: left !important;
+}
+
+body.submenu-open .grid-button[data-category="MyPeople"] > span,
+body.submenu-open [data-category="MyPeople"] .grid-button > span {
+  grid-row: 1 !important;
+  align-self: end !important;
+  min-height: 0 !important;
+}
+
+/* v124 hotfix: center submenu back icon and use one polished row accent. */
+body.submenu-open #messageBar.submenu-titlebar .title-back-to-menu,
+body.submenu-open .submenu-titlebar .title-back-to-menu {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 58px !important;
+  min-width: 58px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  font-size: 2rem !important;
+  text-align: center !important;
+  text-indent: 0 !important;
+  transform: translateY(-50%) !important;
+}
+
+body.submenu-open #messageBar.submenu-titlebar .title-back-to-menu > *,
+body.submenu-open .submenu-titlebar .title-back-to-menu > * {
+  display: block !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+body.submenu-open .grid-button {
+  border-left-width: 1px !important;
+  border-left-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 26%, rgba(15,23,42,0.12)) !important;
+}
+
+body.submenu-open .grid-button::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 12px !important;
+  top: 22px !important;
+  bottom: 22px !important;
+  width: 6px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, var(--category-color, var(--primary-color)), var(--category-dark, var(--primary-dark))) !important;
+  opacity: 0.9 !important;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--category-color, var(--primary-color)) 28%, transparent) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+body.submenu-open .grid-button > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+@media (max-width: 640px) {
+  body.submenu-open .grid-button::before {
+    left: 9px !important;
+    top: 18px !important;
+    bottom: 18px !important;
+    width: 5px !important;
+  }
 }

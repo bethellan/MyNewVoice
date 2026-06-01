@@ -1,8 +1,0 @@
-MyNewVoice v40 - Voice persistence and header fix
-
-- Settings password changed to 4321.
-- Generated speech voice settings now persist safely across reloads by preventing stale compressed content data from overwriting newer standalone app settings.
-- App settings continue to export as optional appSettings without changing protected backup fields.
-- Voice status text added to Settings to show whether the saved voice is available or a fallback/default is being used.
-- Introduction header button/photo is restricted to the main screen only; submenu headers remain plain title headers with no introduction image/button.
-- Backup/export/import schema unchanged.
