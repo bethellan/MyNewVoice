@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v123: Rebuilds Settings/Content Editor navigation so Content Editor runs as a real body-level screen, not a floating panel. Restores one-row tables with internal horizontal/vertical scrolling and keeps Back/Save outside the table. v114 viewport lock retained. No schema, speech or media-storage changes. */
+/* v124: Makes the main Settings dashboard a true full-screen body-level screen rather than a floating modal panel. Content Editor remains a real screen with one-row tables and internal scrolling. v114 viewport lock retained. No schema, speech or media-storage changes. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -167,7 +167,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v123';
+const CURRENT_APP_VERSION = 'v124';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -176,7 +176,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v123';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v124';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -1043,6 +1043,7 @@ function hideSettingsEntryOverlay() {
     if (!overlay) return;
     overlay.classList.remove('show');
     overlay.style.display = 'none';
+    document.body.classList.remove('settings-real-screen-active');
 }
 
 function showAboutFromSettingsEntry() {
@@ -1983,6 +1984,7 @@ function showSettingsOverlay() {
     warmSpeechVoices().then(() => updateSettingsControls()).catch(() => updateSettingsControls());
     updateSettingsControls();
     updateMediaQualityPanel();
+    document.body.classList.add('settings-real-screen-active');
     overlay.style.display = 'flex';
     requestAnimationFrame(() => overlay.classList.add('show'));
 }
@@ -1992,6 +1994,7 @@ function hideSettingsOverlay() {
     if (!overlay) return;
     overlay.classList.remove('show');
     overlay.style.display = 'none';
+    document.body.classList.remove('settings-real-screen-active');
 }
 
 function showAppVersionStatus() {

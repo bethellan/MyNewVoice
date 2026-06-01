@@ -10493,3 +10493,110 @@ body.content-editor-open #managementOverlay.management-overlay.show .management-
     font-size: 0.8rem !important;
   }
 }
+
+/* ============================================================================
+   v124 SETTINGS AS A REAL FULL-SCREEN SCREEN
+   ----------------------------------------------------------------------------
+   The Settings dashboard must not appear as a floating modal window. It now
+   occupies the full app viewport, while the Dad-facing communication container
+   is hidden behind it until Return to App.
+   ============================================================================ */
+body.settings-real-screen-active .container {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.settings-real-screen-active #settingsOverlay.settings-overlay,
+body.settings-real-screen-active #settingsOverlay.settings-overlay.show,
+#settingsOverlay.settings-overlay.show {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10000 !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  width: 100% !important;
+  height: var(--mnv-app-height, var(--app-height, 100vh)) !important;
+  min-height: var(--mnv-app-height, var(--app-height, 100vh)) !important;
+  max-height: var(--mnv-app-height, var(--app-height, 100vh)) !important;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px) !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: var(--background-color, #eef7f1) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  contain: layout paint !important;
+}
+
+#settingsOverlay .settings-v115-panel,
+#settingsOverlay.settings-overlay.show .settings-panel,
+body.settings-real-screen-active #settingsOverlay .settings-v115-panel,
+body.settings-real-screen-active #settingsOverlay.settings-overlay.show .settings-panel {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: clamp(0.45rem, 1.4vw, 0.75rem) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: clamp(0.45rem, 1.4vw, 0.7rem) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: var(--settings-panel-bg, #ffffff) !important;
+  transform: none !important;
+}
+
+#settingsOverlay .settings-v115-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  border-radius: clamp(0.8rem, 2vw, 1.2rem) !important;
+}
+
+#settingsOverlay .settings-v115-dashboard {
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: clamp(0.45rem, 1.2vw, 0.75rem) clamp(0.35rem, 1vw, 0.65rem) calc(1.2rem + env(safe-area-inset-bottom, 0px)) !important;
+  box-sizing: border-box !important;
+  scrollbar-gutter: stable both-edges;
+}
+
+#settingsOverlay .settings-v115-card {
+  max-width: none !important;
+}
+
+@media (min-width: 900px) {
+  #settingsOverlay .settings-v115-panel {
+    padding-left: clamp(1rem, 3vw, 2rem) !important;
+    padding-right: clamp(1rem, 3vw, 2rem) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  #settingsOverlay .settings-v115-panel,
+  #settingsOverlay.settings-overlay.show .settings-panel {
+    padding: 0.35rem !important;
+  }
+
+  #settingsOverlay .settings-v115-header {
+    grid-template-columns: minmax(0, 1fr) !important;
+    border-radius: 0.9rem !important;
+  }
+}

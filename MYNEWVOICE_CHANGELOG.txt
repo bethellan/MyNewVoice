@@ -1863,3 +1863,11 @@ V117_CONTENT_EDITOR_MOBILE_FIT
 - Restored one-row table layout with internal vertical and horizontal scrolling.
 - Kept Back/Save footer outside the table scroll area so it cannot be cropped.
 - No backup schema, media, speech, phrase IDs, category IDs or Dad-facing communication screen changes.
+
+
+## v124 - Settings fullscreen real screen
+- Rebuilt the Settings dashboard presentation so it opens as a true full-screen screen rather than a centred floating panel.
+- Removed modal-style backdrop/rounded floating window sizing for Settings; the dashboard now fills the available app screen.
+- Main app is visually hidden while Settings is open, then restored unchanged when returning to the app.
+- Content Editor v123 true-screen table behaviour retained.
+- No backup schema, phrase ID, media ID, storage key, speech, photo/audio, or Dad-facing communication screen changes.
