@@ -1,0 +1,19 @@
+MyNewVoice v116 - Content Editor compact iPhone pass
+
+This build is based on v115.
+
+Changed:
+- Compact Content Editor title/header bars.
+- Compact Content Editor table rows, thumbnails and action buttons.
+- Compact sticky Save/Back footer so buttons do not sit half off-screen.
+- Reduced table minimum widths for better iPhone usability while retaining horizontal scrolling for dense editor columns.
+- Removed duplicated Back to Sections button from the phrase editor footer.
+
+Preserved:
+- v114 locked main viewport fix.
+- v115 Settings menu rewrite.
+- Dad-facing main menu and phrase screen layout.
+- Speech fallback behaviour.
+- Local photo/audio storage.
+- Backup/export/import schema and protected top-level fields.
+- Phrase/category/media IDs and storage keys.

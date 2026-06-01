@@ -1,13 +1,20 @@
-MyNewVoice build metadata
+MyNewVoice build
+Version: v117
+ZIP filename: MyNewVoice_v117_content_editor_mobile_fit.zip
+Internal folder name: MyNewVoice_v117_content_editor_mobile_fit
+App label: MyNewVoice v117
+Service worker cache: mynewvoice-v117-content-editor-mobile-fit
+Offline cache: mynewvoice-offline-v117
 
-Version: v115
-ZIP filename: MyNewVoice_v115_settings_menu_rewrite.zip
-Internal folder name: MyNewVoice_v115_settings_menu_rewrite
-App label: MyNewVoice v115
-Service worker cache: mynewvoice-v115-settings-menu-rewrite
-Offline cache: mynewvoice-offline-v115
-
-Build note:
-- Rewrites the carer Settings screen with a fixed header, independent scrolling content, clearer grouped sections, and responsive full-width buttons.
-- Retains the v114 locked main viewport fix so Settings/password/about overlays do not resize the Dad-facing main screen after returning to the app.
-- Preserves app behaviour, speech, media, local storage and backup schema.
+Scope:
+- Targeted Content Editor mobile fit pass.
+- Converts Content Editor topic and phrase tables into stacked cards on narrow screens.
+- Reduces Content Editor title/header height, helper-note size, thumbnail size, and editor button padding.
+- Keeps bottom Content Editor actions sticky and visible.
+- Preserves v114 locked main viewport fix.
+- Preserves v115 Settings menu rewrite.
+- Preserves v116 compact editor pass.
+- No backup/export/import schema changes.
+- No phrase/category/media ID changes.
+- No local photo/audio deletion.
+- No Dad-facing menu/phrase layout changes.

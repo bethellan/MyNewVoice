@@ -1,0 +1,12 @@
+MyNewVoice v117 - Content Editor mobile fit pass
+
+Targeted display-only follow-up to v116.
+
+Changes:
+- Content Editor topic and phrase tables become stacked cards on narrow screens.
+- Smaller title bars, helper notes, thumbnails and editor buttons for iPhone fit.
+- Bottom actions remain sticky and visible.
+- Main Dad-facing communication screen unchanged.
+- Settings v115 structure and v114 viewport lock retained.
+- Backup/export schema unchanged.
+- Local images/audio and speech fallback unchanged.

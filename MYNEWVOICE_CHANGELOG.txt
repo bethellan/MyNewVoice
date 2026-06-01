@@ -1805,3 +1805,21 @@ Preserved:
 - Storage keys unchanged.
 - Local images/audio not deleted.
 - Speech fallback unchanged.
+
+
+v116 - Content Editor compact iPhone pass
+- Targeted the Content Editor sub-screens only.
+- Reduced the sticky editor title bar height and hidden subtitle on narrow phones to preserve usable screen space.
+- Reduced Content Editor card, table, thumbnail, button and footer spacing while keeping controls tappable.
+- Reduced horizontal table minimum widths so fewer controls sit off-screen on iPhone.
+- Fixed duplicated Back to Sections button in the phrase editor footer.
+- Updated CURRENT_APP_VERSION, offline cache name, service worker cache name, app-version.json and BUILD_VERSION.txt to v116.
+- Preserved Dad-facing main screen, v114 viewport lock, v115 Settings rewrite, speech behaviour, media storage and backup/export/import schema.
+
+
+V117_CONTENT_EDITOR_MOBILE_FIT
+- Further compacted Content Editor for iPhone screens.
+- Converted topic/phrase editor tables into stacked mobile cards on narrow screens, avoiding half-off-screen buttons.
+- Reduced title bar, helper text, media thumbnail and button sizing inside Content Editor only.
+- Retained v114 locked main viewport and v115 Settings rewrite.
+- No backup/export schema, phrase/category IDs, media storage, local photos/audio, or speech behaviour changed.
