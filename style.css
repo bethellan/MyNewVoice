@@ -10600,3 +10600,32 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay.show .setting
     border-radius: 0.9rem !important;
   }
 }
+
+/* ============================================================================
+   v125 MAIN MENU TITLE ABOVE IMAGE
+   Scope: Dad-facing main menu card layout only. Moves the category label above
+   the image within each existing menu card. Does not change submenu rows,
+   settings screens, content editor, speech, media storage, backup schema, IDs,
+   or image crop/storage behaviour.
+   ============================================================================ */
+.tab {
+  grid-template-rows: auto minmax(126px, 1fr) !important;
+}
+
+.menu-card-title {
+  grid-row: 1 !important;
+  border-top: 0 !important;
+  border-bottom: 4px solid var(--tab-color, #4CAF50) !important;
+}
+
+.menu-card-image-shell {
+  grid-row: 2 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+@media (max-width: 520px) {
+  .tab {
+    grid-template-rows: auto minmax(116px, 1fr) !important;
+  }
+}

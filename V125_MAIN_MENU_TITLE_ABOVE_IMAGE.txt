@@ -1,0 +1,13 @@
+MyNewVoice v125 - Main menu title above image
+
+Changes:
+- Moves Dad-facing main menu card titles above their images.
+- Keeps existing main menu card layout, tap behaviour, category colour accents, image crop/storage behaviour, and fallback icons.
+- Retains v124 Settings and Content Editor real-screen layouts.
+- Retains v114 locked main viewport fix.
+
+Compatibility:
+- Backup JSON/.mnvoice structure unchanged.
+- Existing top-level fields unchanged: type, version, exportedAt, appVersion, buttonData, categoryConfig, mediaRecords.
+- Phrase/category/media IDs unchanged.
+- Local images and recorded voices are not cleared.
