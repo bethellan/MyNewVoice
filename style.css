@@ -3004,7 +3004,7 @@ body:not(.submenu-open) #messageBar {
 }
 
 .settings-overlay.show .settings-panel {
-  width: 100vw;
+  width: 100%;
   max-width: none;
   height: 100vh;
   max-height: none;
@@ -3093,9 +3093,9 @@ body:not(.submenu-open) #messageBar {
   left: 0 !important;
   transform: none !important;
   display: block !important;
-  width: 100vw !important;
+  width: 100% !important;
   max-width: none !important;
-  min-width: 100vw !important;
+  min-width: 0 !important;
   height: 100vh !important;
   height: 100dvh !important;
   max-height: none !important;
@@ -7934,241 +7934,259 @@ button.cancel {
 }
 
 
+/* v108: modal/layout restore after Settings.
+   Problem fixed: opening/closing Settings could leave the Dad-facing main menu widened or horizontally shifted on iPhone.
+   Scope: modal scroll locking, viewport sizing, and main menu containment only. */
 
-/* v111: Settings screen refactor.
-   Expert-audit fix:
-   - Settings entry and password-protected Settings are now treated as contained full-screen app screens.
-   - No body/html width, padding, transform, scroll-lock, or observer-based layout restoration is used.
-   - Opening Settings must not change the Dad-facing main menu/submenu dimensions.
-*/
-
-/* Global frame stability */
+/* Stable viewport sizing: avoid iPhone 100vw scrollbar/browser-bar layout shifts on main surfaces. */
 html,
 body {
   width: 100%;
   max-width: 100%;
-  min-width: 0;
   overflow-x: hidden;
 }
 
-body {
-  position: static;
-  margin: 0;
-  padding: 0;
+#app,
+.app,
+.app-shell,
+.main-screen,
+.main-view,
+.screen,
+.page,
+.main-menu,
+.menu-screen,
+.grid-container,
+.grid,
+.settings-modal,
+.management-modal,
+.modal,
+.dialog {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-/* Do not use modal-open width compensation anywhere in this app. */
+/* Prevent modal-open states from adding horizontal offset/scrollbar compensation. */
 html.modal-open,
 body.modal-open,
 html.settings-open,
 body.settings-open,
-html.settings-dashboard-active,
-body.settings-dashboard-active,
-html.settings-entry-active,
-body.settings-entry-active,
-html.management-mode,
-body.management-mode {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
-  transform: none;
-  left: auto;
-  right: auto;
+html.dialog-open,
+body.dialog-open,
+html.crop-open,
+body.crop-open {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: hidden !important;
+}
+
+/* v113: body overflow-y lock removed – Settings/modals use contained fixed overlays and must not alter body scrollbar width. */
+
+/* Modal overlays must not force the page wider than the visible viewport. */
+.settings-modal,
+.management-modal,
+.info-modal,
+.crop-modal,
+.image-crop-modal,
+.modal-overlay,
+.dialog-overlay,
+#settingsModal,
+#managementModal,
+#infoModal,
+#cropModal,
+#imageCropModal {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  box-sizing: border-box;
   overflow-x: hidden;
 }
 
-/* Settings entry / settings dashboard appear as a new app screen without resizing the background app. */
-#settingsEntryOverlay,
-#settingsOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 5000;
-  display: none;
-  align-items: stretch;
-  justify-content: center;
+/* Main menu grid should keep identical width before and after modals. */
+.main-menu .grid,
+.menu-screen .grid,
+body:not(.submenu-open) .grid {
   width: 100%;
   max-width: 100%;
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
-  margin: 0;
-  padding:
-    max(12px, env(safe-area-inset-top, 0px))
-    max(10px, env(safe-area-inset-right, 0px))
-    max(12px, env(safe-area-inset-bottom, 0px))
-    max(10px, env(safe-area-inset-left, 0px));
+  margin-left: auto;
+  margin-right: auto;
   box-sizing: border-box;
-  overflow: hidden;
-  overscroll-behavior: contain;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(48, 209, 88, 0.10), transparent 35%),
-    linear-gradient(180deg, rgba(243, 248, 246, 0.98), rgba(233, 241, 238, 0.98));
-  -webkit-overflow-scrolling: auto;
+  transform: none;
 }
 
-/* show class is visual only; display is controlled directly in JS. */
-#settingsEntryOverlay.show,
-#settingsOverlay.show {
+/* Main menu cards should not inherit modal transforms. */
+body:not(.submenu-open) .grid-button {
+  transform-origin: center center;
+}
+
+/* Clear any accidental visual drift caused by lingering inline styles. */
+body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .main-menu,
+body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .menu-screen,
+body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .grid-container {
+  margin-left: auto;
+  margin-right: auto;
+  transform: none;
+}
+
+/* iPhone-specific containment fallback. */
+@supports (-webkit-touch-callout: none) {
+  .app-shell,
+  .main-screen,
+  .main-view,
+  .screen,
+  .page {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .settings-modal,
+  .management-modal,
+  .info-modal,
+  .crop-modal,
+  .image-crop-modal,
+  .modal-overlay,
+  .dialog-overlay {
+    contain: layout paint;
+  }
+}
+
+
+/* v109: Settings cog jump and modal panel sizing repair.
+   The Settings entry/settings panels must not use 100vw/100vh sizing because iPhone Safari can recalculate the viewport and shift the visible app behind it. */
+#settingsEntryOverlay.settings-overlay.show,
+#settingsOverlay.settings-overlay.show {
+  position: fixed;
+  inset: 0;
   display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: max(18px, env(safe-area-inset-top, 0px)) max(14px, env(safe-area-inset-right, 0px)) max(18px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  overscroll-behavior: contain;
 }
 
-/* Each Settings screen owns its own internal scroll. */
-#settingsEntryOverlay .settings-panel,
-#settingsOverlay .settings-panel {
+#settingsEntryOverlay.settings-overlay.show .settings-panel,
+#settingsOverlay.settings-overlay.show .settings-panel {
   width: min(760px, 100%);
   max-width: 100%;
-  height: 100%;
-  max-height: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
+  height: auto;
+  max-height: calc(100dvh - max(36px, env(safe-area-inset-top, 0px)) - max(36px, env(safe-area-inset-bottom, 0px)));
   overflow-y: auto;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 18px 52px rgba(15, 23, 42, 0.18);
-}
-
-/* Settings header is part of the Settings screen, not the Dad-facing app header. */
-#settingsEntryOverlay .settings-header,
-#settingsOverlay .settings-header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  min-height: 78px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 18px 18px 14px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, rgba(58, 157, 99, 0.98), rgba(37, 117, 78, 0.98));
-  color: #ffffff;
-  border-radius: 28px 28px 0 0;
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.10);
-}
-
-#settingsEntryOverlay .settings-header h3,
-#settingsOverlay .settings-header h3 {
   margin: 0;
-  flex: 1 1 auto;
-  font-size: clamp(1.5rem, 6vw, 2.3rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
-  color: #ffffff;
 }
 
-#settingsEntryOverlay .settings-close,
-#settingsOverlay .settings-close {
-  flex: 0 0 56px;
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
-  min-height: 56px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.45);
-  background: rgba(255,255,255,0.92);
-  color: #111827;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  font-weight: 800;
-  touch-action: manipulation;
-}
+/* v113: settings-entry-active / settings-dashboard-active body rules removed – classes no longer set by JS. */
 
-/* Normal Settings action buttons remain in-card, not sticky/floating. */
-#settingsOverlay .settings-actions,
-#settingsEntryOverlay .settings-actions {
-  position: static;
-  inset: auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 14px 0 0;
-  padding: 0;
-  background: transparent;
-  box-shadow: none;
-  border: 0;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-#settingsOverlay .settings-action-btn,
-#settingsEntryOverlay .settings-action-btn,
-#settingsOverlay .management-btn,
-#settingsEntryOverlay .management-btn {
-  position: static;
-  transform: none;
-  width: 100%;
-  box-sizing: border-box;
-  touch-action: manipulation;
-}
-
-/* Password modal is separate and must not resize underlying views. */
-#passwordModal {
-  position: fixed;
-  inset: 0;
-  z-index: 7000;
-  width: 100%;
-  height: 100dvh;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-/* Dad-facing frame stability: do not allow settings classes to mutate the communication UI. */
-.container,
-#messageBar,
-#buttonGrid,
-.grid,
-.tab-container,
-#submenuHeader,
-#managementToggle {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-/* Settings cog press must not scale/reflow the main screen. */
+/* Pressing the cog must not visually scale, nudge, or reflow the page. */
 #managementToggle,
+.management-toggle,
+.settings-cog,
+#settingsToggle,
+#settingsButton {
+  transform: none !important;
+  will-change: auto !important;
+}
+
 #managementToggle:hover,
 #managementToggle:active,
-#managementToggle.press-active {
-  transform: none;
-  will-change: auto;
+#managementToggle.press-active,
+.management-toggle:hover,
+.management-toggle:active,
+.management-toggle.press-active,
+.settings-cog:hover,
+.settings-cog:active,
+.settings-cog.press-active {
+  transform: none !important;
 }
 
 @media (max-width: 520px) {
-  #settingsEntryOverlay,
-  #settingsOverlay {
-    padding:
-      max(8px, env(safe-area-inset-top, 0px))
-      8px
-      max(8px, env(safe-area-inset-bottom, 0px))
-      8px;
+  #settingsEntryOverlay.settings-overlay.show,
+  #settingsOverlay.settings-overlay.show {
+    padding: max(12px, env(safe-area-inset-top, 0px)) 10px max(12px, env(safe-area-inset-bottom, 0px));
   }
 
-  #settingsEntryOverlay .settings-panel,
-  #settingsOverlay .settings-panel {
+  #settingsEntryOverlay.settings-overlay.show .settings-panel,
+  #settingsOverlay.settings-overlay.show .settings-panel {
+    width: 100%;
+    max-height: calc(100dvh - max(24px, env(safe-area-inset-top, 0px)) - max(24px, env(safe-area-inset-bottom, 0px)));
     border-radius: 24px;
   }
+}
 
-  #settingsEntryOverlay .settings-header,
-  #settingsOverlay .settings-header {
-    border-radius: 24px 24px 0 0;
-    min-height: 70px;
-    padding: 14px;
-  }
 
-  #settingsEntryOverlay .settings-close,
-  #settingsOverlay .settings-close {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    min-height: 52px;
-    border-radius: 18px;
-  }
+/* v110: protected Settings dashboard exit repair.
+   The Settings entry chooser was restoring correctly, but entering the password-protected
+   Settings dashboard could leave a persistent iPhone viewport/layout size change.
+   This isolates the dashboard overlay and prevents it from mutating the Dad-facing screen. */
+
+html,
+body,
+#app,
+.app,
+.app-shell {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Settings dashboard overlay is self-contained and must not require body width/padding changes. */
+#settingsOverlay,
+#settingsOverlay.settings-overlay,
+#settingsOverlay.settings-overlay.show,
+.settings-dashboard-overlay,
+.settings-modal-dashboard {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+  contain: layout paint !important;
+}
+
+/* The dashboard panel scrolls internally; the page behind it does not change size. */
+#settingsOverlay .settings-panel,
+#settingsOverlay .settings-content,
+#settingsOverlay .settings-scroll,
+#settingsOverlay .management-panel,
+#settingsOverlay .management-content {
+  width: min(760px, 100%) !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: calc(100dvh - max(24px, env(safe-area-inset-top, 0px)) - max(24px, env(safe-area-inset-bottom, 0px))) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* v113: settings-dashboard-active body rules removed. */
+
+/* v113: conditional body class rules removed. */
+
+/* Avoid focus outlines or iPhone text zoom causing apparent dashboard-induced scaling. */
+#settingsOverlay input,
+#settingsOverlay select,
+#settingsOverlay textarea,
+#settingsOverlay button {
+  font-size: max(16px, 1rem);
 }

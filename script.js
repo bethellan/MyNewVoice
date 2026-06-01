@@ -2,7 +2,110 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-const CURRENT_APP_VERSION = 'v111';
+/* v113: restoreMainMenuLayoutAfterModal removed – Settings are full-screen fixed screens that do not alter body geometry. */
+
+document.addEventListener('load', function(event) {
+    const el = event.target;
+    if (el && el.tagName === 'IMG') {
+        el.classList.add('media-ready');
+    }
+}, true);
+
+/*
+Copyright © Andrew Bethell. All rights reserved.
+Created by Andrew Bethell in his own time for his father following a stroke.
+
+Version history:
+v2_public_template_placeholders - Public-safe template with generic image placeholders, stable photo IDs, category colours, and About box.
+v3_stacked_rows - Changed communication choices from tiled cards to stacked full-width rows with left image/icon space and right phrase text.
+v4_zoom_comfort_swap - Added optional 4-second zoom images from images/zoom/, preserved speech on button taps, and swapped Comfort/My People top-menu positions.
+v5_menu_image_submenus - Changed the main category menu into stacked image cards and moved phrase rows into category submenus.
+v6_device_photo_voice_setup - Added Settings hub, local device photo setup, local recorded phrase voice clips, persistent storage request, and private media backup/import.
+v7_locked_title_phrase_popup - Locked the top title bar, made only menu/phrase options scroll, changed submenu title display, and added a phrase popup for spoken text.
+v8_titlebar_back_button - Removed the redundant submenu header and moved the Main menu button into the fixed title bar.
+   v9_content_refinement - Prioritised clinical/accessibility menu order, added Quick Words, merged Entertainment into Activities, and refined phrase wording.
+   v10_centered_submenu_rows - Vertically centred image/icon and text alignment in submenu phrase buttons.
+   v11_image_cropper - Added local image cropper for selected photos and made submenu image slots larger.
+   v12_ios_tts_no_subtitles - Improved iPhone/iPad device speech fallback, removed subtitles, and auto-closed the phrase popup after speech.
+   v13_password_setup_compact_photo_voice - Password-protected Photo / Voice Setup, compacted setup controls, fixed crop shapes, allowed device camera/photo selection, hid top icons in submenus, and reduced the Main menu button size.
+   v14_carer_content_setup - Rebuilt Content Management as a password-protected carer setup dashboard with top-menu rename/hide/reorder and one-selected-phrase editing.
+   v15_safe_refresh_settings_only - Added Android/iPhone-safe app-code refresh, moved About into Settings only, and removed day/night and main-screen info buttons.
+   v16_single_phrase_image_full_backup - Simplified phrase images to one cropped image used in rows and popups, added complete cross-device backup/restore, and downsized selected images.
+   v17_separate_clear_images_audio - Added password-protected remove-all-images and remove-all-audio maintenance actions with confirm screens.
+   v18_pc_tts_titlebar_split - Improved PC/browser text-to-speech fallback and split the submenu title bar into a back-arrow square plus title area.
+   v19_custom_categories_editor_layout - Preserved custom imported top-menu categories and merged content/photo/voice editing into a cleaner editor-style management layout.
+   v20_settings_editor_navigation_fix - Password now unlocks Settings once, content editor uses topic page -> phrase page navigation, and image picker previews update reliably.
+   v21_settings_editor_table_cleanup - Added Enter-to-unlock, full-screen editor, image edit/delete/cancel popup, row-based phrase controls, fallback icon chooser, and table plus-row add controls.
+   v22_settings_visual_tidy - Appearance-only tidy for Settings and in-app editor panels; no behaviour or backup schema changes.
+   v23_settings_entry_cleanup - Removed oversized content editor intro, added Back to Settings, and disabled opening resize animation.
+   v24_content_editor_fullscreen_fix - Forced the in-app content editor to open directly as a true full-screen overlay.
+   v25_settings_navigation_refine - Settings now exits only from the main Settings menu; editor Save returns one level up.
+   v26_stabilised_codebase - Stabilised settings/import/media handlers, removed duplicate backup-import hooks, and integrated patch behaviour without changing the backup schema.
+   v27_simple_vocabulary_and_press_delay - Added optional simple vocabulary list view and configurable normal/long/longer press activation, saved locally and in complete backups as optional appSettings.
+   v28_mobile_touch_interaction_lock - Prevented mobile text selection, callout/context menus, and image dragging during hold-to-speak while preserving scrolling.
+   v30a_professional_visual_polish - Safe visual polish only: tactile button states, cleaner shadows/colours and editor readability.
+   v32_settings_editor_polish - Visual-only polish for Settings and Content Editor; no behaviour/schema changes.
+   v33_intro_button_popup_delay - Added configurable popup delay and optional introduction button saved as optional appSettings/media records.
+   v34_intro_button_fix - Fixed introduction header photo/icon display and made introduction button work reliably with photo-only setups.
+   v35_intro_header_photo_only - When an intro photo exists, show only a larger centred photo in a compact outlined header button.
+   v36_generated_voice_setting - Added Settings control for browser/device generated speech voice, rate, and pitch.
+   v37_default_simple_list_about_return - Simple vocabulary list is the default; About now returns to Settings without closing Settings.
+   v39_about_settings_navigation_audit - Isolated About from Return to App; About closes back to Settings.
+   v40_voice_persistence_header_fix - Persist generated voice settings safely; keep introduction header off submenu screens; password 4321.
+   v41_settings_information_entry_menu - Settings cog opens Information / Settings entry menu; Information closes back to entry, Settings opens password-protected carer dashboard.
+   v42_ios_icon_submenu_intro_header_fix - Added MyNewVoice app icon assets and made the introduction picture strictly main-menu-only in menu view.
+   v43_submenu_header_icon_removed_settings_entry_icons - Removed the introduction fallback icon from submenu title bars and refined the first Settings entry menu icons.
+   v44_settings_save_returns_previous_level - Save actions in Settings submenus now close the active edit panel and return to the prior Settings level.
+   v45_my_people_round_submenu_images - My People submenu image holders are always circular, even when relationship details are blank.
+   v71_audit_and_tidy - Moved charset before lz-string in HTML head; updated stale v60 about version text; removed dead static management panel HTML; stripped dead legacy management event listeners from init block; moved applyAppTheme() to correct position; updated version constants.
+   v73_zoom_lock_settings_footer_fix - Locked accidental mobile page zoom gestures and improved Settings/editor bottom padding so Cancel / Save remain reachable.
+   v74_equal_cancel_save_buttons - Made Cancel and Save buttons equal width in Settings/editor action rows.
+   v75_single_button_press_guard - Added a touch visual guard so only one tappable button shows the depressed/pressed state at a time.
+   v76_settings_access_cancel_equal_width - Made first Settings password Access and Cancel buttons equal width; corrected static About version fallback.
+   v78_smooth_menu_scrolling_cleanup - Reduced touch-scroll jumpiness by removing the global non-passive touchmove zoom guard, clearing pressed visuals on scroll movement, and restoring smooth menu/settings scrolling.
+*/
+
+// ============================================================================
+// DATA PERSISTENCE FUNCTIONS
+// ============================================================================
+
+const STORAGE_KEY = 'mynewvoice_public_template_v9';
+const CATEGORY_CONFIG_KEY = 'mynewvoice_category_config_v14';
+const APP_SETTINGS_KEY = 'mynewvoice_app_settings_v27';
+const MANAGEMENT_PASSWORD = "4321";
+const DEFAULT_IMAGE = '';
+const MAIN_MENU_PROMPT = 'Select a button to speak...';
+const INTRODUCTION_ITEM_ID = 'introduction';
+const INTRODUCTION_IMAGE_KEY = 'intro:image';
+const INTRODUCTION_VOICE_KEY = 'voice:introduction';
+const CLICK_SOUND = new Audio('assets/sounds/click.mp3');
+CLICK_SOUND.volume = 0.3; // keep it gentle
+
+const ZOOM_IMAGE_FOLDER = 'images/zoom';
+const MENU_IMAGE_FOLDER = 'images/menu';
+const ZOOM_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+let zoomImageTimer = null;
+let phrasePopupTimer = null;
+let phrasePopupToken = 0;
+let phrasePopupMinimumCloseTime = 0;
+let currentViewCategory = null;
+
+
+// ============================================================================
+// PRIVATE DEVICE MEDIA STORAGE
+// v12: iPhone/iPad text-to-speech fallback starts synchronously when no local recording exists.
+// Local photos and recorded voices are stored only on the current device/browser.
+// They are not uploaded to GitHub and are preserved between app launches unless
+// browser/site data is cleared. Export/import is provided for backup.
+// ============================================================================
+
+const PRIVATE_MEDIA_DB_NAME = 'MyNewVoicePrivateMedia';
+const PRIVATE_MEDIA_DB_VERSION = 1;
+const PRIVATE_MEDIA_STORE = 'media';
+const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
+const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
+let fullAppBackupExportInProgress = false;
+const CURRENT_APP_VERSION = 'v113';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
@@ -11,7 +114,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v111';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v113';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -804,26 +907,16 @@ function getPhraseFilenameForSetup(category, phrase) {
 }
 
 
-/* v111: settings-screen utility layer.
-   These functions intentionally do not alter body/html layout. */
-function mnvCaptureViewportBeforeSettings() {}
-function mnvRestoreViewportAfterSettings() {}
-function mnvHardRestoreAfterSettingsDashboard() {}
-function restoreMainMenuLayoutAfterModal() {}
 
-function openSettingsScreen(overlay) {
-    if (!overlay) return;
-    overlay.style.display = 'flex';
-    overlay.classList.add('show');
-    overlay.removeAttribute('aria-hidden');
-}
+/* v112: preserve visible app position around Settings cog/modal open.
+   This avoids iPhone Safari viewport recalculation shifting the main menu/submenu behind Settings. */
+/* v113: mnvSettingsSavedViewport removed */
+/* v112: hard reset for protected Settings dashboard layout effects. */
+/* v113: mnvHardRestoreAfterSettingsDashboard removed – contained fixed overlay no longer requires body layout restore. */
 
-function closeSettingsScreen(overlay) {
-    if (!overlay) return;
-    overlay.classList.remove('show');
-    overlay.style.display = 'none';
-    overlay.setAttribute('aria-hidden', 'true');
-}
+/* v113: mnvCaptureViewportBeforeSettings removed – no viewport capture/restore needed with contained fixed overlays. */
+
+/* v113: mnvRestoreViewportAfterSettings removed. */
 
 function ensureSettingsEntryOverlay() {
     let overlay = document.getElementById('settingsEntryOverlay');
@@ -878,13 +971,16 @@ function ensureSettingsEntryOverlay() {
 
 function showSettingsEntryOverlay() {
     const overlay = ensureSettingsEntryOverlay();
+    overlay.style.display = 'flex';
     updateOfflineReadinessPanel();
-    openSettingsScreen(overlay);
-}
+    requestAnimationFrame(() => { overlay.classList.add('show'); });
+    }
 
 function hideSettingsEntryOverlay() {
     const overlay = document.getElementById('settingsEntryOverlay');
-    closeSettingsScreen(overlay);
+    if (!overlay) return;
+    overlay.classList.remove('show');
+    overlay.style.display = 'none';
 }
 
 function showAboutFromSettingsEntry() {
@@ -900,7 +996,7 @@ function showAboutFromSettingsEntry() {
     aboutModal.style.display = 'flex';
     aboutModal.classList.add('about-from-settings');
     const closeButton = document.getElementById('aboutClose');
-    // v111: do not autofocus modal close buttons; preserve the underlying viewport.
+    // v112: do not autofocus modal close buttons; preserve the underlying viewport.
     updateAboutInformationPanel();
 }
 
@@ -914,7 +1010,7 @@ function closeAboutToSettingsEntry() {
     if (entryOverlay) {
         entryOverlay.removeAttribute('aria-hidden');
         if (entryOverlay.style.display !== 'flex') showSettingsEntryOverlay();
-        // v111: no autofocus when returning to Settings entry.
+        // v112: no autofocus when returning to Settings entry.
     }
 }
 
@@ -1788,7 +1884,7 @@ function showAboutFromSettings() {
     aboutModal.classList.add('about-from-settings');
     if (settingsOverlay) settingsOverlay.setAttribute('aria-hidden', 'true');
     const closeButton = document.getElementById('aboutClose');
-    // v111: do not autofocus modal close buttons; preserve the underlying viewport.
+    // v112: do not autofocus modal close buttons; preserve the underlying viewport.
     updateAboutInformationPanel();
 }
 
@@ -1806,7 +1902,7 @@ function closeAboutToSettings() {
     if (settingsOverlay) {
         settingsOverlay.removeAttribute('aria-hidden');
         const closeButton = settingsOverlay.querySelector('[data-settings-close]');
-        // v111: do not autofocus modal close buttons; preserve the underlying viewport.
+        // v112: do not autofocus modal close buttons; preserve the underlying viewport.
     }
 }
 
@@ -1822,12 +1918,15 @@ function showSettingsOverlay() {
     warmSpeechVoices().then(() => updateSettingsControls()).catch(() => updateSettingsControls());
     updateSettingsControls();
     updateMediaQualityPanel();
-    openSettingsScreen(overlay);
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => overlay.classList.add('show'));
 }
 
 function hideSettingsOverlay() {
     const overlay = document.getElementById('settingsOverlay');
-    closeSettingsScreen(overlay);
+    if (!overlay) return;
+    overlay.classList.remove('show');
+    overlay.style.display = 'none';
 }
 
 function showAppVersionStatus() {
@@ -3959,7 +4058,7 @@ function showPasswordModal(action = 'management') {
     if (description) description.textContent = label[1];
     modal.style.display = 'flex';
     document.getElementById('passwordInput').value = '';
-    // v111: avoid auto-focusing password input on iPhone to prevent viewport jump.
+    // v112: avoid auto-focusing password input on iPhone to prevent viewport jump.
 }
 
 function hidePasswordModal() {
@@ -4001,7 +4100,7 @@ function checkPassword() {
     } else {
         showToast('Incorrect password. Please try again.', 'error');
         document.getElementById('passwordInput').value = '';
-        // v111: avoid auto-focusing password input on iPhone to prevent viewport jump.
+        // v112: avoid auto-focusing password input on iPhone to prevent viewport jump.
     }
 }
 
@@ -4018,11 +4117,6 @@ function showManagementPanel() {
         renderContentManagementPanel();
         overlay.style.display = 'flex';
         overlay.classList.add('show');
-
-        setTimeout(() => {
-            const firstButton = panel.querySelector('button, input, select');
-            if (firstButton) firstButton.focus();
-        }, 100);
     }
 }
 
@@ -7246,3 +7340,13 @@ if ('serviceWorker' in navigator) {
         checkExpectedWebsiteVersionAfterLoad();
     });
 }
+
+
+/* v113: broad delegated close-button layout restore removed – Settings are now contained fixed screens. */
+
+
+
+
+/* v113: dashboard-specific restore click listener removed. */
+
+/* v113: MutationObserver on document.body removed – it caused feedback loops when settings visibility changed. */

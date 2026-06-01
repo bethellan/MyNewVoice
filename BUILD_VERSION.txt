@@ -1,11 +1,11 @@
 MyNewVoice build version
 ========================
 
-Version: v111
-ZIP filename: MyNewVoice_v111_settings_screen_refactor.zip
-App label: MyNewVoice v111
-Service worker cache: mynewvoice-v111-settings-screen-refactor
-Offline cache: mynewvoice-offline-v111
+Version: v113
+ZIP filename: MyNewVoice_v113_settings_screen_refactor.zip
+Internal folder name: MyNewVoice_v113_settings_screen_refactor
+App label: MyNewVoice v113
+Service worker cache: mynewvoice-v113-settings-screen-refactor
+Offline cache: mynewvoice-offline-v113
 
-Internal folder: MyNewVoice_v111_settings_screen_refactor
-Naming rule: ZIP filename, internal app version, cache names, BUILD_VERSION and changelog entry must match the build version.
+Built from: MyNewVoice_v112_emergency_restore.zip

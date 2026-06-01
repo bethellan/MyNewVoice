@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v111: submenu Apple-style simplification; app behaviour, schema, media and speech unchanged.
-const CACHE_NAME = 'mynewvoice-v111-settings-screen-refactor';
+// v113: Settings full-screen refactor simplification; app behaviour, schema, media and speech unchanged.
+const CACHE_NAME = 'mynewvoice-v113-settings-screen-refactor';
 const urlsToCache = [
   './',
   './index.html',

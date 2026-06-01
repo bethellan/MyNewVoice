@@ -1684,10 +1684,98 @@ v110 - Settings dashboard layout restore
 - Preserved backup schema, phrase/category/media IDs, local media, speech, import/export and menu content.
 
 
-v111 - Settings screen refactor and code audit cleanup
-- Removed the accumulated v108-v110 observer/timer/body-style layout patches that were causing menu freezing and dimension drift.
-- Rebuilt Settings entry and password-protected Settings dashboard as contained full-screen app screens.
-- Pressing the Settings cog no longer changes Dad-facing screen dimensions.
-- Entering the password-protected Settings area no longer changes Dad-facing screen dimensions.
-- Internal ZIP folder and version naming now match v111.
-- Preserved backup schema, phrase/category/media IDs, local media, speech and import/export behaviour.
+v112 - Emergency restore
+- Abandoned v111 Settings screen refactor because it caused a hard save-data/startup regression.
+- Restored from MyNewVoice_v110_settings_dashboard_layout_restore.zip.
+- Updated ZIP/internal app/cache/build version references to v112.
+- No feature, schema, media, phrase, speech or import/export changes were intentionally made.
+
+
+v113 - Settings full-screen refactor (settings-screen-refactor)
+
+Built from: v112 emergency restore.
+
+Root cause of screen jump / freeze bug:
+- showSettingsEntryOverlay() added settings-entry-active to body, which altered CSS layout rules.
+- hideSettingsOverlay() called mnvHardRestoreAfterSettingsDashboard() which forcibly cleared inline
+  styles on body, html, and many app elements; this caused a reflow jump.
+- mnvRestoreViewportAfterSettings() called window.scrollTo() and mutated body.style.scrollBehavior,
+  triggering unnecessary iPhone viewport recalculations.
+- A MutationObserver on document.body (subtree:true, attributes:true) re-ran on every DOM change
+  and re-added settings-dashboard-active to body inside its callback, creating a feedback loop.
+- Two delegated document.addEventListener('click') listeners fired on every click site-wide and
+  called multiple setTimeout restore functions, sometimes re-triggering after the menu had
+  already stabilised.
+- body.modal-open { overflow-y: hidden } caused the scrollbar to appear/disappear, changing
+  body clientWidth and triggering layout shift on the underlying app screen.
+- 100vw sizing on .management-overlay and some settings panels included the scrollbar gutter,
+  causing a 15px+ horizontal nudge on desktop and overflow on iOS.
+
+What was removed:
+- restoreMainMenuLayoutAfterModal() function and all call sites.
+- mnvHardRestoreAfterSettingsDashboard() function and all call sites.
+- mnvCaptureViewportBeforeSettings() function and all call sites.
+- mnvRestoreViewportAfterSettings() function and all call sites.
+- mnvSettingsSavedViewport variable (no longer needed).
+- setupSettingsDashboardObserverV110 MutationObserver (subtree body observer).
+- Two broad document.addEventListener('click') layout-restore delegated listeners.
+- window.addEventListener('pageshow', restoreMainMenuLayoutAfterModal).
+- window.addEventListener('orientationchange') layout restore.
+- document.body.classList.add/remove('settings-entry-active', 'settings-dashboard-active').
+- document.documentElement.classList.add/remove('settings-dashboard-active').
+- body.style.scrollBehavior mutations.
+- firstButton.focus() in showManagementPanel (could trigger iOS viewport scroll).
+- CSS: body.modal-open / body.settings-open / body.dialog-open / body.crop-open overflow-y: hidden.
+- CSS: body.settings-entry-active and body.settings-dashboard-active layout rules.
+- CSS: body:not(.settings-dashboard-active):not(.settings-entry-active) conditional rules.
+- CSS: 100vw on .management-overlay.show .management-panel replaced with 100%.
+- CSS: min-width: 100vw on .management-overlay.show .management-panel replaced with min-width: 0.
+
+What was changed:
+- showSettingsEntryOverlay(): removed body class mutation and viewport capture/restore.
+- hideSettingsEntryOverlay(): removed viewport restore call.
+- hideSettingsOverlay(): removed both restore function calls.
+- showManagementPanel(): removed setTimeout firstButton.focus() to prevent iOS scroll.
+- CURRENT_APP_VERSION: v112 -> v113.
+- OFFLINE_CACHE_NAME: mynewvoice-offline-v112 -> mynewvoice-offline-v113.
+- sw.js CACHE_NAME: mynewvoice-v112-emergency-restore -> mynewvoice-v113-settings-screen-refactor.
+- app-version.json, index.html About version text, BUILD_VERSION.txt: all updated to v113.
+
+What was preserved:
+- All phrase IDs, category IDs, media IDs and storage keys unchanged.
+- All backup/export/import schema top-level fields (type, version, exportedAt, appVersion,
+  buttonData, categoryConfig, mediaRecords) unchanged.
+- Import tolerates missing mediaRecords (unchanged from v112).
+- IndexedDB media storage unchanged; no media is deleted or reset.
+- Speech behaviour (TTS fallback, recorded voice playback) unchanged.
+- Dad-facing main menu and submenu unchanged.
+- All Settings dashboard sections and controls unchanged.
+- Phrase popup behaviour unchanged.
+- Image cropper unchanged.
+- Safe-area CSS (env(safe-area-inset-*)) unchanged.
+- Settings overlays remain position:fixed; inset:0 – the v109/v110 containment CSS is kept.
+- contain: layout paint on Settings overlays kept (prevents stacking context from affecting body).
+
+Manual QA checklist:
+[ ] App loads without "error saving data" toast on first open.
+[ ] Main menu cards display correctly on iPhone/iPad.
+[ ] Tapping Settings cog opens Settings Entry screen without any visible main menu jump or resize.
+[ ] Tapping Close/X on Settings Entry returns to main menu with no jump or resize.
+[ ] Tapping Information opens About screen without jump.
+[ ] Tapping Back in About returns to Settings Entry without jump.
+[ ] Tapping Settings in Settings Entry shows password prompt without jump.
+[ ] Entering password 4321 opens Settings dashboard without jump.
+[ ] Scrolling within Settings dashboard works; page behind does not scroll.
+[ ] Tapping Return to App from Settings dashboard returns to main menu with no jump or resize.
+[ ] Tapping a category card on main menu opens submenu correctly.
+[ ] Tapping Back in submenu returns to main menu correctly.
+[ ] Opening Settings from submenu and returning does not alter submenu layout.
+[ ] Phrase spoken popup appears, image displays with object-fit:contain, closes on time/tap.
+[ ] Export Backup creates one .mnvoice file.
+[ ] Import Backup accepts .mnvoice and .json backups from v17+.
+[ ] Edit Content opens full-screen content editor.
+[ ] Saving a phrase change returns to Settings.
+[ ] Cancel in editor returns to Settings.
+[ ] Save/Cancel buttons visible above iPhone home indicator.
+[ ] Rotating device (portrait<->landscape) does not cause layout jump.
+[ ] App works fully offline after Save Offline pressed once.
