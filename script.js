@@ -250,6 +250,8 @@ let privateMediaSizeIndex = new Map();
 let privateMediaIndexReady = false;
 let contentEditorScreen = 'topics';
 let activeSpeechUtterance = null;
+let activePrivateVoiceAudio = null;
+let activePrivateVoiceObjectUrl = '';
 let speechVoicesReadyPromise = null;
 let speechSynthesisPrimed = false;
 
@@ -424,6 +426,29 @@ function renderContentSectionMediaTotals(category) {
 function hasKnownPrivateVoice(buttonInfo) {
     const key = getPrivateMediaKey('voice', buttonInfo);
     return Boolean(key && privateVoiceKeySet.has(key));
+}
+
+function isSpeechOutputEnabled() {
+    return normaliseAppSettings(appSettings).speechEnabled !== false;
+}
+
+function stopSpokenOutput() {
+    if (window.speechSynthesis) {
+        try { window.speechSynthesis.cancel(); } catch (_) {}
+    }
+    activeSpeechUtterance = null;
+    if (activePrivateVoiceAudio) {
+        try {
+            activePrivateVoiceAudio.pause();
+            activePrivateVoiceAudio.removeAttribute('src');
+            activePrivateVoiceAudio.load();
+        } catch (_) {}
+        activePrivateVoiceAudio = null;
+    }
+    if (activePrivateVoiceObjectUrl) {
+        try { URL.revokeObjectURL(activePrivateVoiceObjectUrl); } catch (_) {}
+        activePrivateVoiceObjectUrl = '';
+    }
 }
 
 async function clearPrivateMediaRecords() {
@@ -963,6 +988,10 @@ function openImageCropper(file, options = {}) {
 }
 
 async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken = null) {
+    if (!isSpeechOutputEnabled()) {
+        if (popupToken) closePhrasePopupAfterMinimum(popupToken);
+        return false;
+    }
     const text = buttonInfo && buttonInfo.text ? buttonInfo.text : '';
     const key = getPrivateMediaKey('voice', buttonInfo);
     if (!key) return false;
@@ -971,7 +1000,7 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
     if (!record || !record.blob) return false;
 
     try {
-        window.speechSynthesis.cancel();
+        stopSpokenOutput();
 
         playOptionalClickSound();
 
@@ -979,10 +1008,14 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
 
         const url = URL.createObjectURL(record.blob);
         const audio = new Audio(url);
+        activePrivateVoiceAudio = audio;
+        activePrivateVoiceObjectUrl = url;
         audio.volume = 1.0;
 
         const finishPlayback = () => {
+            if (activePrivateVoiceObjectUrl === url) activePrivateVoiceObjectUrl = '';
             URL.revokeObjectURL(url);
+            if (activePrivateVoiceAudio === audio) activePrivateVoiceAudio = null;
             if (buttonElement) buttonElement.classList.remove('speaking');
             if (popupToken) closePhrasePopupAfterMinimum(popupToken);
         };
@@ -1001,6 +1034,13 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
 
 function speakPhrase(buttonInfo, buttonElement) {
     const popupToken = showPhrasePopup(buttonInfo);
+
+    if (!isSpeechOutputEnabled()) {
+        stopSpokenOutput();
+        playOptionalClickSound();
+        closePhrasePopupAfterMinimum(popupToken);
+        return;
+    }
 
     // iPhone/iPad Safari can fail generated speech if speechSynthesis is started
     // only after an asynchronous IndexedDB lookup. Use a synchronous local voice
@@ -1204,6 +1244,12 @@ function ensureSettingsOverlay() {
                 <details class="settings-v115-card settings-v115-foldout settings-section-voice" open>
                     <summary><span>Voice &amp; Speech</span><small>Voice choice, speech speed, pitch and popup delay.</small></summary>
                     <div class="settings-v115-form-grid">
+                        <label for="settingsSpeechEnabled">Spoken voice</label>
+                        <select id="settingsSpeechEnabled" class="settings-select">
+                            <option value="on">On</option>
+                            <option value="off">Off - visual popup only</option>
+                        </select>
+                        <p class="settings-help settings-v115-wide">When off, buttons still show the large visual message but no recorded or device voice is played.</p>
                         <label for="settingsSpeechVoice">Voice choice</label>
                         <div class="settings-v115-inline">
                             <select id="settingsSpeechVoice" class="settings-select">
@@ -1439,6 +1485,13 @@ function ensureSettingsOverlay() {
             setSpeechVoiceFromSelect(event.target.value);
             saveAppSettings({ render: false });
             showToast(appSettings.speechVoiceName ? 'Voice saved' : 'Default voice selected', 'success');
+            return;
+        }
+        if (event.target && event.target.id === 'settingsSpeechEnabled') {
+            appSettings.speechEnabled = event.target.value !== 'off';
+            if (!appSettings.speechEnabled) stopSpokenOutput();
+            saveAppSettings({ render: false });
+            showToast(appSettings.speechEnabled ? 'Spoken voice on' : 'Spoken voice off', 'success');
             return;
         }
         if (event.target && event.target.id === 'settingsIntroductionEnabled') {
@@ -1924,6 +1977,11 @@ function updateSettingsTestPanel(html) {
 
 function runSettingsSpeechTest() {
     const phrase = 'This is a MyNewVoice speech test. If you can hear this, speech is working.';
+    if (!isSpeechOutputEnabled()) {
+        updateSettingsTestPanel('<div class="offline-status-summary warn">Spoken voice is off</div><p class="settings-help">Turn Spoken voice on in Voice & Speech to test audio.</p>');
+        showToast('Spoken voice is off', 'warning');
+        return;
+    }
     updateSettingsTestPanel('<div class="offline-status-summary ready">Speech test started</div><p class="settings-help">You should hear a short test phrase from this device.</p>');
     try {
         speakText(phrase, null, { showPopup: false });
@@ -3183,6 +3241,7 @@ const DEFAULT_APP_SETTINGS = {
     autoUpdateCheck: false,
     popupCloseDelaySeconds: 2,
     popupCloseMode: 'timed',
+    speechEnabled: true,
     speechVoiceName: '',
     speechVoiceLang: '',
     speechRate: 0.9,
@@ -3327,6 +3386,7 @@ function normaliseAppSettings(rawSettings) {
     const autoUpdateCheck = false;
     const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
     const popupCloseMode = raw.popupCloseMode === 'manual' ? 'manual' : DEFAULT_APP_SETTINGS.popupCloseMode;
+    const speechEnabled = raw.speechEnabled !== false && raw.speechEnabled !== 'off';
     const speechVoiceName = String(raw.speechVoiceName || '').slice(0, 160);
     const speechVoiceLang = String(raw.speechVoiceLang || '').slice(0, 40);
     const speechRate = clampNumber(Number(raw.speechRate || DEFAULT_APP_SETTINGS.speechRate), 0.7, 1.2);
@@ -3337,7 +3397,7 @@ function normaliseAppSettings(rawSettings) {
         text: String(rawIntro.text || '').slice(0, 500),
         fallbackIcon: String(rawIntro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
     };
-    return { displayMode, theme, pressActivation, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
+    return { displayMode, theme, pressActivation, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
 }
 
 function applyAppTheme() {
@@ -3409,6 +3469,8 @@ function updateSettingsControls() {
     if (delayValue) delayValue.textContent = `${appSettings.popupCloseDelaySeconds} second${appSettings.popupCloseDelaySeconds === 1 ? '' : 's'}`;
     const closeModeSelect = document.getElementById('settingsPopupCloseMode');
     if (closeModeSelect) closeModeSelect.value = appSettings.popupCloseMode || DEFAULT_APP_SETTINGS.popupCloseMode;
+    const speechEnabledSelect = document.getElementById('settingsSpeechEnabled');
+    if (speechEnabledSelect) speechEnabledSelect.value = appSettings.speechEnabled === false ? 'off' : 'on';
     populateSpeechVoiceSelect();
     const voiceSelect = document.getElementById('settingsSpeechVoice');
     if (voiceSelect) voiceSelect.value = getSpeechVoiceSelectValue(appSettings.speechVoiceName, appSettings.speechVoiceLang);
@@ -3421,6 +3483,11 @@ function updateSettingsControls() {
     if (speechPitch) speechPitch.value = appSettings.speechPitch;
     const speechPitchValue = document.getElementById('settingsSpeechPitchValue');
     if (speechPitchValue) speechPitchValue.textContent = formatSpeechPitchLabel(appSettings.speechPitch);
+    const speechControlsDisabled = appSettings.speechEnabled === false;
+    const previewSpeechButton = document.querySelector('[data-preview-speech-voice]');
+    [voiceSelect, speechRate, speechPitch, previewSpeechButton].forEach(control => {
+        if (control) control.disabled = speechControlsDisabled;
+    });
     const introEnabled = document.getElementById('settingsIntroductionEnabled');
     if (introEnabled) introEnabled.value = appSettings.introduction.enabled ? 'on' : 'off';
     const introText = document.getElementById('settingsIntroductionText');
@@ -6981,6 +7048,10 @@ function populateSpeechVoiceSelect() {
 function updateSpeechVoiceStatus() {
   const status = document.getElementById('settingsSpeechVoiceStatus');
   if (!status) return;
+  if (!isSpeechOutputEnabled()) {
+    status.textContent = 'Spoken voice is off. Buttons will show the visual popup only.';
+    return;
+  }
   const synth = window.speechSynthesis;
   const voices = synth && typeof synth.getVoices === 'function' ? (synth.getVoices() || []) : [];
   const savedName = String(appSettings.speechVoiceName || '');
@@ -7025,6 +7096,10 @@ function previewSelectedSpeechVoice() {
   if (select) setSpeechVoiceFromSelect(select.value);
   const sample = 'This is the selected MyNewVoice generated speech voice.';
   saveAppSettings({ render: false });
+  if (!isSpeechOutputEnabled()) {
+    showToast('Spoken voice is off', 'warning');
+    return;
+  }
   speakText(sample, null, { showPopup: false });
 }
 
@@ -7118,6 +7193,11 @@ function speakText(text, buttonElement, options = {}) {
     if (buttonElement) buttonElement.classList.remove('speaking');
     if (popupToken) closePhrasePopupAfterMinimum(popupToken);
   };
+
+  if (!isSpeechOutputEnabled()) {
+    finishSpeech();
+    return;
+  }
 
   if (!spokenText || !synth || typeof SpeechSynthesisUtterance === 'undefined') {
     finishSpeech();
