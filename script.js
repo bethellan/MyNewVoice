@@ -208,13 +208,11 @@ const OFFLINE_CORE_FILES = [
 const OFFLINE_PREPARED_AT_KEY = 'mynewvoiceOfflinePreparedAt';
 const MY_PEOPLE_RELATIONSHIP_OPTIONS = [
     { value: '', label: 'Not set' },
+    { value: 'Partner / spouse', label: 'Partner / spouse' },
+    { value: 'Child', label: 'Child' },
+    { value: 'Grandchild', label: 'Grandchild' },
     { value: 'Family', label: 'Family' },
     { value: 'Friend', label: 'Friend' },
-    { value: 'Carer', label: 'Carer' },
-    { value: 'Nurse', label: 'Nurse' },
-    { value: 'Doctor', label: 'Doctor' },
-    { value: 'Neighbour', label: 'Neighbour' },
-    { value: 'Visitor', label: 'Visitor' },
     { value: 'Other', label: 'Other' }
 ];
 
@@ -252,6 +250,7 @@ let contentEditorScreen = 'topics';
 let activeSpeechUtterance = null;
 let activePrivateVoiceAudio = null;
 let activePrivateVoiceObjectUrl = '';
+let introductionPlaybackGuardUntil = 0;
 let speechVoicesReadyPromise = null;
 let speechSynthesisPrimed = false;
 
@@ -1334,7 +1333,8 @@ function ensureSettingsOverlay() {
                     <div class="settings-v115-actions-two">
                         <button type="button" class="settings-action-btn" data-check-storage-health><span class="settings-card-text"><strong>Check Storage</strong><small>Images, voices and unused files.</small></span></button>
                         <button type="button" class="settings-action-btn" data-compress-images-good><span class="settings-card-text"><strong>Compress Photos</strong><small>Smaller backup, good quality.</small></span></button>
-                        <button type="button" class="settings-action-btn" data-compress-images-smallest><span class="settings-card-text"><strong>Make Photos Smaller</strong><small>Smallest backup, lower quality.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-compress-images-smallest><span class="settings-card-text"><strong>Make Photos Smaller</strong><small>Small backup, lower quality.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-compress-images-tiny><span class="settings-card-text"><strong>Make Photos Tiny</strong><small>Smallest backup, softest images.</small></span></button>
                     </div>
                 </details>
 
@@ -1402,6 +1402,10 @@ function ensureSettingsOverlay() {
         }
         if (event.target.closest('[data-compress-images-smallest]')) {
             compressLocalImages('smallest');
+            return;
+        }
+        if (event.target.closest('[data-compress-images-tiny]')) {
+            compressLocalImages('tiny');
             return;
         }
         if (event.target.closest('[data-clear-all-audio]')) {
@@ -1725,8 +1729,12 @@ async function confirmAndClearUnusedMedia() {
     showToast(`Removed ${summary.unusedRecords.length} unused media file${summary.unusedRecords.length === 1 ? '' : 's'}`, 'success');
 }
 
-function getImageCompressionLimitsForRecord(record) {
+function getImageCompressionLimitsForRecord(record, mode = 'good') {
     const id = record && record.id ? String(record.id) : '';
+    if (mode === 'tiny') {
+        if (id.startsWith('menu:')) return { maxWidth: 1200, maxHeight: 860 };
+        return { maxWidth: 420, maxHeight: 420 };
+    }
     if (id.startsWith('menu:')) return { maxWidth: 1792, maxHeight: 1024 };
     return { maxWidth: 600, maxHeight: 600 };
 }
@@ -1747,10 +1755,10 @@ function loadImageFromBlob(blob) {
     });
 }
 
-async function compressImageRecord(record, quality) {
+async function compressImageRecord(record, quality, mode = 'good') {
     if (!record || record.type !== 'image' || !record.blob) return null;
     const img = await loadImageFromBlob(record.blob);
-    const limits = getImageCompressionLimitsForRecord(record);
+    const limits = getImageCompressionLimitsForRecord(record, mode);
     const scale = Math.min(1, limits.maxWidth / img.naturalWidth, limits.maxHeight / img.naturalHeight);
     const outputWidth = Math.max(1, Math.round(img.naturalWidth * scale));
     const outputHeight = Math.max(1, Math.round(img.naturalHeight * scale));
@@ -1778,13 +1786,13 @@ async function compressImageRecord(record, quality) {
 }
 
 async function compressLocalImages(mode = 'good') {
-    const quality = mode === 'smallest' ? 0.58 : 0.72;
+    const quality = mode === 'tiny' ? 0.44 : mode === 'smallest' ? 0.58 : 0.72;
     const summary = await buildImageQualitySummary();
     if (!summary.imageRecords.length) {
         showToast('No saved images to compress', 'warning');
         return;
     }
-    const label = mode === 'smallest' ? 'smaller file' : 'good quality';
+    const label = mode === 'tiny' ? 'tiny file' : mode === 'smallest' ? 'smaller file' : 'good quality';
     const message = `Compress ${summary.imageRecords.length} local saved image${summary.imageRecords.length === 1 ? '' : 's'} using ${label} mode?\n\nCurrent image size: ${formatStorageBytes(summary.imageBytes)}\n\nThis changes the local images stored on this device. Export a complete backup after checking the result.`;
     if (!confirm(message)) return;
 
@@ -1794,7 +1802,7 @@ async function compressLocalImages(mode = 'good') {
     let after = 0;
     for (const record of summary.imageRecords) {
         try {
-            const result = await compressImageRecord(record, quality);
+            const result = await compressImageRecord(record, quality, mode);
             if (result) {
                 before += result.oldSize || 0;
                 after += result.newSize || result.oldSize || 0;
@@ -2057,7 +2065,7 @@ async function updateAboutInformationPanel() {
         if (storageEl) {
             storageEl.innerHTML = `
                 <div class="settings-stat-grid">
-                    <div><strong>${formatStorageBytes(summary.totalBackupBytes)}</strong><span>Total .json/.mnvoice</span></div>
+                    <div><strong>${formatStorageBytes(summary.totalBackupBytes)}</strong><span>Total JSON backup</span></div>
                     <div><strong>${formatStorageBytes(summary.imageBytes)}</strong><span>Images (${summary.imageCount})</span></div>
                     <div><strong>${formatStorageBytes(summary.audioBytes)}</strong><span>Audio (${summary.audioCount})</span></div>
                 </div>
@@ -3051,7 +3059,7 @@ async function saveBlobWithBestAvailableDestination(blob, filename) {
                 suggestedName: filename,
                 types: [{
                     description: 'MyNewVoice complete backup',
-                    accept: { 'application/json': ['.mnvoice', '.json'] }
+                    accept: { 'application/json': ['.json', '.mnvoice'] }
                 }]
             });
             const writable = await handle.createWritable();
@@ -3097,7 +3105,7 @@ async function exportFullAppBackup() {
     try {
         const payload = await buildCompleteBackupPayload();
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-        const filename = `MyNewVoice_complete_backup_${new Date().toISOString().split('T')[0]}.mnvoice`;
+        const filename = `MyNewVoice_complete_backup_${new Date().toISOString().split('T')[0]}.json`;
         const result = await saveBlobWithBestAvailableDestination(blob, filename);
         if (result === 'cancelled') {
             showToast('Backup export cancelled', 'info');
@@ -3596,6 +3604,10 @@ function playIntroductionFromSettings() {
 }
 
 function playIntroduction(options = {}) {
+    const now = Date.now();
+    if (now < introductionPlaybackGuardUntil) return;
+    introductionPlaybackGuardUntil = now + 900;
+
     const intro = getIntroductionSettings();
     const text = String(options.text || intro.text || '').trim();
     const popupToken = showPhrasePopup({ id: INTRODUCTION_ITEM_ID, text, isIntroduction: true });
@@ -3653,6 +3665,7 @@ async function renderIntroductionHeaderButton() {
     // settings changes or header re-renders.
     button.onclick = (event) => {
         event.preventDefault();
+        event.stopPropagation();
         playIntroduction();
     };
 
