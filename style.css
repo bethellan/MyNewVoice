@@ -12394,6 +12394,53 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   }
 }
 
+/* v124 hotfix: spoken popup image frame follows phrase image shape.
+   Normal phrase photos use a snug square frame; My People keeps its circular
+   identity with a round frame. Introduction popup sizing is preserved above. */
+.phrase-popup-overlay:not(.introduction-popup) .phrase-popup-image-shell {
+  --phrase-popup-media-size: min(32vw, 42vh, 420px);
+  width: var(--phrase-popup-media-size) !important;
+  height: var(--phrase-popup-media-size) !important;
+  inline-size: var(--phrase-popup-media-size) !important;
+  block-size: var(--phrase-popup-media-size) !important;
+  max-width: var(--phrase-popup-media-size) !important;
+  max-height: var(--phrase-popup-media-size) !important;
+  flex: 0 0 var(--phrase-popup-media-size) !important;
+  box-sizing: border-box !important;
+  min-height: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: var(--mnv-ui-radius, 18px) !important;
+  background:
+    radial-gradient(circle at 32% 18%, rgba(255,255,255,0.72), transparent 42%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--category-color, var(--primary-color)) 18%, #ffffff),
+      color-mix(in srgb, var(--category-color, var(--primary-color)) 8%, #ffffff)) !important;
+  border: 1px solid color-mix(in srgb, var(--category-color, var(--primary-color)) 38%, rgba(15,23,42,0.12)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.78),
+    0 10px 24px rgba(15,23,42,0.10) !important;
+}
+
+.phrase-popup-overlay:not(.introduction-popup) .phrase-popup-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: calc(var(--mnv-ui-radius, 18px) - 2px) !important;
+  background: transparent !important;
+}
+
+.phrase-popup-overlay.my-people-popup:not(.introduction-popup) .phrase-popup-image-shell,
+.phrase-popup-overlay.my-people-popup:not(.introduction-popup) .phrase-popup-image {
+  border-radius: 50% !important;
+}
+
+@media (max-width: 640px) {
+  .phrase-popup-overlay:not(.introduction-popup) .phrase-popup-image-shell {
+    --phrase-popup-media-size: min(58vw, 38vh, 300px);
+  }
+}
+
 /* v124 hotfix: compact add-row buttons in the Content Editor tables. */
 #managementOverlay .one-row-editor-table .management-add-row td {
   text-align: center !important;

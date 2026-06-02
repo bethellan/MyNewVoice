@@ -6775,7 +6775,8 @@ function hidePhrasePopup(token = null) {
     }
     if (imageShell) imageShell.hidden = true;
 
-    overlay.classList.remove('show', 'manual-close');
+    overlay.classList.remove('show', 'manual-close', 'my-people-popup');
+    overlay.removeAttribute('data-popup-category');
     overlay.setAttribute('aria-hidden', 'true');
 }
 
@@ -6813,6 +6814,11 @@ function showPhrasePopup(buttonInfoOrText) {
 
     overlay.classList.toggle('manual-close', shouldUseManualPopupClose());
     overlay.classList.toggle('introduction-popup', Boolean(buttonInfo && buttonInfo.isIntroduction));
+    const popupCategory = buttonInfo && !buttonInfo.isIntroduction
+        ? String(buttonInfo.category || findCategoryForPhraseId(buttonInfo.id) || '')
+        : '';
+    overlay.dataset.popupCategory = popupCategory;
+    overlay.classList.toggle('my-people-popup', popupCategory === 'MyPeople');
     overlay.classList.add('show');
     overlay.setAttribute('aria-hidden', 'false');
 
