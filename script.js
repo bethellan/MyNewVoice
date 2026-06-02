@@ -185,7 +185,7 @@ const CURRENT_APP_VERSION = 'v124';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_CROP_OUTPUTS = {
-    menu: { width: 1792, height: 600, aspect: 1792 / 600, shape: 'rectangle', label: 'main menu button picture' },
+    menu: { width: 1400, height: 1000, aspect: 1.4, shape: 'rectangle', label: 'main menu button picture', cropRole: 'menu' },
     phrase: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' },
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
@@ -646,7 +646,22 @@ function getCropConfigForKey(key) {
     if (kind === 'phrase' && /^phrase:people/i.test(String(key || ''))) {
         return PRIVATE_CROP_OUTPUTS.people;
     }
+    if (kind === 'menu') return getMenuCropConfig();
     return PRIVATE_CROP_OUTPUTS[kind] || PRIVATE_CROP_OUTPUTS.phrase;
+}
+
+function getMenuCropConfig() {
+    const fallback = PRIVATE_CROP_OUTPUTS.menu;
+    const shell = document.querySelector('body:not(.submenu-open) .tab .menu-card-image-shell, .tab .menu-card-image-shell');
+    const rect = shell ? shell.getBoundingClientRect() : null;
+    const measuredAspect = rect && rect.width > 80 && rect.height > 60 ? rect.width / rect.height : 0;
+    const aspect = measuredAspect >= 1.15 && measuredAspect <= 1.85 ? measuredAspect : fallback.aspect;
+    const width = fallback.width;
+    return {
+        ...fallback,
+        aspect,
+        height: Math.round(width / aspect)
+    };
 }
 
 function ensureImageCropOverlay() {
@@ -917,7 +932,7 @@ function openImageCropper(file, options = {}) {
         };
 
         const shapeText = selectedShape === 'circle' ? 'circle' : selectedShape === 'rectangle' ? 'rectangle' : 'square';
-        const isMenuButtonCrop = selectedShape === 'rectangle' && options.outputWidth === 1792 && options.outputHeight === 600;
+        const isMenuButtonCrop = selectedShape === 'rectangle' && options.cropRole === 'menu';
         title.textContent = `Crop ${options.label || 'photo'}`;
         help.textContent = selectedShape === 'circle'
             ? 'Move and resize the circle so the face or important part is inside it. The saved image is compressed for local storage.'
@@ -1101,9 +1116,9 @@ function showAboutFromSettingsEntry() {
     if (!aboutModal) return;
     aboutModal.dataset.returnTo = 'settings-entry';
     if (entryOverlay) {
-        entryOverlay.classList.remove('show');
-        entryOverlay.style.display = 'none';
-        entryOverlay.removeAttribute('aria-hidden');
+        entryOverlay.style.display = 'flex';
+        entryOverlay.classList.add('show', 'about-underlay');
+        entryOverlay.setAttribute('aria-hidden', 'true');
     }
     aboutModal.style.display = 'flex';
     aboutModal.classList.add('about-from-settings');
@@ -1121,6 +1136,7 @@ function closeAboutToSettingsEntry() {
     delete aboutModal.dataset.returnTo;
     if (entryOverlay) {
         entryOverlay.removeAttribute('aria-hidden');
+        entryOverlay.classList.remove('about-underlay');
         if (entryOverlay.style.display !== 'flex') showSettingsEntryOverlay();
         // v112: no autofocus when returning to Settings entry.
     }
@@ -1393,6 +1409,7 @@ function ensureSettingsOverlay() {
         }
         if (event.target.closest('[data-intro-cancel]')) {
             updateSettingsControls();
+            updateIntroductionSaveRowState();
             closeIntroductionSettingsPanelToPriorLevel();
             showToast('Introduction changes cancelled', 'warning');
             return;
@@ -1425,7 +1442,13 @@ function ensureSettingsOverlay() {
             return;
         }
         if (event.target && event.target.id === 'settingsIntroductionEnabled') {
+            appSettings.introduction = {
+                ...getIntroductionSettings(),
+                enabled: event.target.value === 'on'
+            };
             updateIntroductionSettingsPanelVisibility();
+            saveAppSettings({ render: true });
+            showToast(appSettings.introduction.enabled ? 'Introduction on' : 'Introduction off', 'success');
             return;
         }
         if (event.target && event.target.id === 'settingsAutoUpdateCheck') {
@@ -1446,6 +1469,10 @@ function ensureSettingsOverlay() {
     });
 
     overlay.addEventListener('input', (event) => {
+        if (event.target && (event.target.id === 'settingsIntroductionText' || event.target.id === 'settingsIntroductionIcon')) {
+            updateIntroductionSaveRowState();
+            return;
+        }
         if (event.target && event.target.id === 'settingsSpeechRate') {
             appSettings.speechRate = clampNumber(Number(event.target.value), 0.7, 1.2);
             saveAppSettings({ render: false });
@@ -2520,7 +2547,8 @@ async function choosePrivateImage(key, label = '', text = '') {
                 aspect: cropConfig.aspect,
                 shape: cropConfig.shape,
                 outputWidth: cropConfig.width,
-                outputHeight: cropConfig.height
+                outputHeight: cropConfig.height,
+                cropRole: cropConfig.cropRole
             });
             const blob = croppedBlob;
             await putPrivateMediaRecord(key, 'image', blob, { label, text, mime: blob.type || 'image/jpeg' });
@@ -2592,7 +2620,8 @@ function ensureManagementImageOptionsOverlay() {
                     aspect: cropConfig.aspect,
                     shape: cropConfig.shape,
                     outputWidth: cropConfig.width,
-                    outputHeight: cropConfig.height
+                    outputHeight: cropConfig.height,
+                    cropRole: cropConfig.cropRole
                 });
                 const finalBlob = croppedBlob;
                 await putPrivateMediaRecord(state.key, 'image', finalBlob, { label: state.label, text: state.text, mime: finalBlob.type || 'image/jpeg' });
@@ -2682,6 +2711,7 @@ function ensureFallbackIconOverlay() {
         } else if (target.kind === 'introduction') {
             const iconField = document.getElementById('settingsIntroductionIcon');
             if (iconField) iconField.value = icon;
+            updateIntroductionSaveRowState();
         } else {
             const phrase = findPhraseById(target.category || contentSetupPhraseCategory, target.id);
             if (phrase) {
@@ -3407,6 +3437,44 @@ function updateIntroductionSettingsPanelVisibility() {
     const panel = document.getElementById('introductionSettingsPanel');
     if (!panel) return;
     panel.hidden = enabledSelect ? enabledSelect.value !== 'on' : !getIntroductionSettings().enabled;
+    markIntroductionPanelClean();
+}
+
+function getIntroductionPanelDraft() {
+    const textField = document.getElementById('settingsIntroductionText');
+    const iconField = document.getElementById('settingsIntroductionIcon');
+    return {
+        text: textField ? textField.value.trim() : '',
+        fallbackIcon: (iconField && iconField.value.trim()) ? iconField.value.trim().slice(0, 4) : DEFAULT_APP_SETTINGS.introduction.fallbackIcon
+    };
+}
+
+function getSavedIntroductionPanelDraft() {
+    const intro = getIntroductionSettings();
+    return {
+        text: String(intro.text || '').trim(),
+        fallbackIcon: String(intro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).trim().slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
+    };
+}
+
+function introductionPanelHasUnsavedTextChanges() {
+    const draft = getIntroductionPanelDraft();
+    const saved = getSavedIntroductionPanelDraft();
+    return draft.text !== saved.text || draft.fallbackIcon !== saved.fallbackIcon;
+}
+
+function updateIntroductionSaveRowState() {
+    const panel = document.getElementById('introductionSettingsPanel');
+    if (!panel) return;
+    const row = panel.querySelector('.settings-v115-save-row');
+    if (!row) return;
+    const dirty = introductionPanelHasUnsavedTextChanges();
+    row.hidden = !dirty;
+    row.setAttribute('aria-hidden', dirty ? 'false' : 'true');
+}
+
+function markIntroductionPanelClean() {
+    updateIntroductionSaveRowState();
 }
 
 function closeIntroductionSettingsPanelToPriorLevel() {
@@ -3426,6 +3494,7 @@ function saveIntroductionSettingsFromPanel({ closeToPriorLevel = false } = {}) {
         fallbackIcon: (iconField && iconField.value.trim()) ? iconField.value.trim().slice(0, 4) : DEFAULT_APP_SETTINGS.introduction.fallbackIcon
     };
     saveAppSettings({ render: true });
+    updateIntroductionSaveRowState();
     if (closeToPriorLevel) closeIntroductionSettingsPanelToPriorLevel();
     showToast('Introduction settings saved', 'success');
 }
@@ -3889,6 +3958,210 @@ const DEFAULT_CATEGORY_ORDER = Object.keys(CATEGORY_META);
 let categoryConfig = { order: DEFAULT_CATEGORY_ORDER.slice(), categories: {} };
 let contentSetupSelected = null;
 let contentSetupPhraseCategory = DEFAULT_CATEGORY_ORDER[0] || 'quick';
+let contentEditorCleanSnapshot = null;
+let contentEditorPendingInputDirty = false;
+
+function cloneContentEditorState() {
+    return {
+        buttonData: JSON.parse(JSON.stringify(buttonData || {})),
+        categoryConfig: JSON.parse(JSON.stringify(normaliseCategoryConfig(categoryConfig)))
+    };
+}
+
+function serialiseContentEditorState() {
+    return JSON.stringify(cloneContentEditorState());
+}
+
+function markContentEditorClean() {
+    contentEditorCleanSnapshot = serialiseContentEditorState();
+    contentEditorPendingInputDirty = false;
+    updateContentEditorSaveState();
+}
+
+function contentEditorHasUnsavedChanges() {
+    if (contentEditorPendingInputDirty) return true;
+    if (!contentEditorCleanSnapshot) return false;
+    return serialiseContentEditorState() !== contentEditorCleanSnapshot;
+}
+
+function updateContentEditorSaveState() {
+    const panel = document.getElementById('managementPanel');
+    if (!panel) return;
+    const dirty = contentEditorHasUnsavedChanges();
+    panel.querySelectorAll('[data-content-save-close]').forEach(button => {
+        button.hidden = !dirty;
+        button.setAttribute('aria-hidden', dirty ? 'false' : 'true');
+    });
+    const settingsBackButton = panel.querySelector('[data-content-back-settings]');
+    if (settingsBackButton) settingsBackButton.textContent = dirty ? 'Cancel' : 'Return to Settings';
+    const topicsBackButton = panel.querySelector('[data-content-back-topics]');
+    if (topicsBackButton) topicsBackButton.textContent = dirty ? 'Cancel' : 'Back to Sections';
+}
+
+function commitActiveContentEditorField() {
+    const panel = document.getElementById('managementPanel');
+    const active = document.activeElement;
+    if (!panel || !active || !panel.contains(active) || typeof active.blur !== 'function') return;
+    active.blur();
+}
+
+function restoreContentEditorSnapshot() {
+    if (!contentEditorCleanSnapshot) return;
+    try {
+        const snapshot = JSON.parse(contentEditorCleanSnapshot);
+        contentEditorPendingInputDirty = false;
+        buttonData = snapshot.buttonData || buttonData;
+        categoryConfig = normaliseCategoryConfig(snapshot.categoryConfig || categoryConfig);
+        saveCategoryConfig();
+        saveDataToStorage();
+        renderCategoryMenuCards();
+        if (currentViewCategory && buttonData[currentViewCategory]) {
+            populateGrid(currentViewCategory);
+        } else {
+            showMainMenu();
+        }
+    } catch (error) {
+        console.error('Could not restore Content Editor snapshot.', error);
+        showToast('Could not discard changes. Please restore a backup if needed.', 'error');
+    }
+}
+
+function finishContentEditorNavigation(destination) {
+    if (destination === 'topics') {
+        contentEditorScreen = 'topics';
+        contentSetupSelected = { type: 'category', category: contentSetupPhraseCategory };
+        renderContentManagementPanel();
+        return;
+    }
+    hideManagementPanel();
+    showSettingsOverlay();
+}
+
+function showContentEditorChoiceDialog({
+    title = 'Choose an action',
+    message = '',
+    actions = []
+} = {}) {
+    return new Promise((resolve) => {
+        let overlay = document.getElementById('contentEditorUnsavedDialog');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'contentEditorUnsavedDialog';
+            overlay.className = 'content-unsaved-overlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+            overlay.setAttribute('aria-labelledby', 'contentUnsavedTitle');
+            overlay.innerHTML = `
+                <div class="content-unsaved-panel">
+                    <h3 id="contentUnsavedTitle"></h3>
+                    <p data-content-choice-message></p>
+                    <div class="content-unsaved-actions" data-content-choice-actions></div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        const resolvedActions = actions.length ? actions : [
+            { id: 'stay', label: 'Keep editing', className: 'management-btn close-btn' }
+        ];
+        const titleEl = overlay.querySelector('#contentUnsavedTitle');
+        const messageEl = overlay.querySelector('[data-content-choice-message]');
+        const actionsEl = overlay.querySelector('[data-content-choice-actions]');
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+        if (actionsEl) {
+            actionsEl.dataset.actionCount = String(resolvedActions.length);
+            actionsEl.innerHTML = resolvedActions.map(action => `
+                <button type="button" class="${escapeHtml(action.className || 'management-btn')}" data-choice-action="${escapeHtml(action.id)}">${escapeHtml(action.label)}</button>
+            `).join('');
+        }
+
+        const finish = (choice) => {
+            overlay.classList.remove('show');
+            overlay.style.display = 'none';
+            overlay.onclick = null;
+            resolve(choice);
+        };
+
+        overlay.onclick = (event) => {
+            const actionButton = event.target.closest('[data-choice-action]');
+            if (!actionButton) return;
+            finish(actionButton.dataset.choiceAction || resolvedActions[resolvedActions.length - 1].id);
+        };
+
+        overlay.style.display = 'flex';
+        requestAnimationFrame(() => {
+            overlay.classList.add('show');
+            const firstButton = overlay.querySelector('[data-choice-action]');
+            firstButton?.focus?.({ preventScroll: true });
+        });
+    });
+}
+
+function showContentEditorUnsavedDialog() {
+    return showContentEditorChoiceDialog({
+        title: 'Save your changes?',
+        message: 'You have unsaved Content Editor changes. Choose what to do before leaving this screen.',
+        actions: [
+            { id: 'save', label: 'Save changes', className: 'management-btn save-private-setup' },
+            { id: 'discard', label: 'Discard changes', className: 'management-btn remove-btn' },
+            { id: 'stay', label: 'Keep editing', className: 'management-btn close-btn' }
+        ]
+    });
+}
+
+function confirmDeletePhraseInEditor(phraseText = '') {
+    const label = String(phraseText || 'this phrase').trim();
+    return showContentEditorChoiceDialog({
+        title: 'Delete phrase?',
+        message: `Delete "${label}" from this submenu? Hiding is usually safer. This also removes its saved picture and recorded voice from this device.`,
+        actions: [
+            { id: 'delete', label: 'Delete phrase', className: 'management-btn remove-btn' },
+            { id: 'stay', label: 'Keep phrase', className: 'management-btn close-btn' }
+        ]
+    });
+}
+
+async function confirmDeleteTopicInEditor(topicLabel = '', phraseCount = 0) {
+    const label = String(topicLabel || 'this topic').trim();
+    const countText = phraseCount === 1 ? '1 phrase' : `${phraseCount} phrases`;
+    const firstChoice = await showContentEditorChoiceDialog({
+        title: 'Delete whole topic?',
+        message: `Delete "${label}" and its ${countText}? Hiding the topic is usually safer. This also removes linked pictures and recorded voices from this device.`,
+        actions: [
+            { id: 'delete', label: 'Delete topic', className: 'management-btn remove-btn' },
+            { id: 'stay', label: 'Keep topic', className: 'management-btn close-btn' }
+        ]
+    });
+    if (firstChoice !== 'delete') return 'stay';
+    return showContentEditorChoiceDialog({
+        title: 'Final confirmation',
+        message: `Permanently delete "${label}" now? This cannot be undone unless you restore a backup.`,
+        actions: [
+            { id: 'delete', label: 'Yes, permanently delete', className: 'management-btn remove-btn' },
+            { id: 'stay', label: 'Keep topic', className: 'management-btn close-btn' }
+        ]
+    });
+}
+
+async function handleContentEditorLeave(destination) {
+    commitActiveContentEditorField();
+    if (!contentEditorHasUnsavedChanges()) {
+        finishContentEditorNavigation(destination);
+        return;
+    }
+    const choice = await showContentEditorUnsavedDialog();
+    if (choice === 'stay') return;
+    if (choice === 'save') {
+        markContentEditorClean();
+        finishContentEditorNavigation(destination);
+        showToast('Content changes saved', 'success');
+        return;
+    }
+    restoreContentEditorSnapshot();
+    finishContentEditorNavigation(destination);
+    showToast('Content changes discarded', 'warning');
+}
 
 function makeFallbackCategoryMeta(category) {
     const safeCategory = String(category || 'custom').trim() || 'custom';
@@ -4261,6 +4534,7 @@ function showManagementPanel() {
             document.body.appendChild(overlay);
         }
         document.body.classList.add('content-editor-open');
+        markContentEditorClean();
         renderContentManagementPanel();
         overlay.style.display = 'block';
         overlay.classList.add('show');
@@ -4275,6 +4549,7 @@ function hideManagementPanel() {
         overlay.classList.remove('show');
         overlay.style.display = 'none';
         document.body.classList.remove('content-editor-open');
+        contentEditorCleanSnapshot = null;
     }
 }
 
@@ -4302,8 +4577,43 @@ function renderContentManagementPanel() {
     }
 
     panel.onclick = handleContentManagementClick;
+    panel.oninput = handleContentManagementInput;
     panel.onchange = handleContentManagementChange;
+    panel.onfocusin = handleContentManagementFocusIn;
     applyPrivateImagesIn(panel);
+    updateContentEditorSaveState();
+}
+
+function selectDefaultContentEditorText(input) {
+    if (!input || typeof input.select !== 'function') return;
+    const value = String(input.value || '').trim();
+    if (value !== 'New topic' && value !== 'New phrase') return;
+    requestAnimationFrame(() => {
+        input.select();
+        if (typeof input.setSelectionRange === 'function') {
+            input.setSelectionRange(0, input.value.length);
+        }
+    });
+}
+
+function focusNewContentEditorRow(kind, id) {
+    const panel = document.getElementById('managementPanel');
+    if (!panel || !id) return;
+    requestAnimationFrame(() => {
+        const attributeName = kind === 'topic'
+            ? 'data-content-inline-category-label'
+            : 'data-content-inline-phrase-text';
+        const input = Array.from(panel.querySelectorAll(`[${attributeName}]`))
+            .find(item => item.getAttribute(attributeName) === id);
+        if (!input) return;
+        input.scrollIntoView({ block: 'center', inline: 'nearest' });
+        try {
+            input.focus({ preventScroll: true });
+        } catch (error) {
+            input.focus();
+        }
+        selectDefaultContentEditorText(input);
+    });
 }
 
 function renderContentTopicsScreen(panel, allCategories) {
@@ -4324,7 +4634,7 @@ function renderContentTopicsScreen(panel, allCategories) {
         </div>
 
         <div class="private-setup-footer editor-bottom-actions settings-standard-actionbar compact-save-actions table-editor-footer">
-            <button type="button" class="management-btn close-btn" data-content-back-settings>Back to Settings</button>
+            <button type="button" class="management-btn close-btn" data-content-back-settings>Return to Settings</button>
             <button type="button" class="management-btn save-private-setup" data-content-save-close>Save Changes</button>
         </div>
     `;
@@ -4586,21 +4896,20 @@ async function handleContentManagementClick(event) {
 
     if (target.closest('[data-content-close]')) {
         if (contentEditorScreen === 'phrases') {
-            contentEditorScreen = 'topics';
-            renderContentManagementPanel();
+            handleContentEditorLeave('topics');
         } else {
-            hideManagementPanel();
-            showSettingsOverlay();
+            handleContentEditorLeave('settings');
         }
         return;
     }
     if (target.closest('[data-content-back-settings]')) {
-        hideManagementPanel();
-        showSettingsOverlay();
+        handleContentEditorLeave('settings');
         return;
     }
 
     if (target.closest('[data-content-save-close]')) {
+        commitActiveContentEditorField();
+        markContentEditorClean();
         if (contentEditorScreen === 'phrases') {
             contentEditorScreen = 'topics';
             contentSetupSelected = { type: 'category', category: contentSetupPhraseCategory };
@@ -4657,10 +4966,12 @@ async function handleContentManagementClick(event) {
         categoryConfig.order.push(id);
         categoryConfig.categories[id] = { label: 'New topic', hidden: false, icon: '🗂️' };
         buttonData[id] = [];
+        contentSetupSelected = { type: 'category', category: id };
         saveCategoryConfig();
         saveDataToStorage();
         renderCategoryMenuCards();
         renderContentManagementPanel();
+        focusNewContentEditorRow('topic', id);
         showToast('New topic row added. Type the title into the row.', 'success');
         return;
     }
@@ -4669,9 +4980,8 @@ async function handleContentManagementClick(event) {
     if (deleteTopicRowButton) {
         const category = deleteTopicRowButton.dataset.contentDeleteTopicRow;
         const meta = getCategoryMeta(category);
-        if (!confirm(`Delete the whole topic "${meta.label}" and all phrases/images/audio linked to it? Hiding is safer. This cannot be undone unless you restore a backup.`)) return;
-        if (!confirm('Final confirmation: delete this topic now?')) return;
         const phrases = buttonData[category] || [];
+        if (await confirmDeleteTopicInEditor(meta.label, phrases.length) !== 'delete') return;
         phrases.forEach(phrase => {
             deletePrivateMediaRecord(getPrivateMediaKey('phrase', phrase));
             deletePrivateMediaRecord(getPrivateMediaKey('voice', phrase));
@@ -4698,6 +5008,7 @@ async function handleContentManagementClick(event) {
         saveDataToStorage();
         if (currentViewCategory === category) populateGrid(category);
         renderContentManagementPanel();
+        focusNewContentEditorRow('phrase', id);
         showToast('New phrase row added. Type the wording into the row.', 'success');
         return;
     }
@@ -4712,7 +5023,8 @@ async function handleContentManagementClick(event) {
             renderContentManagementPanel();
             return;
         }
-        if (!confirm('Delete this phrase permanently? Hiding is usually safer.')) return;
+        const phrase = (buttonData[category] || [])[index];
+        if (await confirmDeletePhraseInEditor(phrase?.text || phraseId) !== 'delete') return;
         await deletePhraseAtIndex(category, index);
         if (contentSetupSelected?.type === 'phrase' && contentSetupSelected.category === category && contentSetupSelected.phraseId === phraseId) {
             contentSetupSelected = { type: 'category', category };
@@ -4748,9 +5060,7 @@ async function handleContentManagementClick(event) {
     }
 
     if (target.closest('[data-content-back-topics]')) {
-        contentEditorScreen = 'topics';
-        contentSetupSelected = { type: 'category', category: contentSetupPhraseCategory };
-        renderContentManagementPanel();
+        handleContentEditorLeave('topics');
         return;
     }
 
@@ -4858,7 +5168,8 @@ async function handleContentManagementClick(event) {
             renderContentManagementPanel();
             return;
         }
-        if (!confirm('Delete this phrase permanently? Hiding is usually safer.')) return;
+        const phrase = (buttonData[category] || [])[index];
+        if (await confirmDeletePhraseInEditor(phrase?.text || contentSetupSelected.phraseId) !== 'delete') return;
         await deletePhraseAtIndex(category, index);
         contentSetupSelected = { type: 'category', category };
         renderContentManagementPanel();
@@ -4904,6 +5215,30 @@ async function handleContentManagementClick(event) {
     }
 }
 
+function handleContentManagementFocusIn(event) {
+    const target = event.target;
+    if (!target || !target.matches?.('.table-title-input')) return;
+    if (!target.hasAttribute('data-content-inline-category-label') && !target.hasAttribute('data-content-inline-phrase-text')) return;
+    selectDefaultContentEditorText(target);
+}
+
+function handleContentManagementInput(event) {
+    const target = event.target;
+    if (!target) return;
+    if (
+        target.hasAttribute('data-content-inline-category-label') ||
+        target.hasAttribute('data-content-inline-category-icon') ||
+        target.hasAttribute('data-content-inline-phrase-text') ||
+        target.hasAttribute('data-content-inline-phrase-icon') ||
+        target.id === 'contentCategoryLabel' ||
+        target.id === 'contentPhraseText' ||
+        target.id === 'contentPhraseIcon'
+    ) {
+        contentEditorPendingInputDirty = true;
+        updateContentEditorSaveState();
+    }
+}
+
 function handleContentManagementChange(event) {
     const inlineCategoryLabel = event.target && event.target.getAttribute('data-content-inline-category-label');
     if (inlineCategoryLabel) {
@@ -4912,6 +5247,7 @@ function handleContentManagementChange(event) {
         saveCategoryConfig();
         saveDataToStorage();
         renderCategoryMenuCards();
+        updateContentEditorSaveState();
         return;
     }
 
@@ -4924,6 +5260,7 @@ function handleContentManagementChange(event) {
         saveCategoryConfig();
         saveDataToStorage();
         renderCategoryMenuCards();
+        updateContentEditorSaveState();
         return;
     }
 
@@ -4939,6 +5276,7 @@ function handleContentManagementChange(event) {
         saveCategoryConfig();
         saveDataToStorage();
         renderCategoryMenuCards();
+        updateContentEditorSaveState();
         return;
     }
 
@@ -4950,6 +5288,7 @@ function handleContentManagementChange(event) {
             phrase.text = String(event.target.value || '').trim();
             saveDataToStorage();
             if (currentViewCategory === category) populateGrid(category);
+            updateContentEditorSaveState();
         }
         return;
     }
@@ -4964,6 +5303,7 @@ function handleContentManagementChange(event) {
             else delete phrase.icon;
             saveDataToStorage();
             if (currentViewCategory === category) populateGrid(category);
+            updateContentEditorSaveState();
         }
         return;
     }
@@ -4978,6 +5318,7 @@ function handleContentManagementChange(event) {
             else delete phrase.relationship;
             saveDataToStorage();
             if (currentViewCategory === category) populateGrid(category);
+            updateContentEditorSaveState();
         }
         return;
     }
@@ -4990,6 +5331,7 @@ function handleContentManagementChange(event) {
             phrase.hidden = Boolean(event.target.checked);
             saveDataToStorage();
             if (currentViewCategory === category) populateGrid(category);
+            updateContentEditorSaveState();
         }
         return;
     }
@@ -6470,6 +6812,7 @@ function showPhrasePopup(buttonInfoOrText) {
     }
 
     overlay.classList.toggle('manual-close', shouldUseManualPopupClose());
+    overlay.classList.toggle('introduction-popup', Boolean(buttonInfo && buttonInfo.isIntroduction));
     overlay.classList.add('show');
     overlay.setAttribute('aria-hidden', 'false');
 
