@@ -251,6 +251,7 @@ let activeSpeechUtterance = null;
 let activePrivateVoiceAudio = null;
 let activePrivateVoiceObjectUrl = '';
 let introductionPlaybackGuardUntil = 0;
+let speechPlaybackRunId = 0;
 let speechVoicesReadyPromise = null;
 let speechSynthesisPrimed = false;
 
@@ -432,6 +433,7 @@ function isSpeechOutputEnabled() {
 }
 
 function stopSpokenOutput() {
+    speechPlaybackRunId += 1;
     if (window.speechSynthesis) {
         try { window.speechSynthesis.cancel(); } catch (_) {}
     }
@@ -7168,7 +7170,9 @@ function primeSpeechSynthesis() {
     primer.rate = 1;
     synth.speak(primer);
     setTimeout(() => {
-      try { synth.cancel(); } catch (_) {}
+      if (!activeSpeechUtterance && !activePrivateVoiceAudio) {
+        try { synth.cancel(); } catch (_) {}
+      }
     }, 50);
   } catch (_) {}
 }
@@ -7180,6 +7184,9 @@ document.addEventListener('click', primeSpeechSynthesis, { once: true, passive: 
 function speakText(text, buttonElement, options = {}) {
   const spokenText = String(text || '').trim();
   const synth = window.speechSynthesis;
+  const speechRunId = speechPlaybackRunId + 1;
+  speechPlaybackRunId = speechRunId;
+  const isCurrentSpeechRun = () => speechRunId === speechPlaybackRunId;
   if (synth) {
     try { synth.cancel(); } catch (_) {}
   }
@@ -7199,6 +7206,7 @@ function speakText(text, buttonElement, options = {}) {
   let retriedAfterVoicesLoaded = false;
 
   const finishSpeech = () => {
+    if (!isCurrentSpeechRun()) return;
     if (finished) return;
     finished = true;
     if (watchdog) clearTimeout(watchdog);
@@ -7218,7 +7226,7 @@ function speakText(text, buttonElement, options = {}) {
   }
 
   const speakNow = () => {
-    if (finished) return;
+    if (finished || !isCurrentSpeechRun()) return;
 
     const utterance = new SpeechSynthesisUtterance(spokenText);
     const configuredRate = clampNumber(Number(appSettings.speechRate || DEFAULT_APP_SETTINGS.speechRate), 0.7, 1.2);
@@ -7235,16 +7243,18 @@ function speakText(text, buttonElement, options = {}) {
     }
 
     utterance.onstart = () => {
+      if (!isCurrentSpeechRun()) return;
       if (watchdog) clearTimeout(watchdog);
       watchdog = setTimeout(finishSpeech, Math.max(6000, spokenText.length * 90));
     };
     utterance.onend = finishSpeech;
     utterance.onerror = () => {
+      if (!isCurrentSpeechRun()) return;
       // Desktop Chrome/Edge can error if voices were still initialising. Retry once.
       if (!retriedAfterVoicesLoaded) {
         retriedAfterVoicesLoaded = true;
         warmSpeechVoices().then(() => {
-          if (!finished) speakNow();
+          if (!finished && isCurrentSpeechRun()) speakNow();
         }).catch(finishSpeech);
         return;
       }
@@ -7256,10 +7266,10 @@ function speakText(text, buttonElement, options = {}) {
       synth.speak(utterance);
       watchdog = setTimeout(() => {
         // If speech never starts, retry once after voices have loaded.
-        if (!finished && !retriedAfterVoicesLoaded && synth.speaking === false && synth.pending === false) {
+        if (!finished && isCurrentSpeechRun() && !retriedAfterVoicesLoaded && synth.speaking === false && synth.pending === false) {
           retriedAfterVoicesLoaded = true;
           warmSpeechVoices().then(() => {
-            if (!finished) speakNow();
+            if (!finished && isCurrentSpeechRun()) speakNow();
           }).catch(finishSpeech);
         }
       }, 900);
