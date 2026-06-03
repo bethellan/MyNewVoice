@@ -3052,9 +3052,9 @@ async function buildCompleteBackupPayload() {
 
 async function saveBlobWithBestAvailableDestination(blob, filename) {
     // Prefer the File System Access save picker on browsers that support it.
-    // iPhone/iPad Safari does not currently support this picker, so the next
-    // option is the native share sheet with a File object. The final fallback
-    // is the standard browser download link.
+    // iPhone/iPad Safari does not currently support this picker, so the final
+    // fallback is the standard browser download link. Avoid the native share
+    // sheet here because some devices add an unwanted companion text file.
     if (window.showSaveFilePicker) {
         try {
             const handle = await window.showSaveFilePicker({
@@ -3070,20 +3070,7 @@ async function saveBlobWithBestAvailableDestination(blob, filename) {
             return 'picker';
         } catch (error) {
             if (error && error.name === 'AbortError') return 'cancelled';
-            console.warn('Save picker failed; trying share/download fallback.', error);
-        }
-    }
-
-    if (navigator.canShare && navigator.share) {
-        try {
-            const file = new File([blob], filename, { type: blob.type || 'application/json' });
-            if (navigator.canShare({ files: [file] })) {
-                await navigator.share({ files: [file], title: 'MyNewVoice backup', text: 'Save this MyNewVoice complete backup.' });
-                return 'share';
-            }
-        } catch (error) {
-            if (error && error.name === 'AbortError') return 'cancelled';
-            console.warn('Share sheet failed; using download fallback.', error);
+            console.warn('Save picker failed; using download fallback.', error);
         }
     }
 
@@ -3113,8 +3100,6 @@ async function exportFullAppBackup() {
             showToast('Backup export cancelled', 'info');
         } else if (result === 'picker') {
             showToast('Complete backup saved', 'success');
-        } else if (result === 'share') {
-            showToast('Complete backup shared/saved', 'success');
         } else {
             showToast('Complete backup downloaded', 'success');
         }

@@ -12306,6 +12306,14 @@ body:not(.submenu-open) .management-toggle {
   transform: none !important;
 }
 
+/* v124 mobile main-menu scroll clearance:
+   The topic list is the scroll owner on the Dad-facing main screen. Give it
+   enough final padding so the last topic can clear iPhone browser bars. */
+body:not(.submenu-open) .tab-container {
+  padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
+  scroll-padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
+}
+
 @media (max-width: 640px) {
   body:not(.submenu-open) #messageBar:not(.submenu-titlebar) {
     grid-template-columns: minmax(0, 1fr) auto !important;
