@@ -727,9 +727,6 @@ function ensureImageCropOverlay() {
             </div>
         </div>
     `;
-    overlay.addEventListener('click', () => {
-        if (shouldUseManualPopupClose()) hidePhrasePopup();
-    });
     document.body.appendChild(overlay);
     return overlay;
 }
@@ -1233,24 +1230,18 @@ function ensureSettingsOverlay() {
                             <option value="sci-fi">Sci-Fi Console</option>
                             <option value="high-contrast">High Contrast</option>
                         </select>
-                        <label for="settingsPressActivation">Tap response</label>
-                        <select id="settingsPressActivation" class="settings-select">
-                            <option value="normal">Normal tap</option>
-                            <option value="long">Long press</option>
-                            <option value="longer">Longer press</option>
-                        </select>
                     </div>
                 </details>
 
                 <details class="settings-v115-card settings-v115-foldout settings-section-voice" open>
-                    <summary><span>Voice &amp; Speech</span><small>Voice choice, speech speed, pitch and popup delay.</small></summary>
+                    <summary><span>Voice &amp; Speech</span><small>Voice choice, speech speed and pitch.</small></summary>
                     <div class="settings-v115-form-grid">
                         <label for="settingsSpeechEnabled">Spoken voice</label>
                         <select id="settingsSpeechEnabled" class="settings-select">
                             <option value="on">On</option>
                             <option value="off">Off - visual popup only</option>
                         </select>
-                        <p class="settings-help settings-v115-wide">When off, buttons still show the large visual message but no recorded or device voice is played.</p>
+                        <p class="settings-help settings-v115-wide">When off, buttons show the large visual message without speaking. The message stays open until the screen is tapped or a key is pressed.</p>
                         <label for="settingsSpeechVoice">Voice choice</label>
                         <div class="settings-v115-inline">
                             <select id="settingsSpeechVoice" class="settings-select">
@@ -1263,14 +1254,6 @@ function ensureSettingsOverlay() {
                         <input id="settingsSpeechRate" class="settings-range" type="range" min="0.7" max="1.2" step="0.05" value="0.9">
                         <label for="settingsSpeechPitch">Pitch: <span id="settingsSpeechPitchValue">Normal</span></label>
                         <input id="settingsSpeechPitch" class="settings-range" type="range" min="0.8" max="1.2" step="0.05" value="1">
-                        <label for="settingsPopupCloseDelay">Popup delay: <span id="settingsPopupCloseDelayValue">2 seconds</span></label>
-                        <input id="settingsPopupCloseDelay" class="settings-range" type="range" min="1" max="5" step="1" value="2">
-                        <label for="settingsPopupCloseMode">Popup close</label>
-                        <select id="settingsPopupCloseMode" class="settings-select">
-                            <option value="timed">Timed close</option>
-                            <option value="manual">Press anywhere to close</option>
-                        </select>
-                        <p class="settings-help settings-v115-wide">Press-anywhere mode keeps Dad's message on screen until it has been shown.</p>
                     </div>
                 </details>
 
@@ -1540,12 +1523,6 @@ function ensureSettingsOverlay() {
         }
         if (event.target && event.target.id === 'settingsSpeechPitch') {
             appSettings.speechPitch = clampNumber(Number(event.target.value), 0.8, 1.2);
-            saveAppSettings({ render: false });
-            updateSettingsControls();
-            return;
-        }
-        if (event.target && event.target.id === 'settingsPopupCloseDelay') {
-            appSettings.popupCloseDelaySeconds = clampNumber(Number(event.target.value), 1, 5);
             saveAppSettings({ render: false });
             updateSettingsControls();
             return;
@@ -3379,9 +3356,9 @@ function normaliseAppSettings(rawSettings) {
         ? raw.pressActivation
         : DEFAULT_APP_SETTINGS.pressActivation;
     const autoUpdateCheck = false;
-    const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
-    const popupCloseMode = raw.popupCloseMode === 'manual' ? 'manual' : DEFAULT_APP_SETTINGS.popupCloseMode;
     const speechEnabled = raw.speechEnabled !== false && raw.speechEnabled !== 'off';
+    const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
+    const popupCloseMode = speechEnabled ? 'timed' : 'manual';
     const speechVoiceName = String(raw.speechVoiceName || '').slice(0, 160);
     const speechVoiceLang = String(raw.speechVoiceLang || '').slice(0, 40);
     const speechRate = clampNumber(Number(raw.speechRate || DEFAULT_APP_SETTINGS.speechRate), 0.7, 1.2);
@@ -3402,15 +3379,11 @@ function applyAppTheme() {
 }
 
 function getPopupCloseDelayMs() {
-    return clampNumber(Number(normaliseAppSettings(appSettings).popupCloseDelaySeconds), 1, 5) * 1000;
-}
-
-function getPopupCloseMode() {
-    return normaliseAppSettings(appSettings).popupCloseMode === 'manual' ? 'manual' : 'timed';
+    return DEFAULT_APP_SETTINGS.popupCloseDelaySeconds * 1000;
 }
 
 function shouldUseManualPopupClose() {
-    return getPopupCloseMode() === 'manual';
+    return !isSpeechOutputEnabled();
 }
 
 function getIntroductionSettings() {
@@ -3458,12 +3431,6 @@ function updateSettingsControls() {
     if (themeSelect) themeSelect.value = appSettings.theme;
     const pressActivationSelect = document.getElementById('settingsPressActivation');
     if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
-    const delaySlider = document.getElementById('settingsPopupCloseDelay');
-    if (delaySlider) delaySlider.value = appSettings.popupCloseDelaySeconds;
-    const delayValue = document.getElementById('settingsPopupCloseDelayValue');
-    if (delayValue) delayValue.textContent = `${appSettings.popupCloseDelaySeconds} second${appSettings.popupCloseDelaySeconds === 1 ? '' : 's'}`;
-    const closeModeSelect = document.getElementById('settingsPopupCloseMode');
-    if (closeModeSelect) closeModeSelect.value = appSettings.popupCloseMode || DEFAULT_APP_SETTINGS.popupCloseMode;
     const speechEnabledSelect = document.getElementById('settingsSpeechEnabled');
     if (speechEnabledSelect) speechEnabledSelect.value = appSettings.speechEnabled === false ? 'off' : 'on';
     populateSpeechVoiceSelect();
@@ -6818,6 +6785,15 @@ function getPhrasePopupOverlay() {
         </div>
     `;
 
+    overlay.addEventListener('click', () => {
+        if (shouldUseManualPopupClose()) hidePhrasePopup();
+    });
+    document.addEventListener('keydown', (event) => {
+        if (!overlay.classList.contains('show') || !shouldUseManualPopupClose()) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        hidePhrasePopup();
+    }, true);
     document.body.appendChild(overlay);
     return overlay;
 }
