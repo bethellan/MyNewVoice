@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v124: Makes the main Settings dashboard a true full-screen body-level screen rather than a floating modal panel. Content Editor remains a real screen with one-row tables and internal scrolling. v114 viewport lock retained. No schema, speech or media-storage changes. */
+/* v125: Adds individual image-size choices to the existing crop flow and shares those presets with the Storage compression tools. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -181,16 +181,54 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v124';
+const CURRENT_APP_VERSION = 'v125';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
+const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
+    original: {
+        label: 'Best quality',
+        help: 'Keeps the current app quality and crop size.',
+        quality: PRIVATE_IMAGE_JPEG_QUALITY,
+        limits: {}
+    },
+    good: {
+        label: 'Good quality',
+        help: 'Reduces the file while keeping a clear photo.',
+        quality: 0.76,
+        limits: {
+            menu: { maxWidth: 1400, maxHeight: 600 },
+            intro: { maxWidth: 1100, maxHeight: 800 },
+            phrase: { maxWidth: 500, maxHeight: 500 }
+        }
+    },
+    smaller: {
+        label: 'Smaller file',
+        help: 'Useful for smaller backups and limited device storage.',
+        quality: 0.68,
+        limits: {
+            menu: { maxWidth: 1200, maxHeight: 520 },
+            intro: { maxWidth: 900, maxHeight: 650 },
+            phrase: { maxWidth: 420, maxHeight: 420 }
+        }
+    },
+    tiny: {
+        label: 'Smallest file',
+        help: 'Makes the smallest backup, with a softer photo.',
+        quality: 0.56,
+        limits: {
+            menu: { maxWidth: 960, maxHeight: 420 },
+            intro: { maxWidth: 720, maxHeight: 520 },
+            phrase: { maxWidth: 320, maxHeight: 320 }
+        }
+    }
+};
 const PRIVATE_CROP_OUTPUTS = {
     menu: { width: 1400, height: 1000, aspect: 1.4, shape: 'rectangle', label: 'main menu button picture', cropRole: 'menu' },
     phrase: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' },
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v124';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v125';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -664,7 +702,7 @@ function resizeImageFile(file, maxSize = PRIVATE_IMAGE_MAX_SIZE, quality = PRIVA
 function getPrivateMediaKindFromKey(key) {
     if (!key || !key.includes(':')) return 'phrase';
     const kind = key.split(':')[0];
-    return kind === 'menu' || kind === 'zoom' ? kind : 'phrase';
+    return kind === 'menu' || kind === 'zoom' || kind === 'intro' ? kind : 'phrase';
 }
 
 function getCropConfigForKey(key) {
@@ -674,6 +712,31 @@ function getCropConfigForKey(key) {
     }
     if (kind === 'menu') return getMenuCropConfig();
     return PRIVATE_CROP_OUTPUTS[kind] || PRIVATE_CROP_OUTPUTS.phrase;
+}
+
+function getImageOptimisationRole(keyOrId = '') {
+    const value = String(keyOrId || '');
+    if (value.startsWith('menu:')) return 'menu';
+    if (value.startsWith('intro:')) return 'intro';
+    return 'phrase';
+}
+
+function getImageOptimisationOutput(baseWidth, baseHeight, role, presetName = 'original') {
+    const preset = PRIVATE_IMAGE_OPTIMISATION_PRESETS[presetName] || PRIVATE_IMAGE_OPTIMISATION_PRESETS.original;
+    const limits = preset.limits[role];
+    if (!limits) {
+        return {
+            width: Math.max(1, Math.round(baseWidth)),
+            height: Math.max(1, Math.round(baseHeight)),
+            quality: preset.quality
+        };
+    }
+    const scale = Math.min(1, limits.maxWidth / baseWidth, limits.maxHeight / baseHeight);
+    return {
+        width: Math.max(1, Math.round(baseWidth * scale)),
+        height: Math.max(1, Math.round(baseHeight * scale)),
+        quality: preset.quality
+    };
 }
 
 function getMenuCropConfig() {
@@ -712,6 +775,15 @@ function ensureImageCropOverlay() {
             <div class="image-crop-mode-row" aria-live="polite">
                 <span id="imageCropShapeLabel" class="crop-shape-label">Fixed crop shape</span>
             </div>
+            <fieldset class="image-optimisation-control">
+                <legend>Photo file size</legend>
+                <div class="image-optimisation-options" role="group" aria-label="Photo file size">
+                    ${Object.entries(PRIVATE_IMAGE_OPTIMISATION_PRESETS).map(([value, preset]) => `
+                        <button type="button" class="image-optimisation-option${value === 'original' ? ' active' : ''}" data-image-optimisation="${value}" aria-pressed="${value === 'original' ? 'true' : 'false'}">${preset.label}</button>
+                    `).join('')}
+                </div>
+                <small id="imageOptimisationHelp">${PRIVATE_IMAGE_OPTIMISATION_PRESETS.original.help}</small>
+            </fieldset>
             <div class="image-crop-stage" id="imageCropStage">
                 <img id="imageCropPreview" alt="Selected photo preview">
                 <div id="imageCropBox" class="image-crop-box" tabindex="0" aria-label="Crop selection">
@@ -744,6 +816,8 @@ function openImageCropper(file, options = {}) {
         const title = overlay.querySelector('#imageCropTitle');
         const help = overlay.querySelector('#imageCropHelp');
         const shapeLabel = overlay.querySelector('#imageCropShapeLabel');
+        const optimisationHelp = overlay.querySelector('#imageOptimisationHelp');
+        const optimisationButtons = Array.from(overlay.querySelectorAll('[data-image-optimisation]'));
         const saveButton = overlay.querySelector('[data-crop-save]');
         const cancelButtons = overlay.querySelectorAll('[data-crop-cancel]');
 
@@ -754,6 +828,7 @@ function openImageCropper(file, options = {}) {
         let imageBounds = { left: 0, top: 0, width: 100, height: 100 };
         let pointerState = null;
         let settled = false;
+        let optimisationPreset = options.optimisationPreset || 'original';
 
         const cleanup = () => {
             overlay.classList.remove('show');
@@ -765,6 +840,7 @@ function openImageCropper(file, options = {}) {
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', handlePointerUp);
             window.removeEventListener('resize', syncImageBoundsAndCrop);
+            optimisationButtons.forEach(btn => btn.removeEventListener('click', handleOptimisationChoice));
             cropBox.classList.remove('circle-crop');
         };
 
@@ -905,6 +981,24 @@ function openImageCropper(file, options = {}) {
 
         const cancelCrop = () => finishReject(new Error('Crop cancelled.'));
 
+        const renderOptimisationChoice = () => {
+            const preset = PRIVATE_IMAGE_OPTIMISATION_PRESETS[optimisationPreset] || PRIVATE_IMAGE_OPTIMISATION_PRESETS.original;
+            optimisationButtons.forEach(button => {
+                const active = button.dataset.imageOptimisation === optimisationPreset;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+            if (optimisationHelp) optimisationHelp.textContent = preset.help;
+        };
+
+        const handleOptimisationChoice = (event) => {
+            const requestedPreset = event.currentTarget && event.currentTarget.dataset
+                ? event.currentTarget.dataset.imageOptimisation
+                : 'original';
+            optimisationPreset = PRIVATE_IMAGE_OPTIMISATION_PRESETS[requestedPreset] ? requestedPreset : 'original';
+            renderOptimisationChoice();
+        };
+
         const saveCrop = () => {
             try {
                 const scaleX = img.naturalWidth / imageBounds.width;
@@ -915,8 +1009,14 @@ function openImageCropper(file, options = {}) {
                 const sourceH = Math.round(crop.height * scaleY);
                 const configuredWidth = options.outputWidth || 700;
                 const configuredHeight = options.outputHeight || Math.round(configuredWidth / aspect);
-                const outputWidth = configuredWidth;
-                const outputHeight = configuredHeight;
+                const output = getImageOptimisationOutput(
+                    configuredWidth,
+                    configuredHeight,
+                    options.optimisationRole || 'phrase',
+                    optimisationPreset
+                );
+                const outputWidth = output.width;
+                const outputHeight = output.height;
                 const canvas = document.createElement('canvas');
                 canvas.width = outputWidth;
                 canvas.height = outputHeight;
@@ -937,7 +1037,7 @@ function openImageCropper(file, options = {}) {
                     canvas.toBlob((blob) => {
                         if (!blob) finishReject(new Error('Could not crop image.'));
                         else finishResolve(blob);
-                    }, 'image/jpeg', PRIVATE_IMAGE_JPEG_QUALITY);
+                    }, 'image/jpeg', output.quality);
                     return;
                 }
 
@@ -948,7 +1048,7 @@ function openImageCropper(file, options = {}) {
                         return;
                     }
                     finishResolve(blob);
-                }, 'image/jpeg', PRIVATE_IMAGE_JPEG_QUALITY);
+                }, 'image/jpeg', output.quality);
             } catch (error) {
                 finishReject(error);
             }
@@ -964,6 +1064,7 @@ function openImageCropper(file, options = {}) {
                 : 'Move and resize the crop box so the important part is inside it. The saved image is compressed for local storage.';
         if (shapeLabel) shapeLabel.textContent = isMenuButtonCrop ? 'Menu button visible-area crop' : `Fixed ${shapeText} crop`;
         cropBox.classList.toggle('circle-crop', selectedShape === 'circle');
+        renderOptimisationChoice();
 
         img.onload = () => {
             overlay.style.display = 'flex';
@@ -982,6 +1083,7 @@ function openImageCropper(file, options = {}) {
         window.addEventListener('pointermove', handlePointerMove);
         window.addEventListener('pointerup', handlePointerUp);
         window.addEventListener('resize', syncImageBoundsAndCrop);
+        optimisationButtons.forEach(btn => btn.addEventListener('click', handleOptimisationChoice));
     });
 }
 
@@ -1709,13 +1811,10 @@ async function confirmAndClearUnusedMedia() {
 }
 
 function getImageCompressionLimitsForRecord(record, mode = 'good') {
-    const id = record && record.id ? String(record.id) : '';
-    if (mode === 'tiny') {
-        if (id.startsWith('menu:')) return { maxWidth: 1200, maxHeight: 860 };
-        return { maxWidth: 420, maxHeight: 420 };
-    }
-    if (id.startsWith('menu:')) return { maxWidth: 1792, maxHeight: 1024 };
-    return { maxWidth: 600, maxHeight: 600 };
+    const role = getImageOptimisationRole(record && record.id);
+    const presetName = mode === 'smallest' ? 'smaller' : mode;
+    const preset = PRIVATE_IMAGE_OPTIMISATION_PRESETS[presetName] || PRIVATE_IMAGE_OPTIMISATION_PRESETS.good;
+    return preset.limits[role] || { maxWidth: Number.MAX_SAFE_INTEGER, maxHeight: Number.MAX_SAFE_INTEGER };
 }
 
 function loadImageFromBlob(blob) {
@@ -1765,13 +1864,15 @@ async function compressImageRecord(record, quality, mode = 'good') {
 }
 
 async function compressLocalImages(mode = 'good') {
-    const quality = mode === 'tiny' ? 0.44 : mode === 'smallest' ? 0.58 : 0.72;
+    const presetName = mode === 'smallest' ? 'smaller' : mode;
+    const preset = PRIVATE_IMAGE_OPTIMISATION_PRESETS[presetName] || PRIVATE_IMAGE_OPTIMISATION_PRESETS.good;
+    const quality = preset.quality;
     const summary = await buildImageQualitySummary();
     if (!summary.imageRecords.length) {
         showToast('No saved images to compress', 'warning');
         return;
     }
-    const label = mode === 'tiny' ? 'tiny file' : mode === 'smallest' ? 'smaller file' : 'good quality';
+    const label = preset.label.toLowerCase();
     const message = `Compress ${summary.imageRecords.length} local saved image${summary.imageRecords.length === 1 ? '' : 's'} using ${label} mode?\n\nCurrent image size: ${formatStorageBytes(summary.imageBytes)}\n\nThis changes the local images stored on this device. Export a complete backup after checking the result.`;
     if (!confirm(message)) return;
 
@@ -2593,7 +2694,8 @@ async function choosePrivateImage(key, label = '', text = '') {
                 shape: cropConfig.shape,
                 outputWidth: cropConfig.width,
                 outputHeight: cropConfig.height,
-                cropRole: cropConfig.cropRole
+                cropRole: cropConfig.cropRole,
+                optimisationRole: getImageOptimisationRole(key)
             });
             const blob = croppedBlob;
             await putPrivateMediaRecord(key, 'image', blob, { label, text, mime: blob.type || 'image/jpeg' });
@@ -2666,7 +2768,8 @@ function ensureManagementImageOptionsOverlay() {
                     shape: cropConfig.shape,
                     outputWidth: cropConfig.width,
                     outputHeight: cropConfig.height,
-                    cropRole: cropConfig.cropRole
+                    cropRole: cropConfig.cropRole,
+                    optimisationRole: getImageOptimisationRole(state.key)
                 });
                 const finalBlob = croppedBlob;
                 await putPrivateMediaRecord(state.key, 'image', finalBlob, { label: state.label, text: state.text, mime: finalBlob.type || 'image/jpeg' });

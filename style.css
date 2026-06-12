@@ -11841,7 +11841,7 @@ body[data-theme="high-contrast"] {
   margin: 0 auto !important;
   padding: clamp(10px, 1.5vw, 18px) !important;
   display: grid !important;
-  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto !important;
   gap: clamp(8px, 1.2vw, 14px) !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
@@ -11882,7 +11882,7 @@ body[data-theme="high-contrast"] {
 }
 
 #imageCropOverlay .image-crop-stage {
-  grid-row: 3 !important;
+  grid-row: 4 !important;
   width: 100% !important;
   height: 100% !important;
   min-height: 220px !important;
@@ -11892,7 +11892,7 @@ body[data-theme="high-contrast"] {
 }
 
 #imageCropOverlay .image-crop-actions {
-  grid-row: 4 !important;
+  grid-row: 5 !important;
   position: static !important;
   inset: auto !important;
   display: grid !important;
@@ -11920,7 +11920,7 @@ body[data-theme="high-contrast"] {
 
 @media (max-width: 720px) {
   #imageCropOverlay .image-crop-panel {
-    grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto !important;
     gap: 8px !important;
   }
 
@@ -11935,6 +11935,76 @@ body[data-theme="high-contrast"] {
 #imageCropOverlay .image-crop-actions {
     gap: 8px !important;
     padding-top: 8px !important;
+  }
+}
+
+/* v125: individual image optimisation uses the same presets as Storage tools. */
+#imageCropOverlay .image-optimisation-control {
+  grid-row: 3 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 8px 10px 9px !important;
+  border: 1px solid var(--mnv-ui-line-soft, rgba(15,23,42,0.12)) !important;
+  border-radius: var(--mnv-ui-radius, 8px) !important;
+  background: color-mix(in srgb, var(--theme-button-surface, #ffffff) 88%, var(--primary-color, #4caf50) 12%) !important;
+}
+
+#imageCropOverlay .image-optimisation-control legend {
+  padding: 0 6px !important;
+  color: var(--mnv-ui-text, #1f2937) !important;
+  font-size: 0.92rem !important;
+  font-weight: 800 !important;
+}
+
+#imageCropOverlay .image-optimisation-options {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+}
+
+#imageCropOverlay .image-optimisation-option {
+  min-width: 0 !important;
+  min-height: 42px !important;
+  padding: 7px 9px !important;
+  border: 1px solid color-mix(in srgb, var(--primary-color, #4caf50) 28%, rgba(15,23,42,0.12)) !important;
+  border-radius: 7px !important;
+  background: var(--theme-button-surface, #ffffff) !important;
+  color: var(--mnv-ui-text, #1f2937) !important;
+  font: inherit !important;
+  font-weight: 750 !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  cursor: pointer !important;
+}
+
+#imageCropOverlay .image-optimisation-option.active {
+  border-color: var(--primary-color, #4caf50) !important;
+  background: color-mix(in srgb, var(--primary-color, #4caf50) 18%, #ffffff) !important;
+  box-shadow: inset 0 0 0 1px var(--primary-color, #4caf50) !important;
+}
+
+#imageCropOverlay #imageOptimisationHelp {
+  display: block !important;
+  margin-top: 7px !important;
+  color: var(--theme-muted-text, #53606d) !important;
+  font-size: 0.84rem !important;
+  line-height: 1.25 !important;
+}
+
+@media (max-width: 720px) {
+  #imageCropOverlay .image-optimisation-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #imageCropOverlay .image-optimisation-option {
+    min-height: 38px !important;
+    padding: 5px 7px !important;
+    font-size: 0.82rem !important;
+  }
+
+  #imageCropOverlay #imageOptimisationHelp {
+    display: none !important;
   }
 }
 

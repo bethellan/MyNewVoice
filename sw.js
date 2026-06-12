@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v124: Settings dashboard and Content Editor are true full-screen screens with internal scrolling; v114 locked viewport retained; schema, media and speech unchanged.
-const CACHE_NAME = 'mynewvoice-v124-settings-fullscreen-real-screen';
+// v125: Individual image imports can use the same optimisation presets as the Storage compression tools.
+const CACHE_NAME = 'mynewvoice-v125-individual-image-optimisation';
 const urlsToCache = [
   './',
   './index.html',
