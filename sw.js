@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v125: Individual image imports can use the same optimisation presets as the Storage compression tools.
-const CACHE_NAME = 'mynewvoice-v125-individual-image-optimisation';
+// v126: Optional main-screen Yes / No quick buttons.
+const CACHE_NAME = 'mynewvoice-v126-yes-no-quick-buttons';
 const urlsToCache = [
   './',
   './index.html',

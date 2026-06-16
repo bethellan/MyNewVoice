@@ -12634,3 +12634,58 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
     grid-template-columns: 1fr;
   }
 }
+
+/* v126: optional main-screen Yes / No quick buttons. */
+.quick-communication-strip {
+  width: min(100%, 620px);
+  margin: clamp(8px, 1.2vw, 14px) auto clamp(12px, 1.8vw, 22px);
+  padding: clamp(7px, 1vw, 11px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(6px, 1vw, 10px);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.88);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+  box-sizing: border-box;
+}
+
+.quick-communication-strip[hidden] {
+  display: none !important;
+}
+
+.quick-strip-button {
+  min-width: 0;
+  min-height: clamp(54px, 7vw, 72px);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: clamp(1.05rem, 2.1vw, 1.45rem);
+  font-weight: 850;
+  line-height: 1.08;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  touch-action: manipulation;
+}
+
+.quick-strip-button.yes {
+  border: 2px solid #7fcca0;
+  background: linear-gradient(180deg, #f5fff7, #dff4e4);
+  color: #185c2b;
+}
+
+.quick-strip-button.no {
+  border: 2px solid #8eafd2;
+  background: linear-gradient(180deg, #f5f9ff, #dfeaf7);
+  color: #1e426a;
+}
+
+.quick-strip-button:focus-visible {
+  outline: 4px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.quick-strip-label {
+  display: block;
+  overflow-wrap: anywhere;
+}

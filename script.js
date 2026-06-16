@@ -2,7 +2,7 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v125: Adds individual image-size choices to the existing crop flow and shares those presets with the Storage compression tools. */
+/* v126: Adds optional main-screen Yes / No quick buttons without changing phrase/menu JSON. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -181,7 +181,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v125';
+const CURRENT_APP_VERSION = 'v126';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
@@ -228,7 +228,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v125';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v126';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -1332,6 +1332,11 @@ function ensureSettingsOverlay() {
                             <option value="sci-fi">Sci-Fi Console</option>
                             <option value="high-contrast">High Contrast</option>
                         </select>
+                        <label for="settingsQuickYesNoEnabled">Yes / No quick buttons</label>
+                        <select id="settingsQuickYesNoEnabled" class="settings-select">
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
+                        </select>
                     </div>
                 </details>
 
@@ -1564,6 +1569,12 @@ function ensureSettingsOverlay() {
             appSettings.theme = THEMES.has(event.target.value) ? event.target.value : DEFAULT_APP_SETTINGS.theme;
             saveAppSettings({ render: true });
             showToast(`Theme saved: ${THEME_LABELS[appSettings.theme] || 'Classic'}`, 'success');
+            return;
+        }
+        if (event.target && event.target.id === 'settingsQuickYesNoEnabled') {
+            appSettings.quickYesNoEnabled = event.target.value === 'on';
+            saveAppSettings({ render: true });
+            showToast(appSettings.quickYesNoEnabled ? 'Yes / No buttons on' : 'Yes / No buttons off', 'success');
             return;
         }
         if (event.target && event.target.id === 'settingsPressActivation') {
@@ -3313,6 +3324,7 @@ const DEFAULT_APP_SETTINGS = {
     displayMode: 'simple-list',
     theme: 'default',
     pressActivation: 'normal',
+    quickYesNoEnabled: false,
     autoUpdateCheck: false,
     popupCloseDelaySeconds: 2,
     popupCloseMode: 'timed',
@@ -3458,6 +3470,7 @@ function normaliseAppSettings(rawSettings) {
     const pressActivation = Object.prototype.hasOwnProperty.call(PRESS_ACTIVATION_DELAYS, raw.pressActivation)
         ? raw.pressActivation
         : DEFAULT_APP_SETTINGS.pressActivation;
+    const quickYesNoEnabled = raw.quickYesNoEnabled === true || raw.quickYesNoEnabled === 'on';
     const autoUpdateCheck = false;
     const speechEnabled = raw.speechEnabled !== false && raw.speechEnabled !== 'off';
     const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
@@ -3472,7 +3485,7 @@ function normaliseAppSettings(rawSettings) {
         text: String(rawIntro.text || '').slice(0, 500),
         fallbackIcon: String(rawIntro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
     };
-    return { displayMode, theme, pressActivation, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
+    return { displayMode, theme, pressActivation, quickYesNoEnabled, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
 }
 
 function applyAppTheme() {
@@ -3532,6 +3545,8 @@ function updateSettingsControls() {
     if (displayModeSelect) displayModeSelect.value = appSettings.displayMode;
     const themeSelect = document.getElementById('settingsTheme');
     if (themeSelect) themeSelect.value = appSettings.theme;
+    const quickYesNoSelect = document.getElementById('settingsQuickYesNoEnabled');
+    if (quickYesNoSelect) quickYesNoSelect.value = appSettings.quickYesNoEnabled ? 'on' : 'off';
     const pressActivationSelect = document.getElementById('settingsPressActivation');
     if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
     const speechEnabledSelect = document.getElementById('settingsSpeechEnabled');
@@ -3814,6 +3829,48 @@ function hideIntroductionHeaderButton() {
         }
     }
     if (messageText) messageText.hidden = false;
+}
+
+function ensureQuickYesNoStrip() {
+    let strip = document.getElementById('quickYesNoStrip');
+    if (strip) return strip;
+    strip = document.createElement('div');
+    strip.id = 'quickYesNoStrip';
+    strip.className = 'quick-communication-strip';
+    strip.setAttribute('aria-label', 'Yes and No quick buttons');
+    const messageBar = document.getElementById('messageBar');
+    if (messageBar && messageBar.parentNode) {
+        messageBar.parentNode.insertBefore(strip, messageBar.nextSibling);
+    } else {
+        document.body.insertBefore(strip, document.body.firstChild);
+    }
+    return strip;
+}
+
+function makeQuickYesNoButton(label, phraseText, className) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `quick-strip-button ${className}`;
+    button.innerHTML = `<span class="quick-strip-label">${escapeHtml(label)}</span>`;
+    attachPhraseActivation(button, {
+        id: `quick_yes_no_${className}`,
+        text: phraseText,
+        image: '',
+        icon: label,
+        category: 'quick',
+        virtual: true
+    });
+    return button;
+}
+
+function renderQuickYesNoStrip() {
+    const strip = ensureQuickYesNoStrip();
+    const visible = normaliseAppSettings(appSettings).quickYesNoEnabled === true && isMainScreenHeaderActive();
+    strip.hidden = !visible;
+    strip.innerHTML = '';
+    if (!visible) return;
+    strip.appendChild(makeQuickYesNoButton('Yes', 'Yes.', 'yes'));
+    strip.appendChild(makeQuickYesNoButton('No', 'No.', 'no'));
 }
 
 function getPressActivationDelay() {
@@ -6532,6 +6589,7 @@ function showMainMenu() {
     }
 
     renderIntroductionHeaderButton();
+    renderQuickYesNoStrip();
 
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
@@ -6550,6 +6608,7 @@ function showCategorySubmenu(category) {
     currentViewCategory = category;
     document.body.classList.add('submenu-open');
     setMessageBarText(meta.label);
+    renderQuickYesNoStrip();
 
     if (messageBar) messageBar.classList.add('submenu-titlebar');
     hideIntroductionHeaderButton();
