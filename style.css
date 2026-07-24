@@ -3465,30 +3465,6 @@ button:active,
 .voice-status-badge {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
 }
-
-
-
-/* V91 iPhone/iPad QA pass: keep fixed action rows visible above the home indicator
-   without adding extra side gutters to the main Dad-facing menu. */
-@supports (padding: max(0px)) {
-  .editor-bottom-actions.compact-save-actions,
-  .introduction-save-row.compact-save-actions,
-  .settings-standard-actionbar.compact-save-actions,
-  .private-setup-footer.editor-bottom-actions,
-  #passwordModal .modal-actions {
-    padding-bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px)) !important;
-  }
-}
-
-/* V91: reduce iOS accidental horizontal rubber-band/jitter while preserving vertical scroll. */
-.tab-container,
-.grid,
-.settings-scroll,
-.management-panel,
-.modal-content {
-  overscroll-behavior-x: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .tab,
   .grid-button,
@@ -6595,30 +6571,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
     font-size: clamp(1.32rem, 6.5vw, 2.05rem) !important;
   }
 }
-
-
-
-/* V91 iPhone/iPad QA pass: keep fixed action rows visible above the home indicator
-   without adding extra side gutters to the main Dad-facing menu. */
-@supports (padding: max(0px)) {
-  .editor-bottom-actions.compact-save-actions,
-  .introduction-save-row.compact-save-actions,
-  .settings-standard-actionbar.compact-save-actions,
-  .private-setup-footer.editor-bottom-actions,
-  #passwordModal .modal-actions {
-    padding-bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px)) !important;
-  }
-}
-
-/* V91: reduce iOS accidental horizontal rubber-band/jitter while preserving vertical scroll. */
-.tab-container,
-.grid,
-.settings-scroll,
-.management-panel,
-.modal-content {
-  overscroll-behavior-x: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .tab,
   .grid-button,
