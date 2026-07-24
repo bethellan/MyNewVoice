@@ -1,5 +1,5 @@
-<!--
-Copyright © Andrew Bethell. All rights reserved.
+﻿<!--
+Copyright Â© Andrew Bethell. All rights reserved.
 Created by Andrew Bethell in his own time for his father following a stroke.
 -->
 <!DOCTYPE html>
@@ -18,19 +18,30 @@ Created by Andrew Bethell in his own time for his father following a stroke.
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Copyright © Andrew Bethell. All rights reserved. Created by Andrew Bethell in his own time for his father following a stroke. -->
+    <!-- Copyright Â© Andrew Bethell. All rights reserved. Created by Andrew Bethell in his own time for his father following a stroke. -->
     <div class="container">
         <!-- Toast Notifications -->
         <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
         <!-- Auto-Save Indicator -->
 
 	<div id="autosaveIndicator" class="autosave-indicator" aria-live="polite" aria-atomic="true">
-  	💾 Saved
+        ðŸ’¾ Saved
 	</div>
 
-        <!-- Message Display Bar -->
+        <!-- Main app bar -->
+        <header class="mnv-app-bar" aria-label="MyNewVoice controls">
+            <div class="mnv-brand" aria-label="MyNewVoice">
+                <span class="mnv-logo" aria-hidden="true"><img src="assets/icon-192.png" alt=""></span>
+                <span class="mnv-brand-name">MyNewVoice</span>
+            </div>
+            <button type="button" id="displayModeCycle" class="mnv-view-cycle" data-display-mode-cycle aria-label="Change view">View: List</button>
+            <button type="button" id="gridLabelsToggle" class="mnv-label-toggle" data-grid-labels-toggle hidden>Images + text</button>
+            <button id="managementToggle" class="management-toggle" title="Settings" aria-label="Open settings">⚙</button>
+        </header>
+
+        <!-- Message Display Bar: kept for older render/state ownership; visually retired by the app bar. -->
         <div id="messageBar" role="status" aria-live="polite">
-            <button id="backToMenu" class="back-to-menu title-back-to-menu" type="button" aria-label="Return to main menu" hidden>←</button>
+            <button id="backToMenu" class="back-to-menu title-back-to-menu" type="button" aria-label="Return to main menu" hidden>â†</button>
             <p id="messageBarText">Select a button to speak...</p>
         </div>
         
@@ -40,10 +51,6 @@ Created by Andrew Bethell in his own time for his father following a stroke.
             <p>Loading...</p>
         </div>
         
-        <!-- Management Toggle Button -->
-        <button id="managementToggle" class="management-toggle" title="Settings" aria-label="Open settings">
-            ⚙️
-        </button>
         <!-- Settings is the only main-screen control. About, maintenance, photo/voice setup and content setup are accessed from Settings. -->
 
         <!-- Tab Navigation -->
@@ -88,8 +95,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
             <div class="modal-content about-content">
                 <h3 id="aboutModalTitle">About MyNewVoice</h3>
                 <p>MyNewVoice was created by Andrew Bethell for his father following a stroke, in the hope of helping him engage with people and the world in a better way.</p>
-                <p><strong>Copyright © Andrew Bethell. All rights reserved.</strong></p>
-                <p><strong id="aboutVersionText">Version: v125</strong></p>
+                <p><strong>Copyright Â© Andrew Bethell. All rights reserved.</strong></p>
+                <p><strong id="aboutVersionText">Version: v134</strong></p>
                 <section class="about-summary-block" aria-label="Backup size summary">
                     <h4>Backup size</h4>
                     <div id="aboutStorageSummary"><p class="settings-help">Open Information to calculate backup size.</p></div>
@@ -105,7 +112,7 @@ Created by Andrew Bethell in his own time for his father following a stroke.
             </div>
         </div>
 
-        <!-- Content Management Overlay — content is rendered dynamically by renderContentManagementPanel() -->
+        <!-- Content Management Overlay â€” content is rendered dynamically by renderContentManagementPanel() -->
         <div id="managementOverlay" class="management-overlay">
             <div id="managementPanel" class="management-panel" role="dialog" aria-labelledby="managementPanelTitle" aria-modal="true">
                 <!-- Populated by script.js -->

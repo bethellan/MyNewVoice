@@ -2,7 +2,14 @@
 
 // v83 import/export reliability fix; keeps v82 submenu delete reliability and iPhone safe-area header fix
 
-/* v125: Adds individual image-size choices to the existing crop flow and shares those presets with the Storage compression tools. */
+/* v126: Adds optional main-screen Yes / No quick buttons without changing phrase/menu JSON. */
+/* v127: Adds optional iPad/tablet submenu image grid without changing phrase/menu JSON. */
+/* v128: Promotes grid to a cross-device view with app bar controls and image-only tiles. */
+/* v129: Refines grid controls, popup timer, tile labels and grid long-press editing. */
+/* v130: Standardises grid tile and image sizing across screens. */
+/* v131: Restores grid cell flow and tightens the app bar controls. */
+/* v132: Isolates grid tile layout from older submenu row CSS. */
+/* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -181,7 +188,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v125';
+const CURRENT_APP_VERSION = 'v134';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
@@ -228,7 +235,7 @@ const PRIVATE_CROP_OUTPUTS = {
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v125';
+const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v134';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -272,6 +279,7 @@ function renderMyPeopleRelationshipSelect(phrase, category) {
     `;
 }
 let pendingPasswordAction = 'management';
+let pendingGridEditorAction = null;
 let returnToSettingsEntryAfterPasswordCancel = false;
 let privateSetupSelectedItem = null;
 let privateMediaDbPromise = null;
@@ -1320,8 +1328,9 @@ function ensureSettingsOverlay() {
                     <div class="settings-v115-form-grid">
                         <label for="settingsDisplayMode">View</label>
                         <select id="settingsDisplayMode" class="settings-select">
-                            <option value="menu">Menu view</option>
                             <option value="simple-list">List view</option>
+                            <option value="menu">Menu view</option>
+                            <option value="grid">Grid view</option>
                         </select>
                         <label for="settingsTheme">Theme</label>
                         <select id="settingsTheme" class="settings-select">
@@ -1331,6 +1340,16 @@ function ensureSettingsOverlay() {
                             <option value="soft-garden">Soft Garden</option>
                             <option value="sci-fi">Sci-Fi Console</option>
                             <option value="high-contrast">High Contrast</option>
+                        </select>
+                        <label for="settingsQuickYesNoEnabled">Yes / No quick buttons</label>
+                        <select id="settingsQuickYesNoEnabled" class="settings-select">
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
+                        </select>
+                        <label for="settingsGridLabelsVisible">Grid labels</label>
+                        <select id="settingsGridLabelsVisible" class="settings-select">
+                            <option value="on">Images + text</option>
+                            <option value="off">Images only</option>
                         </select>
                     </div>
                 </details>
@@ -1557,13 +1576,25 @@ function ensureSettingsOverlay() {
         if (event.target && event.target.id === 'settingsDisplayMode') {
             appSettings.displayMode = event.target.value;
             saveAppSettings();
-            showToast(appSettings.displayMode === 'simple-list' ? 'List view on' : 'Menu view on', 'success');
+            showToast(getDisplayModeToast(appSettings.displayMode), 'success');
             return;
         }
         if (event.target && event.target.id === 'settingsTheme') {
             appSettings.theme = THEMES.has(event.target.value) ? event.target.value : DEFAULT_APP_SETTINGS.theme;
             saveAppSettings({ render: true });
             showToast(`Theme saved: ${THEME_LABELS[appSettings.theme] || 'Classic'}`, 'success');
+            return;
+        }
+        if (event.target && event.target.id === 'settingsQuickYesNoEnabled') {
+            appSettings.quickYesNoEnabled = event.target.value === 'on';
+            saveAppSettings({ render: true });
+            showToast(appSettings.quickYesNoEnabled ? 'Yes / No buttons on' : 'Yes / No buttons off', 'success');
+            return;
+        }
+        if (event.target && event.target.id === 'settingsGridLabelsVisible') {
+            appSettings.gridLabelsVisible = event.target.value !== 'off';
+            saveAppSettings({ render: true });
+            showToast(appSettings.gridLabelsVisible ? 'Grid text shown' : 'Grid images only', 'success');
             return;
         }
         if (event.target && event.target.id === 'settingsPressActivation') {
@@ -3313,6 +3344,8 @@ const DEFAULT_APP_SETTINGS = {
     displayMode: 'simple-list',
     theme: 'default',
     pressActivation: 'normal',
+    quickYesNoEnabled: false,
+    gridLabelsVisible: true,
     autoUpdateCheck: false,
     popupCloseDelaySeconds: 2,
     popupCloseMode: 'timed',
@@ -3327,7 +3360,7 @@ const DEFAULT_APP_SETTINGS = {
         fallbackIcon: '👋'
     }
 };
-const DISPLAY_MODES = new Set(['menu', 'simple-list']);
+const DISPLAY_MODES = new Set(['menu', 'simple-list', 'grid']);
 const THEMES = new Set(['default', 'sunny-day', 'ocean-calm', 'soft-garden', 'sci-fi', 'high-contrast']);
 const LEGACY_THEME_ALIASES = {
     'gentle-morning': 'sunny-day',
@@ -3453,11 +3486,16 @@ let suppressNextPhraseClick = false;
 
 function normaliseAppSettings(rawSettings) {
     const raw = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
-    const displayMode = DISPLAY_MODES.has(raw.displayMode) ? raw.displayMode : DEFAULT_APP_SETTINGS.displayMode;
+    const legacyGridEnabled = raw.ipadImageGridEnabled === true || raw.ipadImageGridEnabled === 'on';
+    const displayMode = legacyGridEnabled
+        ? 'grid'
+        : (DISPLAY_MODES.has(raw.displayMode) ? raw.displayMode : DEFAULT_APP_SETTINGS.displayMode);
     const theme = normaliseThemeName(raw.theme);
     const pressActivation = Object.prototype.hasOwnProperty.call(PRESS_ACTIVATION_DELAYS, raw.pressActivation)
         ? raw.pressActivation
         : DEFAULT_APP_SETTINGS.pressActivation;
+    const quickYesNoEnabled = raw.quickYesNoEnabled === true || raw.quickYesNoEnabled === 'on';
+    const gridLabelsVisible = raw.gridLabelsVisible !== false && raw.gridLabelsVisible !== 'off';
     const autoUpdateCheck = false;
     const speechEnabled = raw.speechEnabled !== false && raw.speechEnabled !== 'off';
     const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
@@ -3472,7 +3510,13 @@ function normaliseAppSettings(rawSettings) {
         text: String(rawIntro.text || '').slice(0, 500),
         fallbackIcon: String(rawIntro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
     };
-    return { displayMode, theme, pressActivation, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
+    return { displayMode, theme, pressActivation, quickYesNoEnabled, gridLabelsVisible, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
+}
+
+function getDisplayModeToast(displayMode) {
+    if (displayMode === 'grid') return 'Grid view on';
+    if (displayMode === 'menu') return 'Menu view on';
+    return 'List view on';
 }
 
 function applyAppTheme() {
@@ -3486,7 +3530,7 @@ function getPopupCloseDelayMs() {
 }
 
 function shouldUseManualPopupClose() {
-    return !isSpeechOutputEnabled();
+    return false;
 }
 
 function getIntroductionSettings() {
@@ -3532,6 +3576,13 @@ function updateSettingsControls() {
     if (displayModeSelect) displayModeSelect.value = appSettings.displayMode;
     const themeSelect = document.getElementById('settingsTheme');
     if (themeSelect) themeSelect.value = appSettings.theme;
+    const quickYesNoSelect = document.getElementById('settingsQuickYesNoEnabled');
+    if (quickYesNoSelect) quickYesNoSelect.value = appSettings.quickYesNoEnabled ? 'on' : 'off';
+    const gridLabelsSelect = document.getElementById('settingsGridLabelsVisible');
+    if (gridLabelsSelect) {
+        gridLabelsSelect.value = appSettings.gridLabelsVisible === false ? 'off' : 'on';
+        gridLabelsSelect.disabled = appSettings.displayMode !== 'grid';
+    }
     const pressActivationSelect = document.getElementById('settingsPressActivation');
     if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
     const speechEnabledSelect = document.getElementById('settingsSpeechEnabled');
@@ -3561,7 +3612,63 @@ function updateSettingsControls() {
     if (introIcon) introIcon.value = appSettings.introduction.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon;
     const autoUpdateSelect = document.getElementById('settingsAutoUpdateCheck');
     if (autoUpdateSelect) autoUpdateSelect.value = appSettings.autoUpdateCheck ? 'on' : 'off';
+    updateAppBarControls();
     updateIntroductionSettingsPanelVisibility();
+}
+
+function updateAppBarControls() {
+    appSettings = normaliseAppSettings(appSettings);
+    document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
+    document.body.classList.toggle('grid-labels-hidden', appSettings.displayMode === 'grid' && appSettings.gridLabelsVisible === false);
+
+    const cycleButton = document.getElementById('displayModeCycle');
+    if (cycleButton) {
+        cycleButton.textContent = getDisplayModeLabel(appSettings.displayMode);
+        cycleButton.dataset.currentDisplayMode = appSettings.displayMode;
+    }
+
+    const labelToggle = document.getElementById('gridLabelsToggle');
+    if (labelToggle) {
+        const gridActive = appSettings.displayMode === 'grid';
+        labelToggle.hidden = !gridActive;
+        labelToggle.textContent = appSettings.gridLabelsVisible === false ? 'Images only' : 'Images + text';
+        labelToggle.setAttribute('aria-pressed', appSettings.gridLabelsVisible === false ? 'true' : 'false');
+    }
+}
+
+function getDisplayModeLabel(displayMode) {
+    if (displayMode === 'grid') return 'Grid View';
+    if (displayMode === 'menu') return 'Menu View';
+    return 'List View';
+}
+
+function getNextDisplayMode(displayMode) {
+    const modes = ['simple-list', 'menu', 'grid'];
+    const index = modes.indexOf(displayMode);
+    return modes[(index + 1 + modes.length) % modes.length];
+}
+
+function setDisplayModeFromAppBar(displayMode) {
+    if (!DISPLAY_MODES.has(displayMode)) return;
+    appSettings.displayMode = displayMode;
+    saveAppSettings({ render: true });
+    showToast(getDisplayModeToast(displayMode), 'success');
+}
+
+function cycleDisplayModeFromAppBar() {
+    setDisplayModeFromAppBar(getNextDisplayMode(normaliseAppSettings(appSettings).displayMode));
+}
+
+function toggleGridLabelsFromAppBar() {
+    appSettings.gridLabelsVisible = normaliseAppSettings(appSettings).gridLabelsVisible === false;
+    const categoryToKeep = currentViewCategory;
+    saveAppSettings({ render: false });
+    if (normaliseAppSettings(appSettings).displayMode === 'grid' && categoryToKeep) {
+        showCategorySubmenu(categoryToKeep);
+    } else {
+        showMainMenu();
+    }
+    showToast(appSettings.gridLabelsVisible ? 'Grid text shown' : 'Grid images only', 'success');
 }
 
 function updateIntroductionSettingsPanelVisibility() {
@@ -3816,6 +3923,48 @@ function hideIntroductionHeaderButton() {
     if (messageText) messageText.hidden = false;
 }
 
+function ensureQuickYesNoStrip() {
+    let strip = document.getElementById('quickYesNoStrip');
+    if (strip) return strip;
+    strip = document.createElement('div');
+    strip.id = 'quickYesNoStrip';
+    strip.className = 'quick-communication-strip';
+    strip.setAttribute('aria-label', 'Yes and No quick buttons');
+    const messageBar = document.getElementById('messageBar');
+    if (messageBar && messageBar.parentNode) {
+        messageBar.parentNode.insertBefore(strip, messageBar.nextSibling);
+    } else {
+        document.body.insertBefore(strip, document.body.firstChild);
+    }
+    return strip;
+}
+
+function makeQuickYesNoButton(label, phraseText, className) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `quick-strip-button ${className}`;
+    button.innerHTML = `<span class="quick-strip-label">${escapeHtml(label)}</span>`;
+    attachPhraseActivation(button, {
+        id: `quick_yes_no_${className}`,
+        text: phraseText,
+        image: '',
+        icon: label,
+        category: 'quick',
+        virtual: true
+    });
+    return button;
+}
+
+function renderQuickYesNoStrip() {
+    const strip = ensureQuickYesNoStrip();
+    const visible = normaliseAppSettings(appSettings).quickYesNoEnabled === true && isMainScreenHeaderActive();
+    strip.hidden = !visible;
+    strip.innerHTML = '';
+    if (!visible) return;
+    strip.appendChild(makeQuickYesNoButton('Yes', 'Yes.', 'yes'));
+    strip.appendChild(makeQuickYesNoButton('No', 'No.', 'no'));
+}
+
 function getPressActivationDelay() {
     const mode = normaliseAppSettings(appSettings).pressActivation;
     return PRESS_ACTIVATION_DELAYS[mode] || 0;
@@ -3942,6 +4091,12 @@ function attachPhraseActivation(button, buttonInfo) {
     const activate = () => speakPhrase(buttonInfo, button);
 
     button.addEventListener('click', (event) => {
+        if (suppressNextPhraseClick) {
+            suppressNextPhraseClick = false;
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
         if (getPressActivationDelay() > 0) {
             event.preventDefault();
             event.stopPropagation();
@@ -3982,6 +4137,50 @@ function attachPhraseActivation(button, buttonInfo) {
             event.preventDefault();
             activate();
         }
+    });
+}
+
+function attachGridEditorLongPress(element, action) {
+    if (!element || !action) return;
+    let timer = null;
+    let startX = 0;
+    let startY = 0;
+    const holdMs = 4000;
+    const cancelDistance = 12;
+
+    const clearTimer = () => {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
+        element.classList.remove('grid-editor-hold');
+    };
+
+    element.addEventListener('pointerdown', (event) => {
+        if (normaliseAppSettings(appSettings).displayMode !== 'grid') return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        startX = event.clientX || 0;
+        startY = event.clientY || 0;
+        clearTimer();
+        element.classList.add('grid-editor-hold');
+        timer = setTimeout(() => {
+            timer = null;
+            element.classList.remove('grid-editor-hold');
+            pendingGridEditorAction = { ...action };
+            suppressNextPhraseClick = true;
+            showPasswordModal(action.type === 'add' ? 'gridAddPhrase' : 'gridEditPhrase');
+        }, holdMs);
+    });
+
+    element.addEventListener('pointermove', (event) => {
+        if (!timer) return;
+        const dx = Math.abs((event.clientX || 0) - startX);
+        const dy = Math.abs((event.clientY || 0) - startY);
+        if (dx > cancelDistance || dy > cancelDistance) clearTimer();
+    });
+
+    ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture'].forEach(eventName => {
+        element.addEventListener(eventName, clearTimer);
     });
 }
 
@@ -4599,6 +4798,8 @@ function showPasswordModal(action = 'management') {
         importFullBackup: ['Complete Backup Access', 'Enter password to import menus, phrases, photos, and recorded voices:'],
         clearAllImages: ['Remove All Images', 'Enter password to remove all locally saved images from this device:'],
         clearAllAudio: ['Remove All Audio', 'Enter password to remove all locally recorded voices from this device:'],
+        gridEditPhrase: ['Edit Phrase Access', 'Enter password to edit this phrase:'],
+        gridAddPhrase: ['Add Phrase Access', 'Enter password to add a phrase to this topic:'],
         management: ['Content Management Access', 'Enter password to manage content:'],
         settings: ['Settings Access', 'Enter password to open Settings:']
     };
@@ -4643,6 +4844,8 @@ function checkPassword() {
             confirmAndClearAllImages();
         } else if (action === 'clearAllAudio') {
             confirmAndClearAllAudio();
+        } else if (action === 'gridEditPhrase' || action === 'gridAddPhrase') {
+            openGridEditorAction(action);
         } else {
             showManagementPanel();
         }
@@ -4651,6 +4854,32 @@ function checkPassword() {
         document.getElementById('passwordInput').value = '';
         // v112: avoid auto-focusing password input on iPhone to prevent viewport jump.
     }
+}
+
+function openGridEditorAction(action) {
+    const pending = pendingGridEditorAction;
+    pendingGridEditorAction = null;
+    if (!pending || !pending.category || !buttonData[pending.category]) {
+        showToast('Could not find that grid item to edit.', 'warning');
+        return;
+    }
+
+    contentEditorScreen = 'phrases';
+    contentSetupPhraseCategory = pending.category;
+
+    let phraseId = pending.phraseId;
+    if (action === 'gridAddPhrase' || pending.type === 'add') {
+        const id = generateNextPhraseId(pending.category);
+        const phrase = { text: 'New phrase', image: `${id}.jpg`, id };
+        buttonData[pending.category].push(phrase);
+        phraseId = id;
+        saveDataToStorage();
+    }
+
+    contentSetupSelected = { type: 'phrase', category: pending.category, phraseId };
+    showManagementPanel();
+    focusNewContentEditorRow('phrase', phraseId);
+    showToast(action === 'gridAddPhrase' || pending.type === 'add' ? 'New phrase added for editing' : 'Phrase ready to edit', 'success');
 }
 
 // === MANAGEMENT OVERLAY SHOW/HIDE ===
@@ -6507,13 +6736,25 @@ function showMainMenu() {
 
     currentViewCategory = null;
     document.body.classList.remove('submenu-open');
+    document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
     setMessageBarText(MAIN_MENU_PROMPT);
 
     if (messageBar) messageBar.classList.remove('submenu-titlebar');
     if (backToMenu) backToMenu.hidden = true;
     if (header) header.hidden = true;
 
-    if (appSettings.displayMode === 'simple-list') {
+    if (appSettings.displayMode === 'grid') {
+        const firstCategory = getCategoryOrder({ includeHidden: false })[0];
+        if (firstCategory) {
+            showCategorySubmenu(firstCategory);
+            return;
+        }
+        if (menu) menu.hidden = true;
+        if (grid) {
+            grid.hidden = false;
+            grid.innerHTML = '<p class="empty-category-message">No visible communication sections. Open Content Management to show at least one section.</p>';
+        }
+    } else if (appSettings.displayMode === 'simple-list') {
         if (menu) menu.hidden = true;
         if (grid) {
             grid.hidden = false;
@@ -6531,7 +6772,9 @@ function showMainMenu() {
         }
     }
 
-    renderIntroductionHeaderButton();
+    hideIntroductionHeaderButton();
+    renderQuickYesNoStrip();
+    updateAppBarControls();
 
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
@@ -6549,11 +6792,13 @@ function showCategorySubmenu(category) {
 
     currentViewCategory = category;
     document.body.classList.add('submenu-open');
+    document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
     setMessageBarText(meta.label);
+    renderQuickYesNoStrip();
 
     if (messageBar) messageBar.classList.add('submenu-titlebar');
     hideIntroductionHeaderButton();
-    if (backToMenu) backToMenu.hidden = false;
+    if (backToMenu) backToMenu.hidden = appSettings.displayMode === 'grid';
     if (menu) menu.hidden = true;
     if (header) header.hidden = true;
     if (grid) {
@@ -6568,7 +6813,12 @@ function showCategorySubmenu(category) {
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 
-    populateGrid(category);
+    if (shouldUseIpadImageGrid()) {
+        renderIpadImageGrid(category);
+    } else {
+        populateGrid(category);
+    }
+    updateAppBarControls();
 }
 
 function createButtonMediaHTML(buttonInfo, category, extraClass = '') {
@@ -6613,6 +6863,178 @@ function applyCategoryThemeToElement(element, category) {
     element.style.setProperty('--category-color', meta.colour);
     element.style.setProperty('--category-dark', meta.dark);
     element.style.setProperty('--category-soft', meta.soft);
+}
+
+function isTabletImageGridViewport() {
+    const width = Math.min(
+        window.innerWidth || Number.POSITIVE_INFINITY,
+        document.documentElement.clientWidth || Number.POSITIVE_INFINITY
+    );
+    const height = Math.min(
+        window.innerHeight || Number.POSITIVE_INFINITY,
+        document.documentElement.clientHeight || Number.POSITIVE_INFINITY
+    );
+    const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    return coarsePointer && width >= 700 && width <= 1180 && height >= 520;
+}
+
+function shouldUseIpadImageGrid() {
+    return normaliseAppSettings(appSettings).displayMode === 'grid';
+}
+
+function getAdjacentVisibleCategory(category, direction) {
+    const categories = getCategoryOrder({ includeHidden: false });
+    if (categories.length < 2) return null;
+    const index = categories.indexOf(category);
+    if (index < 0) return null;
+    return categories[(index + direction + categories.length) % categories.length];
+}
+
+function removeIpadImageGridHandlers(grid) {
+    if (!grid || !grid._ipadImageGridCleanup) return;
+    grid._ipadImageGridCleanup();
+    grid._ipadImageGridCleanup = null;
+}
+
+function attachIpadImageGridSwipe(grid, category) {
+    if (!grid) return;
+    removeIpadImageGridHandlers(grid);
+
+    let startX = 0;
+    let startY = 0;
+
+    const onTouchStart = (event) => {
+        const touch = event.touches && event.touches[0];
+        if (!touch) return;
+        startX = touch.clientX;
+        startY = touch.clientY;
+    };
+
+    const onTouchEnd = (event) => {
+        const touch = event.changedTouches && event.changedTouches[0];
+        if (!touch) return;
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        if (Math.abs(deltaX) < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4) return;
+        const nextCategory = getAdjacentVisibleCategory(category, deltaX < 0 ? 1 : -1);
+        if (nextCategory) showCategorySubmenu(nextCategory);
+    };
+
+    grid.addEventListener('touchstart', onTouchStart, { passive: true });
+    grid.addEventListener('touchend', onTouchEnd, { passive: true });
+    grid._ipadImageGridCleanup = () => {
+        grid.removeEventListener('touchstart', onTouchStart);
+        grid.removeEventListener('touchend', onTouchEnd);
+    };
+}
+
+function createIpadImageGridPhraseButton(buttonInfo, category) {
+    const phraseForClick = { ...buttonInfo, category };
+    const button = document.createElement('button');
+    button.type = 'button';
+    const text = String(buttonInfo.text || '');
+    const isMyPeople = category === 'MyPeople';
+    button.className = `ipad-image-grid-button${isMyPeople ? ' person-grid-button' : ''}`;
+    if (text.length > 34) button.classList.add('long-label');
+    if (text.length > 52) button.classList.add('very-long-label');
+    button.dataset.category = category;
+    if (buttonInfo.id) button.dataset.phraseId = buttonInfo.id;
+    applyCategoryThemeToElement(button, category);
+
+    const safeText = escapeHtml(text);
+    const mediaClass = isMyPeople ? 'person-button-media ipad-image-grid-media' : 'ipad-image-grid-media';
+    button.innerHTML = `
+        ${createButtonMediaHTML(buttonInfo, category, mediaClass)}
+        <span>${safeText}</span>
+    `;
+
+    attachPhraseActivation(button, phraseForClick);
+    attachGridEditorLongPress(button, { type: 'edit', category, phraseId: buttonInfo.id || '' });
+    applyPrivateImagesIn(button);
+    return button;
+}
+
+function createIpadImageGridAddButton(category) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ipad-image-grid-button ipad-grid-add-button';
+    button.dataset.category = category;
+    applyCategoryThemeToElement(button, category);
+    button.innerHTML = `
+        <span class="ipad-grid-add-icon" aria-hidden="true">+</span>
+        <span>Add phrase</span>
+    `;
+    attachGridEditorLongPress(button, { type: 'add', category });
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        showToast('Hold for 4 seconds to add a phrase', 'info');
+    });
+    return button;
+}
+
+function renderIpadImageGrid(category) {
+    const grid = document.getElementById('buttonGrid');
+    if (!grid) return;
+
+    removeIpadImageGridHandlers(grid);
+    grid.innerHTML = '';
+    grid.hidden = false;
+    grid.dataset.view = 'ipad-image-grid';
+    grid.classList.remove('simple-vocabulary-list');
+    grid.classList.add('ipad-image-grid');
+    applyCategoryTheme(category);
+
+    const previousCategory = getAdjacentVisibleCategory(category, -1);
+    const nextCategory = getAdjacentVisibleCategory(category, 1);
+    const previousMeta = previousCategory ? getCategoryMeta(previousCategory) : null;
+    const nextMeta = nextCategory ? getCategoryMeta(nextCategory) : null;
+
+    const nav = document.createElement('div');
+    nav.className = 'ipad-topic-nav';
+
+    const previousButton = document.createElement('button');
+    previousButton.type = 'button';
+    previousButton.className = 'ipad-topic-arrow';
+    previousButton.textContent = '‹';
+    previousButton.setAttribute('aria-label', previousMeta ? `Previous topic: ${previousMeta.label}` : 'Previous topic');
+    previousButton.disabled = !previousCategory;
+    if (previousCategory) previousButton.addEventListener('click', () => showCategorySubmenu(previousCategory));
+
+    const title = document.createElement('div');
+    title.className = 'ipad-topic-nav-title';
+    title.textContent = getCategoryMeta(category).label;
+
+    const nextButton = document.createElement('button');
+    nextButton.type = 'button';
+    nextButton.className = 'ipad-topic-arrow';
+    nextButton.textContent = '›';
+    nextButton.setAttribute('aria-label', nextMeta ? `Next topic: ${nextMeta.label}` : 'Next topic');
+    nextButton.disabled = !nextCategory;
+    if (nextCategory) nextButton.addEventListener('click', () => showCategorySubmenu(nextCategory));
+
+    nav.appendChild(previousButton);
+    nav.appendChild(title);
+    nav.appendChild(nextButton);
+    grid.appendChild(nav);
+
+    const panel = document.createElement('div');
+    panel.className = 'ipad-image-grid-panel';
+    const buttons = getDisplayPhrases(category);
+
+    if (!buttonData[category]) {
+        panel.innerHTML = '<p class="empty-category-message">Category not found.</p>';
+    } else if (!buttons.length) {
+        panel.innerHTML = '<p class="empty-category-message">No visible phrases in this section.</p>';
+        panel.appendChild(createIpadImageGridAddButton(category));
+    } else {
+        buttons.forEach(buttonInfo => {
+            panel.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
+        });
+        panel.appendChild(createIpadImageGridAddButton(category));
+    }
+
+    grid.appendChild(panel);
+    attachIpadImageGridSwipe(grid, category);
 }
 
 function createPhraseButton(buttonInfo, category) {
@@ -6695,6 +7117,7 @@ function renderSimpleVocabularyView(grid) {
 
 function populateGrid(category) {
     const grid = document.getElementById('buttonGrid');
+    removeIpadImageGridHandlers(grid);
     grid.innerHTML = '';
     applyCategoryTheme(category);
 
@@ -6712,6 +7135,7 @@ function populateGrid(category) {
 
     grid.removeAttribute('data-view');
     grid.classList.remove('simple-vocabulary-list');
+    grid.classList.remove('ipad-image-grid');
 
     buttons.forEach(buttonInfo => {
         grid.appendChild(createPhraseButton(buttonInfo, category));
@@ -6884,7 +7308,6 @@ function getPhrasePopupOverlay() {
                 <img class="phrase-popup-image" alt="" decoding="async">
             </div>
             <div class="phrase-popup-text" aria-live="assertive"></div>
-            <div class="phrase-popup-close-hint" aria-hidden="true">Press anywhere to close this message</div>
         </div>
     `;
 
@@ -7964,6 +8387,22 @@ installSingleButtonPressVisualGuard();
             }
             showSettingsEntryOverlay();
         }, { passive: false });
+    }
+
+    const displayModeCycle = document.getElementById('displayModeCycle');
+    if (displayModeCycle) {
+        displayModeCycle.addEventListener('click', (event) => {
+            event.preventDefault();
+            cycleDisplayModeFromAppBar();
+        });
+    }
+
+    const gridLabelsToggle = document.getElementById('gridLabelsToggle');
+    if (gridLabelsToggle) {
+        gridLabelsToggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            toggleGridLabelsFromAppBar();
+        });
     }
     
 

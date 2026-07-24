@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v125: Individual image imports can use the same optimisation presets as the Storage compression tools.
-const CACHE_NAME = 'mynewvoice-v125-individual-image-optimisation';
+// v134: Consolidated grid tile CSS ownership.
+const CACHE_NAME = 'mynewvoice-v134-grid-css-consolidation';
 const urlsToCache = [
   './',
   './index.html',
