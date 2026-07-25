@@ -10468,61 +10468,6 @@ body[data-theme="sci-fi"] .private-media-shell.private-media-pending::after {
     radial-gradient(circle at 74% 68%, rgba(77,208,225,0.12), transparent 28%) !important;
 }
 
-/* v124 follow-up: main menu cards use a title-first modern card composition. */
-body:not(.submenu-open) .tab-container {
-  background: rgba(255, 255, 255, 0.64) !important;
-  border: 1px solid rgba(44, 91, 61, 0.16) !important;
-  border-radius: clamp(22px, 4vw, 34px) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 12px 28px rgba(31,45,61,0.08) !important;
-  padding: clamp(12px, 2vw, 18px) !important;
-  gap: clamp(14px, 2.6vw, 22px) !important;
-}
-
-body:not(.submenu-open) .tab {
-  display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) !important;
-  min-height: clamp(218px, 35vw, 320px) !important;
-  border: 1px solid color-mix(in srgb, var(--tab-color, #4a7c59) 34%, white) !important;
-  border-radius: clamp(20px, 3.2vw, 30px) !important;
-  background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--tab-soft, #eef8f2) 34%, #ffffff) 100%) !important;
-  box-shadow: 0 10px 24px rgba(31,45,61,0.09) !important;
-  overflow: hidden !important;
-}
-
-body:not(.submenu-open) .menu-card-title {
-  grid-row: 1 !important;
-  min-height: clamp(54px, 7vw, 72px) !important;
-  padding: clamp(9px, 1.8vw, 13px) clamp(14px, 3vw, 22px) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.18)),
-    linear-gradient(135deg, color-mix(in srgb, var(--tab-color, #4a7c59) 88%, white), var(--tab-dark, #255f3e)) !important;
-  color: #ffffff !important;
-  border-top: 0 !important;
-  border-bottom: 1px solid color-mix(in srgb, var(--tab-dark, #255f3e) 25%, white) !important;
-  font-size: clamp(1.22rem, 3.9vw, 2rem) !important;
-  font-weight: 950 !important;
-  line-height: 1.08 !important;
-  letter-spacing: 0 !important;
-  text-align: center !important;
-  overflow-wrap: normal !important;
-  word-break: normal !important;
-}
-
-body:not(.submenu-open) .menu-card-image-shell {
-  grid-row: 2 !important;
-  min-height: clamp(152px, 26vw, 238px) !important;
-  border-bottom: 0 !important;
-  background: color-mix(in srgb, var(--tab-soft, #eef8f2) 76%, white) !important;
-}
-
-body:not(.submenu-open) .menu-card-image-shell img {
-  object-fit: cover !important;
-  object-position: center center !important;
-}
-
 /* v124 follow-up: refreshed theme choices, driven by the existing Settings theme owner. */
 body[data-theme="sunny-day"] {
   --theme-page-surface: linear-gradient(180deg, #FFFDF7, #F1FAFF);
@@ -10715,9 +10660,14 @@ body:not(.submenu-open) .tab-container {
   border: 1px solid var(--mnv-ui-line-soft) !important;
   border-radius: var(--mnv-ui-radius) !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), var(--mnv-ui-shadow-soft) !important;
+  padding: clamp(12px, 2vw, 18px) !important;
+  gap: clamp(14px, 2.6vw, 22px) !important;
 }
 
 body:not(.submenu-open) .tab {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  min-height: clamp(218px, 35vw, 320px) !important;
   border: 1px solid color-mix(in srgb, var(--tab-color, var(--primary-color)) 32%, rgba(15,23,42,0.14)) !important;
   border-radius: var(--mnv-ui-radius) !important;
   background:
@@ -10725,6 +10675,7 @@ body:not(.submenu-open) .tab {
     var(--theme-button-surface, #ffffff) !important;
   box-shadow: var(--mnv-ui-shadow-soft) !important;
   transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease !important;
+  overflow: hidden !important;
 }
 
 body:not(.submenu-open) .tab:hover,
@@ -10735,6 +10686,10 @@ body:not(.submenu-open) .tab:focus-visible {
 }
 
 body:not(.submenu-open) .menu-card-title {
+  grid-row: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   min-height: 64px !important;
   padding: 12px 16px !important;
   background:
@@ -10742,15 +10697,28 @@ body:not(.submenu-open) .menu-card-title {
     linear-gradient(135deg, var(--tab-color, var(--primary-color)), var(--tab-dark, var(--primary-dark))) !important;
   border-bottom: 1px solid rgba(255,255,255,0.22) !important;
   color: #ffffff !important;
+  border-top: 0 !important;
   font-size: 1.45rem !important;
+  font-weight: 950 !important;
   line-height: 1.1 !important;
   letter-spacing: 0 !important;
+  text-align: center !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
 }
 
 body:not(.submenu-open) .menu-card-image-shell {
+  grid-row: 2 !important;
+  min-height: clamp(152px, 26vw, 238px) !important;
+  border-bottom: 0 !important;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.08)),
     color-mix(in srgb, var(--tab-soft, #eef8f2) 72%, #ffffff) !important;
+}
+
+body:not(.submenu-open) .menu-card-image-shell img {
+  object-fit: cover !important;
+  object-position: center center !important;
 }
 
 .grid-button {
