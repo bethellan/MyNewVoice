@@ -11085,21 +11085,6 @@ body[data-theme="high-contrast"] {
 }
 
 /* v124 hotfix: Settings polish must not clip real controls. */
-#settingsOverlay .settings-v115-dashboard {
-  grid-auto-rows: auto !important;
-  align-items: start !important;
-}
-
-#settingsOverlay .settings-v115-card,
-#settingsOverlay .settings-v115-priority-card,
-#settingsOverlay .settings-section-backup,
-#settingsOverlay .settings-v115-foldout {
-  height: auto !important;
-  min-height: fit-content !important;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
 #settingsOverlay .settings-v115-card-head,
 #settingsOverlay .settings-v115-actions-two,
 #settingsOverlay .settings-v115-button-row,
@@ -11158,10 +11143,7 @@ body[data-theme="high-contrast"] {
 #settingsOverlay .settings-v115-foldout {
   display: block !important;
   width: 100% !important;
-  min-height: 0 !important;
   margin: 0 !important;
-  overflow: hidden !important;
-  contain: layout paint !important;
 }
 
 #settingsOverlay .settings-v115-card > *,
