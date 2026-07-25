@@ -12102,7 +12102,7 @@ body {
 
 .mnv-app-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(88px, 8.5vw, 116px) clamp(44px, 5vw, 54px);
+  grid-template-columns: minmax(0, 1fr) repeat(4, clamp(42px, 5vw, 54px));
   align-items: center;
   gap: clamp(6px, 1vw, 12px);
   min-height: clamp(58px, 7vw, 74px);
@@ -12120,7 +12120,7 @@ body {
 }
 
 .mnv-app-bar.grid-label-toggle-visible {
-  grid-template-columns: minmax(0, 1fr) clamp(88px, 8.5vw, 116px) clamp(104px, 10vw, 136px) clamp(44px, 5vw, 54px);
+  grid-template-columns: minmax(0, 1fr) repeat(4, clamp(42px, 5vw, 54px));
 }
 
 .mnv-brand {
@@ -12163,6 +12163,7 @@ body {
 
 .mnv-view-cycle,
 .mnv-label-toggle,
+.mnv-edit-toggle,
 .mnv-app-bar .management-toggle {
   position: static !important;
   transform: none !important;
@@ -12170,13 +12171,13 @@ body {
   min-height: clamp(42px, 5.5vw, 54px) !important;
   height: auto !important;
   width: auto !important;
-  padding: 8px 12px !important;
+  padding: 8px !important;
   border-radius: 9px !important;
   border: 1px solid var(--mnv-ui-line-soft, rgba(15,23,42,0.12)) !important;
   background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.68)) !important;
   color: var(--mnv-ui-text, #233042) !important;
   font: inherit !important;
-  font-size: clamp(0.86rem, 1.45vw, 1rem) !important;
+  font-size: clamp(1.18rem, 2vw, 1.42rem) !important;
   font-weight: 850 !important;
   line-height: 1.05 !important;
   box-shadow: none !important;
@@ -12185,7 +12186,8 @@ body {
 }
 
 .mnv-view-cycle,
-.mnv-label-toggle {
+.mnv-label-toggle,
+.mnv-edit-toggle {
   width: 100% !important;
   inline-size: auto !important;
   min-width: 0 !important;
@@ -12194,7 +12196,8 @@ body {
 }
 
 .mnv-view-cycle,
-.mnv-label-toggle[aria-pressed="true"] {
+.mnv-label-toggle[aria-pressed="true"],
+.mnv-edit-toggle.active {
   background: linear-gradient(135deg, var(--primary-color, #3f9f46), var(--primary-dark, #1f5b31)) !important;
   color: #ffffff !important;
   border-color: color-mix(in srgb, var(--primary-color, #3f9f46) 72%, #ffffff) !important;
@@ -12213,7 +12216,7 @@ body {
 
 .mnv-label-toggle:disabled,
 .mnv-label-toggle[aria-disabled="true"] {
-  opacity: 0.56;
+  opacity: 0.38;
   cursor: default !important;
   box-shadow: none !important;
 }
@@ -12252,12 +12255,12 @@ body.grid-view-active .tab-container {
   }
 
   .mnv-app-bar {
-    grid-template-columns: minmax(0, 1fr) 82px 42px;
+    grid-template-columns: minmax(0, 1fr) repeat(4, 40px);
     gap: 6px;
   }
 
   .mnv-app-bar.grid-label-toggle-visible {
-    grid-template-columns: minmax(0, 1fr) 82px 98px 42px;
+    grid-template-columns: minmax(0, 1fr) repeat(4, 40px);
   }
 
   .mnv-brand {
@@ -12278,6 +12281,7 @@ body.grid-view-active .tab-container {
 
   .mnv-view-cycle,
   .mnv-label-toggle,
+  .mnv-edit-toggle,
   .mnv-app-bar .management-toggle {
     min-height: 40px !important;
     padding: 7px 8px !important;

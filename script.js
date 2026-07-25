@@ -3485,6 +3485,7 @@ let activePressTimer = null;
 let activePressButton = null;
 let suppressNextPhraseClick = false;
 let suppressNextPhraseClickUntil = 0;
+let editModeUnlocked = false;
 
 function normaliseAppSettings(rawSettings) {
     const raw = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
@@ -3624,9 +3625,20 @@ function updateAppBarControls() {
     document.body.classList.toggle('grid-view-active', gridActive);
     document.body.classList.toggle('grid-labels-hidden', gridActive && appSettings.gridLabelsVisible === false);
 
+    const editButton = document.getElementById('editModeToggle');
+    if (editButton) {
+        editButton.classList.toggle('active', editModeUnlocked);
+        editButton.textContent = editModeUnlocked ? '✓' : '✎';
+        editButton.title = editModeUnlocked ? 'Edit mode on' : 'Unlock edit mode';
+        editButton.setAttribute('aria-label', editModeUnlocked ? 'Turn edit mode off' : 'Unlock edit mode');
+        editButton.setAttribute('aria-pressed', editModeUnlocked ? 'true' : 'false');
+    }
+
     const cycleButton = document.getElementById('displayModeCycle');
     if (cycleButton) {
-        cycleButton.textContent = getDisplayModeLabel(appSettings.displayMode);
+        cycleButton.textContent = getDisplayModeIcon(appSettings.displayMode);
+        cycleButton.title = getDisplayModeLabel(appSettings.displayMode);
+        cycleButton.setAttribute('aria-label', `Current view: ${getDisplayModeLabel(appSettings.displayMode)}. Change view.`);
         cycleButton.dataset.currentDisplayMode = appSettings.displayMode;
     }
 
@@ -3635,12 +3647,19 @@ function updateAppBarControls() {
 
     const labelToggle = document.getElementById('gridLabelsToggle');
     if (labelToggle) {
-        labelToggle.hidden = !gridActive;
         labelToggle.disabled = !gridActive;
         labelToggle.setAttribute('aria-disabled', gridActive ? 'false' : 'true');
-        labelToggle.textContent = appSettings.gridLabelsVisible === false ? 'Images only' : 'Images + text';
+        labelToggle.textContent = appSettings.gridLabelsVisible === false ? '▣' : '▣≡';
+        labelToggle.title = appSettings.gridLabelsVisible === false ? 'Grid images only' : 'Grid images and text';
+        labelToggle.setAttribute('aria-label', appSettings.gridLabelsVisible === false ? 'Grid images only' : 'Grid images and text');
         labelToggle.setAttribute('aria-pressed', appSettings.gridLabelsVisible === false ? 'true' : 'false');
     }
+}
+
+function getDisplayModeIcon(displayMode) {
+    if (displayMode === 'grid') return '▦';
+    if (displayMode === 'menu') return '▤';
+    return '☰';
 }
 
 function getDisplayModeLabel(displayMode) {
@@ -3666,6 +3685,7 @@ function cycleDisplayModeFromAppBar() {
 }
 
 function toggleGridLabelsFromAppBar() {
+    if (normaliseAppSettings(appSettings).displayMode !== 'grid') return;
     appSettings.gridLabelsVisible = normaliseAppSettings(appSettings).gridLabelsVisible === false;
     const categoryToKeep = currentViewCategory;
     saveAppSettings({ render: false, persistContent: false, showSaveIndicator: false });
@@ -3674,6 +3694,20 @@ function toggleGridLabelsFromAppBar() {
     } else {
         showMainMenu();
     }
+}
+
+function setEditModeUnlocked(value) {
+    editModeUnlocked = Boolean(value);
+    updateAppBarControls();
+    showToast(editModeUnlocked ? 'Edit mode on' : 'Edit mode off', editModeUnlocked ? 'success' : 'info');
+}
+
+function toggleEditModeFromAppBar() {
+    if (editModeUnlocked) {
+        setEditModeUnlocked(false);
+        return;
+    }
+    showPasswordModal('editMode');
 }
 
 function updateIntroductionSettingsPanelVisibility() {
@@ -4183,6 +4217,17 @@ function attachGridEditorLongPress(element, action) {
     element.addEventListener('pointerdown', (event) => {
         if (normaliseAppSettings(appSettings).displayMode !== 'grid') return;
         if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (!editModeUnlocked) {
+            startX = event.clientX || 0;
+            startY = event.clientY || 0;
+            clearTimer();
+            timer = setTimeout(() => {
+                timer = null;
+                armNextPhraseClickSuppression(5000);
+                showToast('Turn Edit on to change buttons.', 'info');
+            }, 850);
+            return;
+        }
         startX = event.clientX || 0;
         startY = event.clientY || 0;
         clearTimer();
@@ -4192,7 +4237,11 @@ function attachGridEditorLongPress(element, action) {
             element.classList.remove('grid-editor-hold');
             pendingGridEditorAction = { ...action };
             armNextPhraseClickSuppression();
-            showPasswordModal(action.type === 'add' ? 'gridAddPhrase' : 'gridPhraseOptions');
+            if (action.type === 'add') {
+                openGridEditorAction('gridAddPhrase');
+            } else {
+                showGridPhraseActionMenu();
+            }
         }, holdMs);
     });
 
@@ -4862,6 +4911,7 @@ function showPasswordModal(action = 'management') {
         importFullBackup: ['Complete Backup Access', 'Enter password to import menus, phrases, photos, and recorded voices:'],
         clearAllImages: ['Remove All Images', 'Enter password to remove all locally saved images from this device:'],
         clearAllAudio: ['Remove All Audio', 'Enter password to remove all locally recorded voices from this device:'],
+        editMode: ['Edit Mode Access', 'Enter password to unlock editing:'],
         gridEditPhrase: ['Edit Phrase Access', 'Enter password to edit this phrase:'],
         gridAddPhrase: ['Add Phrase Access', 'Enter password to add a phrase to this topic:'],
         management: ['Content Management Access', 'Enter password to manage content:'],
@@ -4908,6 +4958,8 @@ function checkPassword() {
             confirmAndClearAllImages();
         } else if (action === 'clearAllAudio') {
             confirmAndClearAllAudio();
+        } else if (action === 'editMode') {
+            setEditModeUnlocked(true);
         } else if (action === 'gridPhraseOptions') {
             showGridPhraseActionMenu();
         } else if (action === 'gridEditPhrase' || action === 'gridAddPhrase') {
@@ -8679,6 +8731,14 @@ installSingleButtonPressVisualGuard();
         displayModeCycle.addEventListener('click', (event) => {
             event.preventDefault();
             cycleDisplayModeFromAppBar();
+        });
+    }
+
+    const editModeToggle = document.getElementById('editModeToggle');
+    if (editModeToggle) {
+        editModeToggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            toggleEditModeFromAppBar();
         });
     }
 
