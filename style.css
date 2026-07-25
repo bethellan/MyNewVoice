@@ -12107,15 +12107,15 @@ body {
   gap: clamp(6px, 1vw, 12px);
   min-height: clamp(58px, 7vw, 74px);
   padding: clamp(7px, 1vw, 10px);
-  border: 1px solid color-mix(in srgb, var(--primary-color, #3f9f46) 18%, rgba(15,23,42,0.12));
+  border: 1px solid color-mix(in srgb, var(--primary-color, #3f9f46) 34%, rgba(15,23,42,0.18));
   border-radius: 10px;
   background:
     linear-gradient(90deg,
-      color-mix(in srgb, var(--primary-color, #3f9f46) 10%, rgba(255,255,255,0.96)),
-      rgba(255,255,255,0.88) 44%,
-      color-mix(in srgb, var(--category-light, #f6f1dc) 24%, rgba(255,255,255,0.92))),
+      color-mix(in srgb, var(--primary-color, #3f9f46) 24%, rgba(255,255,255,0.92)),
+      color-mix(in srgb, var(--primary-color, #3f9f46) 12%, rgba(255,255,255,0.88)) 48%,
+      color-mix(in srgb, var(--category-light, #f6f1dc) 36%, rgba(255,255,255,0.90))),
     var(--theme-card-surface, #ffffff);
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255,255,255,0.86);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255,255,255,0.82);
   box-sizing: border-box;
 }
 
@@ -12477,6 +12477,43 @@ body .quick-communication-strip .quick-strip-button.no {
   border: 2px solid #df9b9b !important;
   background: linear-gradient(180deg, #fff8f8, #f7dfdf) !important;
   color: #7b1e1e !important;
+}
+
+/* v137: Yes / No quick popups mirror the quick-button colours. */
+body .phrase-popup-overlay.quick-yes-popup {
+  background: rgba(24, 92, 43, 0.26) !important;
+}
+
+body .phrase-popup-overlay.quick-yes-popup .phrase-popup-card {
+  border-color: #7fcca0 !important;
+  background: linear-gradient(180deg, #f5fff7, #dff4e4) !important;
+}
+
+body .phrase-popup-overlay.quick-yes-popup .phrase-popup-text {
+  color: #185c2b !important;
+}
+
+body .phrase-popup-overlay.quick-yes-popup .phrase-popup-image-shell {
+  border-color: #7fcca0 !important;
+  background: linear-gradient(180deg, #f5fff7, #dff4e4) !important;
+}
+
+body .phrase-popup-overlay.quick-no-popup {
+  background: rgba(123, 30, 30, 0.24) !important;
+}
+
+body .phrase-popup-overlay.quick-no-popup .phrase-popup-card {
+  border-color: #df9b9b !important;
+  background: linear-gradient(180deg, #fff8f8, #f7dfdf) !important;
+}
+
+body .phrase-popup-overlay.quick-no-popup .phrase-popup-text {
+  color: #7b1e1e !important;
+}
+
+body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
+  border-color: #df9b9b !important;
+  background: linear-gradient(180deg, #fff8f8, #f7dfdf) !important;
 }
 
 /* v136: Content Editor phrase cards replace the wide phrase table. */

@@ -188,7 +188,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v134';
+const CURRENT_APP_VERSION = 'v137';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
@@ -7446,7 +7446,7 @@ function hidePhrasePopup(token = null) {
     }
     if (imageShell) imageShell.hidden = true;
 
-    overlay.classList.remove('show', 'manual-close', 'my-people-popup');
+    overlay.classList.remove('show', 'manual-close', 'my-people-popup', 'quick-yes-popup', 'quick-no-popup');
     overlay.removeAttribute('data-popup-category');
     overlay.setAttribute('aria-hidden', 'true');
 }
@@ -7485,6 +7485,8 @@ function showPhrasePopup(buttonInfoOrText) {
 
     overlay.classList.toggle('manual-close', shouldUseManualPopupClose());
     overlay.classList.toggle('introduction-popup', Boolean(buttonInfo && buttonInfo.isIntroduction));
+    overlay.classList.toggle('quick-yes-popup', Boolean(buttonInfo && buttonInfo.id === 'quick_yes_no_yes'));
+    overlay.classList.toggle('quick-no-popup', Boolean(buttonInfo && buttonInfo.id === 'quick_yes_no_no'));
     const popupCategory = buttonInfo && !buttonInfo.isIntroduction
         ? String(buttonInfo.category || findCategoryForPhraseId(buttonInfo.id) || '')
         : '';
