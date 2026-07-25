@@ -4169,7 +4169,7 @@ function attachGridEditorLongPress(element, action) {
             element.classList.remove('grid-editor-hold');
             pendingGridEditorAction = { ...action };
             suppressNextPhraseClick = true;
-            showPasswordModal(action.type === 'add' ? 'gridAddPhrase' : 'gridEditPhrase');
+            showPasswordModal(action.type === 'add' ? 'gridAddPhrase' : 'gridPhraseOptions');
         }, holdMs);
     });
 
@@ -4875,6 +4875,8 @@ function checkPassword() {
             confirmAndClearAllImages();
         } else if (action === 'clearAllAudio') {
             confirmAndClearAllAudio();
+        } else if (action === 'gridPhraseOptions') {
+            showGridPhraseActionMenu();
         } else if (action === 'gridEditPhrase' || action === 'gridAddPhrase') {
             openGridEditorAction(action);
         } else {
@@ -4911,6 +4913,131 @@ function openGridEditorAction(action) {
     showManagementPanel();
     focusNewContentEditorRow('phrase', phraseId);
     showToast(action === 'gridAddPhrase' || pending.type === 'add' ? 'New phrase added for editing' : 'Phrase ready to edit', 'success');
+}
+
+function movePhraseToCategory(sourceCategory, phraseId, targetCategory) {
+    if (!sourceCategory || !targetCategory || sourceCategory === targetCategory) return null;
+    const sourcePhrases = buttonData[sourceCategory] || [];
+    const targetPhrases = buttonData[targetCategory] || [];
+    const sourceIndex = sourcePhrases.findIndex(item => item && item.id === phraseId);
+    if (sourceIndex < 0) return null;
+
+    const [phrase] = sourcePhrases.splice(sourceIndex, 1);
+    targetPhrases.push(phrase);
+    buttonData[targetCategory] = targetPhrases;
+    saveDataToStorage();
+    renderCategoryMenuCards();
+    if (currentViewCategory === sourceCategory) {
+        populateGrid(sourceCategory);
+    } else if (currentViewCategory === targetCategory) {
+        populateGrid(targetCategory);
+    }
+    return phrase;
+}
+
+async function showGridPhraseMoveDialog(pending) {
+    const targets = getCategoryOrder({ includeHidden: true }).filter(category => category !== pending.category && Array.isArray(buttonData[category]));
+    if (!targets.length) {
+        showToast('There is no other submenu to move this phrase to.', 'warning');
+        pendingGridEditorAction = null;
+        return;
+    }
+
+    const phrase = findPhraseById(pending.category, pending.phraseId);
+    const choice = await showContentEditorChoiceDialog({
+        title: 'Move to another submenu',
+        message: `Move "${phrase?.text || 'this phrase'}" to which submenu?`,
+        actions: [
+            ...targets.map((category, index) => ({
+                id: `move-${index}`,
+                label: getCategoryMeta(category).label,
+                className: 'management-btn'
+            })),
+            { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn' }
+        ]
+    });
+
+    if (!choice || choice === 'cancel') {
+        pendingGridEditorAction = null;
+        return;
+    }
+
+    const match = String(choice).match(/^move-(\d+)$/);
+    const targetCategory = match ? targets[Number(match[1])] : '';
+    if (!targetCategory) {
+        pendingGridEditorAction = null;
+        showToast('Could not find that submenu.', 'warning');
+        return;
+    }
+
+    const movedPhrase = movePhraseToCategory(pending.category, pending.phraseId, targetCategory);
+    pendingGridEditorAction = null;
+    if (!movedPhrase) {
+        showToast('Could not move that phrase.', 'warning');
+        return;
+    }
+    showToast(`Moved to ${getCategoryMeta(targetCategory).label}`, 'success');
+}
+
+async function showGridPhraseActionMenu() {
+    const pending = pendingGridEditorAction;
+    if (!pending || !pending.category || !buttonData[pending.category]) {
+        pendingGridEditorAction = null;
+        showToast('Could not find that grid item to edit.', 'warning');
+        return;
+    }
+
+    if (pending.type === 'add') {
+        openGridEditorAction('gridAddPhrase');
+        return;
+    }
+
+    const phrase = findPhraseById(pending.category, pending.phraseId);
+    if (!phrase) {
+        pendingGridEditorAction = null;
+        showToast('Could not find that phrase.', 'warning');
+        return;
+    }
+
+    const choice = await showContentEditorChoiceDialog({
+        title: 'Phrase options',
+        message: `Choose what to do with "${phrase.text || 'this phrase'}".`,
+        actions: [
+            { id: 'edit', label: 'Edit', className: 'management-btn save-private-setup' },
+            { id: 'move', label: 'Move to another submenu', className: 'management-btn' },
+            { id: 'delete', label: 'Delete', className: 'management-btn remove-btn' },
+            { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn' }
+        ]
+    });
+
+    if (choice === 'edit') {
+        openGridEditorAction('gridEditPhrase');
+        return;
+    }
+
+    if (choice === 'move') {
+        await showGridPhraseMoveDialog(pending);
+        return;
+    }
+
+    if (choice === 'delete') {
+        const index = findPhraseIndexForDelete(pending.category, pending.phraseId, null);
+        if (index < 0) {
+            pendingGridEditorAction = null;
+            showToast('Could not find that phrase.', 'warning');
+            return;
+        }
+        if (await confirmDeletePhraseInEditor(phrase.text || pending.phraseId) !== 'delete') {
+            pendingGridEditorAction = null;
+            return;
+        }
+        await deletePhraseAtIndex(pending.category, index);
+        pendingGridEditorAction = null;
+        showToast('Phrase deleted', 'success');
+        return;
+    }
+
+    pendingGridEditorAction = null;
 }
 
 // === MANAGEMENT OVERLAY SHOW/HIDE ===
