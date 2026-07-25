@@ -3486,6 +3486,7 @@ let activePressButton = null;
 let suppressNextPhraseClick = false;
 let suppressNextPhraseClickUntil = 0;
 let editModeUnlocked = false;
+let gridRearrangeState = null;
 
 function normaliseAppSettings(rawSettings) {
     const raw = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
@@ -5017,6 +5018,66 @@ function movePhraseToCategory(sourceCategory, phraseId, targetCategory) {
     return phrase;
 }
 
+function movePhraseWithinCategory(category, phraseId, targetIndex) {
+    const phrases = buttonData[category] || [];
+    const fromIndex = phrases.findIndex(item => item && item.id === phraseId);
+    if (fromIndex < 0) return null;
+    const boundedTarget = Math.max(0, Math.min(Number(targetIndex) || 0, phrases.length));
+    let insertIndex = boundedTarget;
+    const [phrase] = phrases.splice(fromIndex, 1);
+    if (insertIndex > fromIndex) insertIndex -= 1;
+    insertIndex = Math.max(0, Math.min(insertIndex, phrases.length));
+    phrases.splice(insertIndex, 0, phrase);
+    saveDataToStorage();
+    refreshCurrentCategoryView(category);
+    return { phrase, fromIndex, toIndex: insertIndex };
+}
+
+function startGridRearrangeMode(category, phraseId) {
+    const phrase = findPhraseById(category, phraseId);
+    if (!phrase) {
+        pendingGridEditorAction = null;
+        showToast('Could not find that phrase.', 'warning');
+        return;
+    }
+    gridRearrangeState = { category, phraseId };
+    pendingGridEditorAction = null;
+    renderIpadImageGrid(category);
+    showToast(`Choose where to move "${phrase.text || 'this phrase'}".`, 'info');
+}
+
+function cancelGridRearrangeMode() {
+    const category = gridRearrangeState?.category;
+    gridRearrangeState = null;
+    if (category && currentViewCategory === category && shouldUseIpadImageGrid()) {
+        renderIpadImageGrid(category);
+    }
+}
+
+function createIpadGridDropZone(category, index) {
+    const zone = document.createElement('button');
+    zone.type = 'button';
+    zone.className = 'ipad-grid-drop-zone';
+    zone.dataset.dropIndex = String(index);
+    zone.setAttribute('aria-label', `Move selected phrase to position ${index + 1}`);
+    zone.innerHTML = '<span aria-hidden="true"></span>';
+    zone.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!gridRearrangeState || gridRearrangeState.category !== category) return;
+        const movingPhraseId = gridRearrangeState.phraseId;
+        gridRearrangeState = null;
+        const result = movePhraseWithinCategory(category, movingPhraseId, index);
+        if (!result) {
+            showToast('Could not move that phrase.', 'warning');
+            refreshCurrentCategoryView(category);
+            return;
+        }
+        showToast('Phrase moved', 'success');
+    });
+    return zone;
+}
+
 async function showGridPhraseMoveDialog(pending) {
     const targets = getCategoryOrder({ includeHidden: true }).filter(category => category !== pending.category && Array.isArray(buttonData[category]));
     if (!targets.length) {
@@ -5086,6 +5147,7 @@ async function showGridPhraseActionMenu() {
         message: `Choose what to do with "${phrase.text || 'this phrase'}".`,
         actions: [
             { id: 'edit', label: 'Edit', className: 'management-btn save-private-setup' },
+            { id: 'rearrange', label: 'Rearrange on this screen', className: 'management-btn' },
             { id: 'move', label: 'Move to another submenu', className: 'management-btn' },
             { id: 'delete', label: 'Delete', className: 'management-btn remove-btn' },
             { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn' }
@@ -5099,6 +5161,11 @@ async function showGridPhraseActionMenu() {
 
     if (choice === 'move') {
         await showGridPhraseMoveDialog(pending);
+        return;
+    }
+
+    if (choice === 'rearrange') {
+        startGridRearrangeMode(pending.category, pending.phraseId);
         return;
     }
 
@@ -7069,6 +7136,7 @@ function showMainMenu() {
     const messageBar = document.getElementById('messageBar');
     const backToMenu = document.getElementById('backToMenu');
 
+    gridRearrangeState = null;
     currentViewCategory = null;
     document.body.classList.remove('submenu-open');
     document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
@@ -7125,6 +7193,7 @@ function showCategorySubmenu(category) {
     const backToMenu = document.getElementById('backToMenu');
     const meta = getCategoryMeta(category);
 
+    if (gridRearrangeState && gridRearrangeState.category !== category) gridRearrangeState = null;
     currentViewCategory = category;
     document.body.classList.add('submenu-open');
     document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
@@ -7270,6 +7339,8 @@ function createIpadImageGridPhraseButton(buttonInfo, category) {
     const text = String(buttonInfo.text || '');
     const isMyPeople = category === 'MyPeople';
     button.className = `ipad-image-grid-button${isMyPeople ? ' person-grid-button' : ''}`;
+    const isRearrangingThis = gridRearrangeState && gridRearrangeState.category === category && gridRearrangeState.phraseId === buttonInfo.id;
+    if (isRearrangingThis) button.classList.add('grid-rearrange-source');
     if (text.length > 34) button.classList.add('long-label');
     if (text.length > 52) button.classList.add('very-long-label');
     button.dataset.category = category;
@@ -7283,8 +7354,16 @@ function createIpadImageGridPhraseButton(buttonInfo, category) {
         <span>${safeText}</span>
     `;
 
-    attachPhraseActivation(button, phraseForClick);
-    attachGridEditorLongPress(button, { type: 'edit', category, phraseId: buttonInfo.id || '' });
+    if (gridRearrangeState && gridRearrangeState.category === category) {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (isRearrangingThis) cancelGridRearrangeMode();
+        });
+    } else {
+        attachPhraseActivation(button, phraseForClick);
+        attachGridEditorLongPress(button, { type: 'edit', category, phraseId: buttonInfo.id || '' });
+    }
     applyPrivateImagesIn(button);
     return button;
 }
@@ -7357,6 +7436,8 @@ function renderIpadImageGrid(category) {
     const panel = document.createElement('div');
     panel.className = 'ipad-image-grid-panel';
     const buttons = getDisplayPhrases(category);
+    const rearrangingThisCategory = gridRearrangeState && gridRearrangeState.category === category;
+    if (rearrangingThisCategory) panel.classList.add('grid-rearrange-panel');
 
     if (!buttonData[category]) {
         panel.innerHTML = '<p class="empty-category-message">Category not found.</p>';
@@ -7364,10 +7445,15 @@ function renderIpadImageGrid(category) {
         panel.innerHTML = '<p class="empty-category-message">No visible phrases in this section.</p>';
         panel.appendChild(createIpadImageGridAddButton(category));
     } else {
-        buttons.forEach(buttonInfo => {
+        buttons.forEach((buttonInfo, index) => {
+            if (rearrangingThisCategory) panel.appendChild(createIpadGridDropZone(category, index));
             panel.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
         });
-        panel.appendChild(createIpadImageGridAddButton(category));
+        if (rearrangingThisCategory) {
+            panel.appendChild(createIpadGridDropZone(category, buttons.length));
+        } else {
+            panel.appendChild(createIpadImageGridAddButton(category));
+        }
     }
 
     grid.appendChild(panel);
