@@ -804,7 +804,7 @@ function ensureImageCropOverlay() {
             </div>
             <div class="image-crop-actions">
                 <button type="button" class="management-btn close-btn" data-crop-cancel>Cancel</button>
-                <button type="button" class="management-btn" data-crop-save>Save cropped photo</button>
+                <button type="button" class="management-btn save-private-setup" data-crop-save>Save cropped photo</button>
             </div>
         </div>
     `;
@@ -5549,7 +5549,7 @@ function renderContentSelectedEditor() {
             <div class="content-button-row">
                 <button type="button" class="management-btn" data-content-move-category="up" ${index <= 0 ? 'disabled' : ''}>Move up</button>
                 <button type="button" class="management-btn" data-content-move-category="down" ${index >= allCategories.length - 1 ? 'disabled' : ''}>Move down</button>
-                <button type="button" class="management-btn" data-content-save-category>Save</button>
+                <button type="button" class="management-btn save-private-setup" data-content-save-category>Save</button>
             </div>
         `;
     }
@@ -5588,7 +5588,7 @@ function renderContentSelectedEditor() {
         <div class="content-button-row">
             <button type="button" class="management-btn" data-content-move-phrase="up" ${index <= 0 ? 'disabled' : ''}>Move up</button>
             <button type="button" class="management-btn" data-content-move-phrase="down" ${index >= phraseList.length - 1 ? 'disabled' : ''}>Move down</button>
-            <button type="button" class="management-btn" data-content-save-phrase>Save</button>
+            <button type="button" class="management-btn save-private-setup" data-content-save-phrase>Save</button>
             <button type="button" class="management-btn remove-btn" data-content-delete-phrase>Delete phrase</button>
         </div>
     `;
@@ -7295,14 +7295,16 @@ function createIpadImageGridAddButton(category) {
     button.className = 'ipad-image-grid-button ipad-grid-add-button';
     button.dataset.category = category;
     applyCategoryThemeToElement(button, category);
+    const isMyPeople = category === 'MyPeople';
+    const label = isMyPeople ? 'Add person' : 'Add phrase';
     button.innerHTML = `
         <span class="ipad-grid-add-icon" aria-hidden="true">+</span>
-        <span>Add phrase</span>
+        <span>${escapeHtml(label)}</span>
     `;
     attachGridEditorLongPress(button, { type: 'add', category });
     button.addEventListener('click', (event) => {
         event.preventDefault();
-        showToast('Hold for 4 seconds to add a phrase', 'info');
+        showToast(`Hold for 4 seconds to ${isMyPeople ? 'add a person' : 'add a phrase'}`, 'info');
     });
     return button;
 }

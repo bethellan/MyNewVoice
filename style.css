@@ -11886,6 +11886,7 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 
 .content-unsaved-panel {
   width: min(640px, calc(100vw - 36px));
+  max-height: min(82vh, 680px);
   padding: clamp(22px, 4vw, 34px);
   border: 1px solid color-mix(in srgb, var(--primary-color, #4caf50) 22%, rgba(255,255,255,0.82));
   border-radius: 22px;
@@ -11894,6 +11895,9 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
     var(--theme-settings-surface, #ffffff);
   color: var(--mnv-ui-text, #1f2937);
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.30);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .content-unsaved-panel h3 {
@@ -11916,6 +11920,10 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   align-items: stretch;
   gap: 14px;
   margin-top: 24px;
+  padding-right: 3px;
+  max-height: min(48vh, 420px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .content-unsaved-actions[data-action-count="1"] {
@@ -11952,6 +11960,15 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 .content-unsaved-actions .management-btn:focus-visible,
 .content-unsaved-actions .management-btn:active {
   transform: none !important;
+}
+
+.management-btn.close-btn,
+.small-management-btn.close-btn,
+.content-unsaved-actions .management-btn.close-btn {
+  border-color: rgba(71, 85, 105, 0.34) !important;
+  color: #334155 !important;
+  background: linear-gradient(180deg, #f8fafc, #e8eef5) !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08) !important;
 }
 
 @media (max-width: 640px) {
@@ -12349,10 +12366,24 @@ body.grid-view-active .ipad-image-grid-button .ipad-image-grid-media {
 
 body.grid-view-active .ipad-image-grid-button .button-media img,
 body.grid-view-active .ipad-image-grid-button .button-fallback-icon {
-  display: block !important;
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+}
+
+body.grid-view-active .ipad-image-grid-button .button-media img {
+  display: block !important;
+}
+
+body.grid-view-active .ipad-image-grid-button .button-fallback-icon:not([hidden]) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: clamp(4.2rem, 12vw, 8.8rem) !important;
+  line-height: 1 !important;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,255,255,0.92), rgba(248,250,252,0.76) 62%, rgba(226,232,240,0.62)),
+    color-mix(in srgb, var(--category-soft, #eef8ec) 58%, #ffffff) !important;
 }
 
 body.grid-view-active .ipad-image-grid-button > span:not(.ipad-grid-add-icon) {
@@ -12392,6 +12423,10 @@ body.grid-view-active .ipad-image-grid-button.person-grid-button .button-fallbac
 
 body.grid-view-active .ipad-image-grid-button.person-grid-button .button-media img {
   object-fit: cover !important;
+}
+
+body.grid-view-active .ipad-image-grid-button.person-grid-button .button-fallback-icon:not([hidden]) {
+  font-size: clamp(3.6rem, 10vw, 7.4rem) !important;
 }
 
 body.grid-view-active .ipad-image-grid-button.grid-editor-hold {
