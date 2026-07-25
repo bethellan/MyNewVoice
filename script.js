@@ -293,6 +293,7 @@ let privateVoiceKeySet = new Set();
 let privateMediaSizeIndex = new Map();
 let privateMediaIndexReady = false;
 let contentEditorScreen = 'topics';
+let contentEditorOrigin = { type: 'main', category: '', gridScrollTop: 0 };
 let activeSpeechUtterance = null;
 let activePrivateVoiceAudio = null;
 let activePrivateVoiceObjectUrl = '';
@@ -4329,9 +4330,39 @@ function updateContentEditorSaveState() {
         button.setAttribute('aria-hidden', dirty ? 'false' : 'true');
     });
     const settingsBackButton = panel.querySelector('[data-content-back-settings]');
-    if (settingsBackButton) settingsBackButton.textContent = dirty ? 'Cancel' : 'Return to Settings';
+    if (settingsBackButton) settingsBackButton.textContent = dirty ? 'Cancel' : 'Return to App';
     const topicsBackButton = panel.querySelector('[data-content-back-topics]');
     if (topicsBackButton) topicsBackButton.textContent = dirty ? 'Cancel' : 'Back to Sections';
+}
+
+function captureContentEditorOrigin() {
+    const grid = document.getElementById('buttonGrid');
+    const category = currentViewCategory && buttonData[currentViewCategory] ? currentViewCategory : '';
+    return {
+        type: category ? 'category' : 'main',
+        category,
+        gridScrollTop: grid ? grid.scrollTop : 0
+    };
+}
+
+function restoreContentEditorOriginScroll(origin) {
+    const scrollTop = Number(origin && origin.gridScrollTop) || 0;
+    if (!scrollTop) return;
+    requestAnimationFrame(() => {
+        const grid = document.getElementById('buttonGrid');
+        if (grid) grid.scrollTop = scrollTop;
+    });
+}
+
+function returnToContentEditorOrigin() {
+    const origin = contentEditorOrigin || { type: 'main', category: '', gridScrollTop: 0 };
+    hideSettingsOverlay();
+    if (origin.type === 'category' && origin.category && buttonData[origin.category]) {
+        showCategorySubmenu(origin.category);
+    } else {
+        showMainMenu();
+    }
+    restoreContentEditorOriginScroll(origin);
 }
 
 function commitActiveContentEditorField() {
@@ -4370,7 +4401,7 @@ function finishContentEditorNavigation(destination) {
         return;
     }
     hideManagementPanel();
-    showSettingsOverlay();
+    returnToContentEditorOrigin();
 }
 
 function showContentEditorChoiceDialog({
@@ -4899,6 +4930,7 @@ function showManagementPanel() {
         if (overlay.parentElement !== document.body) {
             document.body.appendChild(overlay);
         }
+        contentEditorOrigin = captureContentEditorOrigin();
         document.body.classList.add('content-editor-open');
         markContentEditorClean();
         renderContentManagementPanel();
@@ -5000,7 +5032,7 @@ function renderContentTopicsScreen(panel, allCategories) {
         </div>
 
         <div class="private-setup-footer editor-bottom-actions settings-standard-actionbar compact-save-actions table-editor-footer">
-            <button type="button" class="management-btn close-btn" data-content-back-settings>Return to Settings</button>
+            <button type="button" class="management-btn close-btn" data-content-back-settings>Return to App</button>
             <button type="button" class="management-btn save-private-setup" data-content-save-close>Save Changes</button>
         </div>
     `;
@@ -5372,16 +5404,8 @@ async function handleContentManagementClick(event) {
     if (target.closest('[data-content-save-close]')) {
         commitActiveContentEditorField();
         markContentEditorClean();
-        if (contentEditorScreen === 'phrases') {
-            contentEditorScreen = 'topics';
-            contentSetupSelected = { type: 'category', category: contentSetupPhraseCategory };
-            renderContentManagementPanel();
-            showToast('Phrase changes saved', 'success');
-        } else {
-            hideManagementPanel();
-            showSettingsOverlay();
-            showToast('Content changes saved', 'success');
-        }
+        finishContentEditorNavigation('origin');
+        showToast('Content changes saved', 'success');
         return;
     }
 
