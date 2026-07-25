@@ -2897,7 +2897,7 @@ function ensureFallbackIconOverlay() {
             if (phrase) {
                 phrase.icon = icon;
                 saveDataToStorage();
-                if (currentViewCategory === (target.category || contentSetupPhraseCategory)) populateGrid(target.category || contentSetupPhraseCategory);
+                refreshCurrentCategoryView(target.category || contentSetupPhraseCategory);
             }
         }
         overlay.classList.remove('show'); overlay.style.display = 'none'; window.__mnvIconTarget = null;
@@ -3484,6 +3484,7 @@ let appSettings = { ...DEFAULT_APP_SETTINGS };
 let activePressTimer = null;
 let activePressButton = null;
 let suppressNextPhraseClick = false;
+let suppressNextPhraseClickUntil = 0;
 
 function normaliseAppSettings(rawSettings) {
     const raw = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
@@ -3619,8 +3620,9 @@ function updateSettingsControls() {
 
 function updateAppBarControls() {
     appSettings = normaliseAppSettings(appSettings);
-    document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
-    document.body.classList.toggle('grid-labels-hidden', appSettings.displayMode === 'grid' && appSettings.gridLabelsVisible === false);
+    const gridActive = appSettings.displayMode === 'grid';
+    document.body.classList.toggle('grid-view-active', gridActive);
+    document.body.classList.toggle('grid-labels-hidden', gridActive && appSettings.gridLabelsVisible === false);
 
     const cycleButton = document.getElementById('displayModeCycle');
     if (cycleButton) {
@@ -3628,10 +3630,12 @@ function updateAppBarControls() {
         cycleButton.dataset.currentDisplayMode = appSettings.displayMode;
     }
 
+    const appBar = document.querySelector('.mnv-app-bar');
+    if (appBar) appBar.classList.toggle('grid-label-toggle-visible', gridActive);
+
     const labelToggle = document.getElementById('gridLabelsToggle');
     if (labelToggle) {
-        const gridActive = appSettings.displayMode === 'grid';
-        labelToggle.hidden = false;
+        labelToggle.hidden = !gridActive;
         labelToggle.disabled = !gridActive;
         labelToggle.setAttribute('aria-disabled', gridActive ? 'false' : 'true');
         labelToggle.textContent = appSettings.gridLabelsVisible === false ? 'Images only' : 'Images + text';
@@ -3990,6 +3994,26 @@ function cancelPendingPhrasePress() {
     }
 }
 
+function armNextPhraseClickSuppression(durationMs = 1200) {
+    suppressNextPhraseClick = true;
+    suppressNextPhraseClickUntil = Date.now() + durationMs;
+}
+
+function clearNextPhraseClickSuppression() {
+    suppressNextPhraseClick = false;
+    suppressNextPhraseClickUntil = 0;
+}
+
+function shouldSuppressPhraseClick() {
+    if (!suppressNextPhraseClick) return false;
+    if (suppressNextPhraseClickUntil && Date.now() > suppressNextPhraseClickUntil) {
+        clearNextPhraseClickSuppression();
+        return false;
+    }
+    clearNextPhraseClickSuppression();
+    return true;
+}
+
 
 function installSingleButtonPressVisualGuard() {
     if (document.documentElement.dataset.singlePressGuardInstalled === 'true') return;
@@ -4092,8 +4116,7 @@ function attachPhraseActivation(button, buttonInfo) {
     const activate = () => speakPhrase(buttonInfo, button);
 
     button.addEventListener('click', (event) => {
-        if (suppressNextPhraseClick) {
-            suppressNextPhraseClick = false;
+        if (shouldSuppressPhraseClick()) {
             event.preventDefault();
             event.stopPropagation();
             return;
@@ -4101,7 +4124,7 @@ function attachPhraseActivation(button, buttonInfo) {
         if (getPressActivationDelay() > 0) {
             event.preventDefault();
             event.stopPropagation();
-            if (suppressNextPhraseClick) suppressNextPhraseClick = false;
+            clearNextPhraseClickSuppression();
             return;
         }
         activate();
@@ -4122,7 +4145,7 @@ function attachPhraseActivation(button, buttonInfo) {
             activePressButton = null;
             button.classList.remove('press-waiting');
             button.removeAttribute('data-hold-label');
-            suppressNextPhraseClick = true;
+            armNextPhraseClickSuppression();
             if (pressedButton === button) activate();
         }, delay);
     });
@@ -4168,7 +4191,7 @@ function attachGridEditorLongPress(element, action) {
             timer = null;
             element.classList.remove('grid-editor-hold');
             pendingGridEditorAction = { ...action };
-            suppressNextPhraseClick = true;
+            armNextPhraseClickSuppression();
             showPasswordModal(action.type === 'add' ? 'gridAddPhrase' : 'gridPhraseOptions');
         }, holdMs);
     });
@@ -4383,7 +4406,7 @@ function restoreContentEditorSnapshot() {
         saveDataToStorage();
         renderCategoryMenuCards();
         if (currentViewCategory && buttonData[currentViewCategory]) {
-            populateGrid(currentViewCategory);
+            refreshCurrentCategoryView(currentViewCategory);
         } else {
             showMainMenu();
         }
@@ -4669,6 +4692,16 @@ function findPhraseIndexForDelete(category, phraseId, fallbackIndex) {
     return -1;
 }
 
+function refreshCurrentCategoryView(category) {
+    if (!category || currentViewCategory !== category) return;
+    if (shouldUseIpadImageGrid()) {
+        renderIpadImageGrid(category);
+    } else {
+        populateGrid(category);
+    }
+    updateAppBarControls();
+}
+
 async function deletePhraseAtIndex(category, index) {
     const phrases = buttonData[category] || [];
     if (index < 0 || index >= phrases.length) return null;
@@ -4679,7 +4712,7 @@ async function deletePhraseAtIndex(category, index) {
     ]);
     phrases.splice(index, 1);
     saveDataToStorage();
-    if (currentViewCategory === category) populateGrid(category);
+    refreshCurrentCategoryView(category);
     return phrase;
 }
 
@@ -4927,11 +4960,8 @@ function movePhraseToCategory(sourceCategory, phraseId, targetCategory) {
     buttonData[targetCategory] = targetPhrases;
     saveDataToStorage();
     renderCategoryMenuCards();
-    if (currentViewCategory === sourceCategory) {
-        populateGrid(sourceCategory);
-    } else if (currentViewCategory === targetCategory) {
-        populateGrid(targetCategory);
-    }
+    refreshCurrentCategoryView(sourceCategory);
+    refreshCurrentCategoryView(targetCategory);
     return phrase;
 }
 
@@ -5625,7 +5655,7 @@ async function handleContentManagementClick(event) {
         buttonData[category].push(phrase);
         contentSetupSelected = { type: 'phrase', category, phraseId: id };
         saveDataToStorage();
-        if (currentViewCategory === category) populateGrid(category);
+        refreshCurrentCategoryView(category);
         renderContentManagementPanel();
         focusNewContentEditorRow('phrase', id);
         showToast('New phrase row added. Type the wording into the row.', 'success');
@@ -5673,7 +5703,7 @@ async function handleContentManagementClick(event) {
         const direction = rowMovePhraseButton.dataset.contentMovePhraseRow;
         moveArrayItem(phrases, index, direction === 'up' ? index - 1 : index + 1);
         saveDataToStorage();
-        if (currentViewCategory === contentSetupPhraseCategory) populateGrid(contentSetupPhraseCategory);
+        refreshCurrentCategoryView(contentSetupPhraseCategory);
         renderContentManagementPanel();
         return;
     }
@@ -5749,7 +5779,7 @@ async function handleContentManagementClick(event) {
         const direction = movePhraseButton.dataset.contentMovePhrase;
         moveArrayItem(phrases, index, direction === 'up' ? index - 1 : index + 1);
         saveDataToStorage();
-        if (currentViewCategory === contentSetupSelected.category) populateGrid(contentSetupSelected.category);
+        refreshCurrentCategoryView(contentSetupSelected.category);
         renderContentManagementPanel();
         return;
     }
@@ -5772,7 +5802,7 @@ async function handleContentManagementClick(event) {
         else delete phrase.icon;
         phrase.hidden = Boolean(hiddenInput?.checked);
         saveDataToStorage();
-        if (currentViewCategory === contentSetupSelected.category) populateGrid(contentSetupSelected.category);
+        refreshCurrentCategoryView(contentSetupSelected.category);
         renderContentManagementPanel();
         showToast('Phrase saved', 'success');
         return;
@@ -5812,7 +5842,7 @@ async function handleContentManagementClick(event) {
         saveDataToStorage();
         contentSetupPhraseCategory = category;
         contentSetupSelected = { type: 'phrase', category, phraseId: id };
-        if (currentViewCategory === category) populateGrid(category);
+        refreshCurrentCategoryView(category);
         renderContentManagementPanel();
         showToast(`Phrase added. Photo filename: ${id}.jpg`, 'success');
         return;
@@ -5906,7 +5936,7 @@ function handleContentManagementChange(event) {
         if (phrase) {
             phrase.text = String(event.target.value || '').trim();
             saveDataToStorage();
-            if (currentViewCategory === category) populateGrid(category);
+            refreshCurrentCategoryView(category);
             updateContentEditorSaveState();
         }
         return;
@@ -5921,7 +5951,7 @@ function handleContentManagementChange(event) {
             if (icon) phrase.icon = icon;
             else delete phrase.icon;
             saveDataToStorage();
-            if (currentViewCategory === category) populateGrid(category);
+            refreshCurrentCategoryView(category);
             updateContentEditorSaveState();
         }
         return;
@@ -5936,7 +5966,7 @@ function handleContentManagementChange(event) {
             if (relationship) phrase.relationship = relationship;
             else delete phrase.relationship;
             saveDataToStorage();
-            if (currentViewCategory === category) populateGrid(category);
+            refreshCurrentCategoryView(category);
             updateContentEditorSaveState();
         }
         return;
@@ -5949,7 +5979,7 @@ function handleContentManagementChange(event) {
         if (phrase) {
             phrase.hidden = Boolean(event.target.checked);
             saveDataToStorage();
-            if (currentViewCategory === category) populateGrid(category);
+            refreshCurrentCategoryView(category);
             updateContentEditorSaveState();
         }
         return;
