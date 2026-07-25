@@ -6919,104 +6919,6 @@ body.has-active-press .tab.active-press {
 }
 
 
-/* v102: Apple-style submenu row simplification.
-   Scope: Dad-facing submenu phrase rows only. Preserves behaviour, IDs, speech, media and backup schema. */
-body.submenu-open .grid {
-  gap: clamp(12px, 2.4vw, 18px);
-  padding: clamp(10px, 2.6vw, 18px);
-}
-
-body.submenu-open .grid-button {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(15, 23, 42, 0.10);
-  border-left: 6px solid var(--category-color, #4f8f6b);
-  border-radius: 24px;
-  min-height: clamp(106px, 13vw, 138px);
-  padding: clamp(12px, 2.4vw, 18px);
-  grid-template-columns: clamp(86px, 15vw, 116px) minmax(0, 1fr);
-  column-gap: clamp(14px, 3vw, 22px);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-body.submenu-open .grid-button:hover {
-  transform: translateY(-1px);
-  border-color: rgba(15, 23, 42, 0.12);
-  border-left-color: var(--category-color, #4f8f6b);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.11);
-}
-
-body.submenu-open .grid-button:active,
-body.submenu-open .grid-button.press-active {
-  transform: scale(0.985);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
-}
-
-body.submenu-open .grid-button > span {
-  font-size: clamp(1.24rem, 4.9vw, 1.72rem);
-  font-weight: 760;
-  letter-spacing: -0.015em;
-  color: #16202f;
-  line-height: 1.18;
-}
-
-body.submenu-open .button-media {
-  width: clamp(82px, 15vw, 112px);
-  height: clamp(82px, 15vw, 112px);
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(248,250,252,0.92), rgba(226,232,240,0.92));
-  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
-}
-
-body.submenu-open .grid-button .button-media img {
-  border-radius: 20px;
-}
-
-body.submenu-open .button-fallback-icon {
-  color: var(--category-dark, #25543b);
-  font-size: clamp(2rem, 6vw, 2.8rem);
-}
-
-body.submenu-open .grid-button[data-category="MyPeople"] .button-media,
-body.submenu-open .grid-button[data-category="MyPeople"] .button-media img,
-body.submenu-open .grid-button[data-category="MyPeople"] .button-fallback-icon,
-body.submenu-open [data-category="MyPeople"] .grid-button .button-media,
-body.submenu-open [data-category="MyPeople"] .grid-button .button-media img,
-body.submenu-open [data-category="MyPeople"] .grid-button .button-fallback-icon {
-  border-radius: 50%;
-}
-
-@media (max-width: 520px) {
-  body.submenu-open .grid {
-    gap: 12px;
-    padding: 10px 10px max(18px, env(safe-area-inset-bottom));
-  }
-
-  body.submenu-open .grid-button {
-    border-radius: 22px;
-    min-height: 98px;
-    grid-template-columns: 82px minmax(0, 1fr);
-    column-gap: 14px;
-    padding: 12px;
-  }
-
-  body.submenu-open .button-media {
-    width: 78px;
-    height: 78px;
-    border-radius: 18px;
-  }
-
-  body.submenu-open .grid-button .button-media img {
-    border-radius: 18px;
-  }
-
-  body.submenu-open .grid-button > span {
-    font-size: clamp(1.16rem, 5.2vw, 1.45rem);
-  }
-}
-
-
 /* v103: Unified Apple-style safe-area header polish.
    Scope: top header, back button and settings cog only. */
 :root {
@@ -7392,31 +7294,6 @@ body:not(.submenu-open) .grid-button::after {
     color-mix(in srgb, var(--category-color, #0A84FF) 42%, transparent),
     color-mix(in srgb, var(--category-light, #E8F3FF) 18%, transparent)
   );
-}
-
-/* Submenu rows: stronger but still calm category accent */
-body.submenu-open .grid-button {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.97), rgba(250,252,255,0.94));
-  border-color: rgba(15, 23, 42, 0.085);
-  border-left-color: color-mix(in srgb, var(--category-color, #0A84FF) 92%, #ffffff 8%);
-  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.075);
-}
-
-body.submenu-open .grid-button:hover {
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.11);
-}
-
-body.submenu-open .button-media {
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(255,255,255,0.20) 42%, transparent 68%),
-    linear-gradient(135deg,
-      color-mix(in srgb, var(--category-light, #E8F3FF) 74%, #ffffff 26%),
-      rgba(241,245,249,0.96)
-    );
-  box-shadow:
-    inset 0 0 0 1px rgba(15, 23, 42, 0.075),
-    0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
 /* Popup: warmer premium card while preserving contrast */
@@ -11680,6 +11557,8 @@ body.submenu-open .grid-button {
     color-mix(in srgb, var(--category-soft, #eef8f2) 38%, var(--theme-button-surface, #ffffff)) !important;
   color: var(--mnv-ui-text, #233042) !important;
   box-shadow: 0 7px 18px rgba(15,23,42,0.08) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transform: none !important;
   overflow: hidden !important;
 }
