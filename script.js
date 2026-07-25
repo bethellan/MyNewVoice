@@ -3487,6 +3487,7 @@ let suppressNextPhraseClick = false;
 let suppressNextPhraseClickUntil = 0;
 let editModeUnlocked = false;
 let gridRearrangeState = null;
+let pendingGridTransitionDirection = 0;
 
 function normaliseAppSettings(rawSettings) {
     const raw = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
@@ -4204,7 +4205,7 @@ function attachGridEditorLongPress(element, action) {
     let timer = null;
     let startX = 0;
     let startY = 0;
-    const holdMs = 4000;
+    const holdMs = 2000;
     const cancelDistance = 12;
 
     const clearTimer = () => {
@@ -5054,10 +5055,11 @@ function cancelGridRearrangeMode() {
     }
 }
 
-function createIpadGridDropZone(category, index) {
+function createIpadGridDropZone(category, index, placement = 'before') {
     const zone = document.createElement('button');
     zone.type = 'button';
     zone.className = 'ipad-grid-drop-zone';
+    if (placement === 'after') zone.classList.add('drop-zone-after');
     zone.dataset.dropIndex = String(index);
     zone.setAttribute('aria-label', `Move selected phrase to position ${index + 1}`);
     zone.innerHTML = '<span aria-hidden="true"></span>';
@@ -5066,16 +5068,26 @@ function createIpadGridDropZone(category, index) {
         event.stopPropagation();
         if (!gridRearrangeState || gridRearrangeState.category !== category) return;
         const movingPhraseId = gridRearrangeState.phraseId;
-        gridRearrangeState = null;
         const result = movePhraseWithinCategory(category, movingPhraseId, index);
         if (!result) {
+            gridRearrangeState = null;
             showToast('Could not move that phrase.', 'warning');
             refreshCurrentCategoryView(category);
             return;
         }
-        showToast('Phrase moved', 'success');
+        gridRearrangeState = { category, phraseId: result.phrase.id };
+        showToast('Phrase moved. Tap another button to move it.', 'success');
     });
     return zone;
+}
+
+function createIpadGridRearrangeSlot(buttonInfo, category, index, isLast) {
+    const slot = document.createElement('div');
+    slot.className = 'ipad-grid-rearrange-slot';
+    slot.appendChild(createIpadGridDropZone(category, index));
+    slot.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
+    if (isLast) slot.appendChild(createIpadGridDropZone(category, index + 1, 'after'));
+    return slot;
 }
 
 async function showGridPhraseMoveDialog(pending) {
@@ -7300,6 +7312,31 @@ function removeIpadImageGridHandlers(grid) {
     grid._ipadImageGridCleanup = null;
 }
 
+function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function showCategorySubmenuWithGridTransition(category, direction) {
+    if (direction && shouldUseIpadImageGrid() && !prefersReducedMotion()) {
+        pendingGridTransitionDirection = direction;
+    }
+    showCategorySubmenu(category);
+}
+
+function applyPendingIpadGridTransition(grid) {
+    const direction = pendingGridTransitionDirection;
+    pendingGridTransitionDirection = 0;
+    if (!grid || !direction || prefersReducedMotion()) return;
+
+    const className = direction > 0 ? 'grid-swipe-enter-from-right' : 'grid-swipe-enter-from-left';
+    grid.classList.remove('grid-swipe-enter-from-right', 'grid-swipe-enter-from-left');
+    grid.classList.add(className);
+
+    const clearTransition = () => grid.classList.remove(className);
+    grid.addEventListener('animationend', clearTransition, { once: true });
+    setTimeout(clearTransition, 320);
+}
+
 function attachIpadImageGridSwipe(grid, category) {
     if (!grid) return;
     removeIpadImageGridHandlers(grid);
@@ -7315,13 +7352,15 @@ function attachIpadImageGridSwipe(grid, category) {
     };
 
     const onTouchEnd = (event) => {
+        if (gridRearrangeState) return;
         const touch = event.changedTouches && event.changedTouches[0];
         if (!touch) return;
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
         if (Math.abs(deltaX) < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4) return;
-        const nextCategory = getAdjacentVisibleCategory(category, deltaX < 0 ? 1 : -1);
-        if (nextCategory) showCategorySubmenu(nextCategory);
+        const direction = deltaX < 0 ? 1 : -1;
+        const nextCategory = getAdjacentVisibleCategory(category, direction);
+        if (nextCategory) showCategorySubmenuWithGridTransition(nextCategory, direction);
     };
 
     grid.addEventListener('touchstart', onTouchStart, { passive: true });
@@ -7358,7 +7397,11 @@ function createIpadImageGridPhraseButton(buttonInfo, category) {
         button.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            if (isRearrangingThis) cancelGridRearrangeMode();
+            if (isRearrangingThis) {
+                cancelGridRearrangeMode();
+                return;
+            }
+            if (buttonInfo.id) startGridRearrangeMode(category, buttonInfo.id);
         });
     } else {
         attachPhraseActivation(button, phraseForClick);
@@ -7383,7 +7426,7 @@ function createIpadImageGridAddButton(category) {
     attachGridEditorLongPress(button, { type: 'add', category });
     button.addEventListener('click', (event) => {
         event.preventDefault();
-        showToast(`Hold for 4 seconds to ${isMyPeople ? 'add a person' : 'add a phrase'}`, 'info');
+        showToast(`Hold for 2 seconds to ${isMyPeople ? 'add a person' : 'add a phrase'}`, 'info');
     });
     return button;
 }
@@ -7414,7 +7457,7 @@ function renderIpadImageGrid(category) {
     previousButton.textContent = '‹';
     previousButton.setAttribute('aria-label', previousMeta ? `Previous topic: ${previousMeta.label}` : 'Previous topic');
     previousButton.disabled = !previousCategory;
-    if (previousCategory) previousButton.addEventListener('click', () => showCategorySubmenu(previousCategory));
+    if (previousCategory) previousButton.addEventListener('click', () => showCategorySubmenuWithGridTransition(previousCategory, -1));
 
     const title = document.createElement('div');
     title.className = 'ipad-topic-nav-title';
@@ -7426,7 +7469,7 @@ function renderIpadImageGrid(category) {
     nextButton.textContent = '›';
     nextButton.setAttribute('aria-label', nextMeta ? `Next topic: ${nextMeta.label}` : 'Next topic');
     nextButton.disabled = !nextCategory;
-    if (nextCategory) nextButton.addEventListener('click', () => showCategorySubmenu(nextCategory));
+    if (nextCategory) nextButton.addEventListener('click', () => showCategorySubmenuWithGridTransition(nextCategory, 1));
 
     nav.appendChild(previousButton);
     nav.appendChild(title);
@@ -7446,18 +7489,18 @@ function renderIpadImageGrid(category) {
         panel.appendChild(createIpadImageGridAddButton(category));
     } else {
         buttons.forEach((buttonInfo, index) => {
-            if (rearrangingThisCategory) panel.appendChild(createIpadGridDropZone(category, index));
-            panel.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
+            if (rearrangingThisCategory) {
+                panel.appendChild(createIpadGridRearrangeSlot(buttonInfo, category, index, index === buttons.length - 1));
+            } else {
+                panel.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
+            }
         });
-        if (rearrangingThisCategory) {
-            panel.appendChild(createIpadGridDropZone(category, buttons.length));
-        } else {
-            panel.appendChild(createIpadImageGridAddButton(category));
-        }
+        if (!rearrangingThisCategory) panel.appendChild(createIpadImageGridAddButton(category));
     }
 
     grid.appendChild(panel);
     attachIpadImageGridSwipe(grid, category);
+    applyPendingIpadGridTransition(grid);
 }
 
 function createPhraseButton(buttonInfo, category) {
