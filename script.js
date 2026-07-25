@@ -5020,7 +5020,7 @@ function renderContentPhraseScreen(panel, category) {
         <div class="private-section-details editor-details open-editor-section table-editor-body phrase-table-editor-body">
             <div class="editor-section-title">Submenu phrases</div>
             ${renderContentSectionMediaTotals(category)}
-            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> each phrase stays on one row. If controls are off screen, scroll left or right inside the table.</div>
+            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> tap ... on a phrase card to edit voice, icon, order, visibility or delete options.</div>
             <div class="editor-table-wrap one-row-table-wrap" role="region" aria-label="Phrases in ${escapeHtml(meta.label)}" tabindex="0">
                 ${renderContentPhraseRows(category, phrases)}
             </div>
@@ -5116,6 +5116,102 @@ function renderVoiceStatusBadge(voiceKey) {
 }
 
 function renderContentPhraseRows(category, phrases) {
+    const people = category === 'MyPeople';
+    const cards = phrases.map((phrase, index) => {
+        const active = contentSetupSelected?.type === 'phrase' && contentSetupSelected.category === category && contentSetupSelected.phraseId === phrase.id;
+        const voiceKey = getPrivateMediaKey('voice', phrase);
+        const fallbackIcon = phrase.icon || getFallbackIcon(category, phrase.text || '');
+        const phraseId = phrase.id || '';
+        const expanded = active ? ' open' : '';
+        const expandedState = active ? 'true' : 'false';
+        const detailsId = `phrase-card-details-${category}-${phraseId}`.replace(/[^a-zA-Z0-9_-]/g, '-');
+        return `
+            <article class="content-phrase-card${active ? ' selected-row' : ''}${expanded}" data-phrase-row="${escapeHtml(phraseId)}">
+                <div class="content-phrase-card-main">
+                    <div class="content-phrase-card-picture">
+                        ${renderMediaThumbForManagement('phrase', phraseId, people, fallbackIcon)}
+                    </div>
+                    <div class="content-phrase-card-text">
+                        <input type="text" class="management-input table-title-input" data-content-inline-phrase-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.text || '')}" placeholder="Enter phrase text" aria-label="Phrase text">
+                        <div class="help-text table-id-line">ID: <code>${escapeHtml(phraseId)}</code></div>
+                        ${people ? renderMyPeopleRelationshipSelect(phrase, category) : ''}
+                    </div>
+                    <button type="button" class="content-phrase-card-toggle" data-content-phrase-card-toggle aria-expanded="${expandedState}" aria-controls="${escapeHtml(detailsId)}" aria-label="More options for ${escapeHtml(phrase.text || 'this phrase')}">...</button>
+                </div>
+                <div class="content-phrase-card-details" id="${escapeHtml(detailsId)}" ${active ? '' : 'hidden'}>
+                    <div class="content-phrase-card-divider"></div>
+                    <section class="content-phrase-card-section content-phrase-card-media">
+                        <div class="content-phrase-card-section-title">Picture</div>
+                        <div class="content-phrase-card-support">
+                            ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), 'Image')}
+                        </div>
+                    </section>
+                    <section class="content-phrase-card-section content-phrase-card-voice">
+                        <div class="content-phrase-card-section-title">Voice</div>
+                        <div class="voice-cell-inner">
+                            ${renderVoiceStatusBadge(voiceKey)}
+                            ${renderMediaSizeLine(voiceKey, 'Audio')}
+                            <div class="voice-buttons table-button-stack">
+                                <button type="button" class="management-btn small-management-btn" data-record-voice data-key="${escapeHtml(voiceKey)}" data-text="${escapeHtml(phrase.text || '')}">Record</button>
+                                <button type="button" class="management-btn small-management-btn" data-play-voice data-key="${escapeHtml(voiceKey)}">Play</button>
+                                <button type="button" class="management-btn remove-btn small-management-btn" data-delete-media data-key="${escapeHtml(voiceKey)}">Delete voice</button>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="content-phrase-card-section">
+                        <label class="content-phrase-card-label">Fallback icon</label>
+                        <input type="text" class="management-input icon-input" data-content-inline-phrase-icon="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(phrase.icon || '')}" placeholder="${escapeHtml(fallbackIcon)}" aria-label="Fallback icon">
+                    </section>
+                    <section class="content-phrase-card-section">
+                        <div class="content-phrase-card-section-title">Move</div>
+                        <div class="table-button-stack move-button-stack">
+                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>â†‘</button>
+                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>â†“</button>
+                        </div>
+                    </section>
+                    <section class="content-phrase-card-section">
+                        <label class="content-checkbox-row compact-checkbox"><input type="checkbox" data-content-inline-phrase-hidden="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" ${phrase.hidden ? 'checked' : ''}> Hidden</label>
+                    </section>
+                    <section class="content-phrase-card-section">
+                        <button type="button" class="management-btn remove-btn small-management-btn content-phrase-delete" data-content-delete-phrase-row="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" data-index="${index}">Delete phrase</button>
+                    </section>
+                </div>
+            </article>
+        `;
+    }).join('') || '<div class="empty-table-cell content-phrase-empty">No phrases in this section yet.</div>';
+
+    return `
+        <div class="content-phrase-card-list" data-content-phrase-card-list>
+            ${cards}
+            <div class="management-add-row content-phrase-add-row">
+                <button type="button" class="management-add-line" data-content-add-phrase-row>ï¼‹ Add new phrase</button>
+            </div>
+        </div>
+    `;
+}
+
+function toggleContentPhraseCard(toggleButton) {
+    const list = toggleButton.closest('[data-content-phrase-card-list]');
+    const card = toggleButton.closest('.content-phrase-card');
+    if (!list || !card) return;
+
+    const willOpen = !card.classList.contains('open');
+    list.querySelectorAll('.content-phrase-card.open').forEach(openCard => {
+        if (openCard === card) return;
+        openCard.classList.remove('open');
+        const openToggle = openCard.querySelector('[data-content-phrase-card-toggle]');
+        const openDetails = openCard.querySelector('.content-phrase-card-details');
+        if (openToggle) openToggle.setAttribute('aria-expanded', 'false');
+        if (openDetails) openDetails.hidden = true;
+    });
+
+    card.classList.toggle('open', willOpen);
+    toggleButton.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    const details = card.querySelector('.content-phrase-card-details');
+    if (details) details.hidden = !willOpen;
+}
+
+function renderLegacyContentPhraseRows(category, phrases) {
     const people = category === 'MyPeople';
     const rows = phrases.map((phrase, index) => {
         const active = contentSetupSelected?.type === 'phrase' && contentSetupSelected.category === category && contentSetupSelected.phraseId === phrase.id;
@@ -5286,6 +5382,12 @@ async function handleContentManagementClick(event) {
             showSettingsOverlay();
             showToast('Content changes saved', 'success');
         }
+        return;
+    }
+
+    const phraseCardToggle = target.closest('[data-content-phrase-card-toggle]');
+    if (phraseCardToggle) {
+        toggleContentPhraseCard(phraseCardToggle);
         return;
     }
 
