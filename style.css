@@ -12299,6 +12299,7 @@ body.grid-view-active .ipad-image-grid-panel {
   grid-auto-flow: row !important;
   grid-auto-rows: minmax(min-content, auto) !important;
   align-items: start !important;
+  align-content: start !important;
   gap: clamp(12px, 1.7vw, 20px) !important;
 }
 
