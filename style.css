@@ -1337,7 +1337,6 @@ body {
    without adding extra side gutters to the main Dad-facing menu. */
 @supports (padding: max(0px)) {
   .editor-bottom-actions.compact-save-actions,
-  .introduction-save-row.compact-save-actions,
   .settings-standard-actionbar.compact-save-actions,
   .private-setup-footer.editor-bottom-actions,
   #passwordModal .modal-actions {
@@ -3742,28 +3741,6 @@ button:active,
   padding: 8px 10px;
 }
 
-.introduction-settings-panel {
-  border: 1px solid #d8e1ee;
-  border-radius: 16px;
-  padding: 12px;
-  margin: 10px 0 14px;
-  background: linear-gradient(135deg, #f8fbff, #eef6ff);
-}
-
-.introduction-inline-actions,
-.introduction-save-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin: 8px 0 12px;
-}
-
-.introduction-save-row {
-  justify-content: flex-end;
-  margin-bottom: 0;
-}
-
 .introduction-header-button {
   border: 0;
   border-radius: 16px;
@@ -3817,13 +3794,6 @@ button:active,
   font-size: 0.98rem;
   padding-left: 16px;
   padding-right: 16px;
-}
-
-@media (max-width: 640px) {
-  .introduction-media-actions .management-btn,
-  .introduction-save-row .management-btn {
-    flex: 1 1 160px;
-  }
 }
 
 /* v36 generated speech voice setting - Settings only */
@@ -4904,8 +4874,7 @@ body[data-theme="midnight"] .content-media-summary {
    Standard action rows use Back on the left, Cancel/Save on the right.
    ============================================================================ */
 .settings-standard-actionbar,
-.editor-bottom-actions.settings-standard-actionbar,
-.introduction-save-row.settings-standard-actionbar {
+.editor-bottom-actions.settings-standard-actionbar {
   display: flex !important;
   align-items: center;
   justify-content: space-between;
@@ -4952,8 +4921,7 @@ body[data-theme="midnight"] .content-media-summary {
 
 @media (max-width: 640px) {
   .settings-standard-actionbar,
-  .editor-bottom-actions.settings-standard-actionbar,
-  .introduction-save-row.settings-standard-actionbar {
+  .editor-bottom-actions.settings-standard-actionbar {
     align-items: stretch;
   }
   .settings-action-left,
@@ -5019,8 +4987,7 @@ body[data-theme="midnight"] .content-media-summary {
    Edit screens use one compact Cancel / Save row. Read-only panels keep Back.
    ============================================================================ */
 .compact-save-actions,
-.editor-bottom-actions.compact-save-actions,
-.introduction-save-row.compact-save-actions {
+.editor-bottom-actions.compact-save-actions {
   display: flex !important;
   align-items: center;
   justify-content: flex-end !important;
@@ -5035,8 +5002,7 @@ body[data-theme="midnight"] .content-media-summary {
 
 @media (max-width: 520px) {
   .compact-save-actions,
-  .editor-bottom-actions.compact-save-actions,
-  .introduction-save-row.compact-save-actions {
+  .editor-bottom-actions.compact-save-actions {
     justify-content: stretch !important;
   }
 
@@ -5275,11 +5241,6 @@ body[data-theme="midnight"] .content-media-summary {
 .settings-preferences > .settings-voice-foldout {
   border-top: 1px solid #edf2f8;
   border-bottom: 1px solid #edf2f8;
-}
-
-/* Intro panel gets a top divider */
-.settings-preferences > #introductionSettingsPanel {
-  border-top: 1px solid #edf2f8;
 }
 
 /* Voice foldout padding */
@@ -5522,7 +5483,6 @@ html {
 
 .editor-bottom-actions,
 .editor-bottom-actions.compact-save-actions,
-.introduction-save-row.compact-save-actions,
 .modal-actions,
 .settings-actions {
   position: sticky;
@@ -5554,7 +5514,6 @@ html {
    ============================================================================ */
 .compact-save-actions .management-btn,
 .editor-bottom-actions.compact-save-actions .management-btn,
-.introduction-save-row.compact-save-actions .management-btn,
 .settings-action-right .management-btn {
   flex: 1 1 0;
   min-width: 0;
@@ -5568,7 +5527,6 @@ html {
 @media (min-width: 641px) {
   .compact-save-actions .management-btn,
   .editor-bottom-actions.compact-save-actions .management-btn,
-  .introduction-save-row.compact-save-actions .management-btn,
   .settings-action-right .management-btn {
     max-width: 180px;
   }
@@ -5755,7 +5713,6 @@ body,
 
 /* All Settings/editor save/cancel style rows use one predictable mobile footer. */
 .editor-bottom-actions.compact-save-actions,
-.introduction-save-row.compact-save-actions,
 .settings-standard-actionbar.compact-save-actions,
 .private-setup-footer.editor-bottom-actions,
 #passwordModal .modal-actions {
@@ -5775,7 +5732,6 @@ body,
 
 /* Equal-width action buttons. This covers Cancel/Save and Access/Cancel. */
 .editor-bottom-actions.compact-save-actions .management-btn,
-.introduction-save-row.compact-save-actions .management-btn,
 .settings-standard-actionbar.compact-save-actions .management-btn,
 .private-setup-footer.editor-bottom-actions .management-btn,
 #passwordModal .modal-actions .management-btn {
@@ -5818,7 +5774,6 @@ body,
   }
 
   .editor-bottom-actions.compact-save-actions,
-  .introduction-save-row.compact-save-actions,
   .settings-standard-actionbar.compact-save-actions,
   .private-setup-footer.editor-bottom-actions,
   #passwordModal .modal-actions {
@@ -6244,7 +6199,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
 }
 
 .editor-bottom-actions.compact-save-actions,
-.introduction-save-row.compact-save-actions,
 .settings-standard-actionbar.compact-save-actions,
 .private-setup-footer.editor-bottom-actions,
 #passwordModal .modal-actions {
@@ -6253,7 +6207,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
 }
 
 .editor-bottom-actions.compact-save-actions .management-btn,
-.introduction-save-row.compact-save-actions .management-btn,
 .settings-standard-actionbar.compact-save-actions .management-btn,
 #passwordModal .modal-actions .management-btn {
   flex: 1 1 0 !important;
@@ -7428,7 +7381,6 @@ button.cancel {
 /* Editor pages use one deliberate bottom action bar, fully inside the viewport. */
 .editor-bottom-actions,
 .compact-save-actions,
-.introduction-save-row,
 .content-editor-footer,
 .editor-footer,
 #contentEditorFooter,
@@ -7453,7 +7405,6 @@ button.cancel {
 
 .editor-bottom-actions .management-btn,
 .compact-save-actions .management-btn,
-.introduction-save-row .management-btn,
 .content-editor-footer .management-btn,
 .editor-footer .management-btn,
 #contentEditorFooter .management-btn,
@@ -7482,7 +7433,6 @@ button.cancel {
 @supports (-webkit-touch-callout: none) {
   .editor-bottom-actions,
   .compact-save-actions,
-  .introduction-save-row,
   .content-editor-footer,
   .editor-footer,
   #contentEditorFooter,
@@ -7514,7 +7464,6 @@ button.cancel {
 
   .editor-bottom-actions,
   .compact-save-actions,
-  .introduction-save-row,
   .content-editor-footer,
   .editor-footer,
   #contentEditorFooter,
@@ -7526,7 +7475,6 @@ button.cancel {
 
   .editor-bottom-actions .management-btn,
   .compact-save-actions .management-btn,
-  .introduction-save-row .management-btn,
   .content-editor-footer .management-btn,
   .editor-footer .management-btn,
   #contentEditorFooter .management-btn,
@@ -11305,8 +11253,7 @@ body[data-theme="high-contrast"] {
 
 #settingsOverlay .settings-v115-foldout[open] > .settings-v115-form-grid,
 #settingsOverlay .settings-v115-foldout[open] > .settings-v115-actions-two,
-#settingsOverlay .settings-v115-foldout[open] > .settings-status-panel,
-#settingsOverlay .settings-v115-foldout[open] > .introduction-settings-panel {
+#settingsOverlay .settings-v115-foldout[open] > .settings-status-panel {
   margin-top: 12px !important;
 }
 
