@@ -327,42 +327,6 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Message Bar */
-#messageBar {
-  background: var(--message-bar-bg);
-  border: clamp(2px, 0.5vw, 3px) solid var(--primary-color);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  margin-bottom: var(--space-lg);
-  min-height: clamp(45px, 6vw, 55px);
-  font-size: var(--font-xxl);
-  font-weight: bold;
-  color: #155724;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  flex: 0 0 auto;
-}
-
-#messageBar p,
-#messageBarText {
-  margin: 0;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  line-height: 1.2;
-  text-align: center;
-  width: 100%;
-}
-
-#messageBar.submenu-titlebar {
-  border-color: var(--category-color, var(--primary-color));
-  color: var(--category-dark, #155724);
-}
-
 .title-back-to-menu {
   position: absolute;
   left: var(--space-md);
@@ -2301,66 +2265,6 @@ body[data-theme="dark"] .private-item-button small {
   background: #fff5f5 !important;
 }
 
-
-/* ============================================================================
-   V18 PC TTS + SUBMENU TITLEBAR SPLIT
-   ============================================================================ */
-#messageBar.submenu-titlebar {
-  display: grid;
-  grid-template-columns: clamp(52px, 12vw, 72px) minmax(0, 1fr);
-  align-items: stretch;
-  justify-content: stretch;
-  padding: 0;
-  overflow: hidden;
-  min-height: clamp(52px, 7vw, 62px);
-}
-
-#messageBar.submenu-titlebar .title-back-to-menu {
-  position: static;
-  transform: none;
-  z-index: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  min-height: clamp(52px, 7vw, 62px);
-  padding: 0;
-  margin: 0;
-  border: 0;
-  border-right: 3px solid var(--category-color, var(--primary-color));
-  border-radius: 0;
-  background: var(--category-color, var(--primary-color));
-  color: #ffffff;
-  font-size: clamp(1.4rem, 5vw, 2rem);
-  line-height: 1;
-  box-shadow: none;
-  white-space: nowrap;
-}
-
-#messageBar.submenu-titlebar .title-back-to-menu:hover,
-#messageBar.submenu-titlebar .title-back-to-menu:focus {
-  background: var(--category-dark, var(--primary-dark));
-  color: #ffffff;
-  outline: 3px solid rgba(255,255,255,0.9);
-  outline-offset: -5px;
-}
-
-#messageBar.submenu-titlebar #messageBarText {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  padding: 0 var(--space-md);
-  width: auto;
-  height: 100%;
-  text-align: center;
-}
-
-body:not(.submenu-open) #messageBar {
-  padding: var(--space-md);
-}
-
 /* v19 editor-style content management refinements */
 .settings-actions-compact .settings-action-btn {
     text-align: left;
@@ -4187,19 +4091,6 @@ body[data-theme="midnight"] .settings-action-btn {
   box-shadow: 0 22px 50px rgba(15,23,42,0.24);
 }
 
-#messageBar {
-  background: var(--message-bar-bg);
-  border-color: var(--theme-border-strong);
-  color: var(--text-dark);
-  box-shadow: 0 8px 22px var(--theme-glow), inset 0 1px 0 rgba(255,255,255,0.42);
-}
-
-#messageBar.submenu-titlebar {
-  background: linear-gradient(135deg, var(--category-color, var(--primary-color)), var(--category-dark, var(--primary-dark)));
-  color: var(--text-light);
-  border-color: rgba(255,255,255,0.42);
-}
-
 .title-back-to-menu,
 .back-to-menu,
 .management-toggle,
@@ -4487,35 +4378,6 @@ body[data-theme="midnight"] {
     inset 0 1px 0 var(--v50-edge-highlight),
     inset 0 -18px 36px rgba(15,23,42,0.035);
   backdrop-filter: blur(12px);
-}
-
-#messageBar {
-  border-radius: calc(var(--radius-lg) + 8px);
-  border: 1px solid color-mix(in srgb, var(--primary-color) 64%, rgba(255,255,255,0.42));
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.54), rgba(255,255,255,0.12)),
-    var(--message-bar-bg) !important;
-  box-shadow:
-    0 16px 34px rgba(15,23,42,0.16),
-    inset 0 1px 0 var(--v50-edge-highlight),
-    inset 0 -10px 20px rgba(15,23,42,0.06);
-  color: var(--primary-dark);
-  overflow: hidden;
-}
-
-#messageBar::after {
-  content: "";
-  position: absolute;
-  inset: 1px 1px auto 1px;
-  height: 42%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.48), rgba(255,255,255,0));
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-#messageBar.submenu-titlebar {
-  justify-content: center;
-  color: var(--category-dark, var(--primary-dark));
 }
 
 .title-back-to-menu,
@@ -5312,32 +5174,6 @@ body[data-theme="midnight"] .content-media-summary {
   border-radius: calc(var(--radius-lg) + 5px) !important;
 }
 
-/* Keep the main-page introduction/header area useful but less bulky. */
-#messageBar:not(.submenu-titlebar) {
-  min-height: clamp(84px, 14vw, 118px) !important;
-  padding: clamp(0.45rem, 1.3vw, 0.75rem) clamp(0.6rem, 1.6vw, 0.9rem) !important;
-  gap: clamp(0.45rem, 1.2vw, 0.8rem) !important;
-}
-
-#messageBar:not(.submenu-titlebar) .intro-button,
-#messageBar:not(.submenu-titlebar) .introduction-button,
-#messageBar:not(.submenu-titlebar) [data-introduction-button],
-#messageBar:not(.submenu-titlebar) .intro-header-button {
-  width: clamp(64px, 12vw, 92px) !important;
-  height: clamp(64px, 12vw, 92px) !important;
-  min-width: clamp(64px, 12vw, 92px) !important;
-  min-height: clamp(64px, 12vw, 92px) !important;
-}
-
-#messageBar:not(.submenu-titlebar) .intro-button img,
-#messageBar:not(.submenu-titlebar) .introduction-button img,
-#messageBar:not(.submenu-titlebar) [data-introduction-button] img,
-#messageBar:not(.submenu-titlebar) .intro-header-button img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-
 .management-toggle {
   flex: 0 0 auto !important;
 }
@@ -5620,23 +5456,6 @@ body[data-theme="midnight"] .settings-preferences > .settings-select {
   transform: scale(0.988);
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   transition: transform 0.07s ease, box-shadow 0.07s ease;
-}
-
-
-/* ─────────────────────────────────────────────────────────────
-   8. MESSAGE BAR: Slightly rounder, better text rendering
-   ───────────────────────────────────────────────────────────── */
-
-#messageBar:not(.submenu-titlebar) {
-  border-radius: var(--radius-lg);
-  letter-spacing: -0.015em;
-}
-
-/* Submenu title bar: crisper back button */
-#messageBar.submenu-titlebar .title-back-to-menu {
-  font-size: clamp(1.5rem, 5.5vw, 2.1rem);
-  font-weight: 900;
-  letter-spacing: -0.02em;
 }
 
 
@@ -6056,14 +5875,6 @@ body,
   grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
 }
 
-
-/* v82 iPhone safe-area header fix.
-   Keep Dad-facing navigation below the iOS status bar/notch in Safari and installed PWA mode. */
-#messageBar {
-  top: env(safe-area-inset-top, 0px);
-  padding-top: max(var(--space-md), calc(var(--space-md) + env(safe-area-inset-top, 0px)));
-}
-
 .submenu-header {
   margin-top: max(0px, env(safe-area-inset-top, 0px));
 }
@@ -6240,39 +6051,6 @@ body {
   overflow: hidden !important;
   gap: clamp(12px, 2vw, 18px) !important;
   padding: clamp(12px, 2vw, 18px) !important;
-}
-
-#messageBar {
-  position: relative !important;
-  top: auto !important;
-  margin-top: 0 !important;
-  min-height: var(--mnv-v90-header-height) !important;
-  padding: max(12px, calc(10px + var(--mnv-v90-top-clearance))) clamp(16px, 3vw, 24px) 14px !important;
-  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,253,250,0.92)) !important;
-  border: 1.5px solid var(--mnv-v90-border) !important;
-  border-radius: clamp(24px, 5vw, 34px) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 8px 18px rgba(31, 79, 50, 0.10) !important;
-  color: var(--primary-dark) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 auto !important;
-  overflow: visible !important;
-}
-
-#messageBarText {
-  color: inherit !important;
-  font-size: clamp(1.35rem, 4.8vw, 2.4rem) !important;
-  font-weight: 900 !important;
-  letter-spacing: -0.02em;
-  text-shadow: none !important;
-  line-height: 1.08 !important;
-  padding: 0 74px !important;
-}
-
-#messageBar.submenu-titlebar {
-  color: var(--category-dark, var(--primary-dark)) !important;
-  border-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 48%, white) !important;
 }
 
 .title-back-to-menu,
@@ -10745,27 +10523,6 @@ body:not(.submenu-open) .menu-card-image-shell img {
   object-position: center center !important;
 }
 
-#messageBar:not(.submenu-titlebar) {
-  min-height: clamp(76px, 11vw, 112px) !important;
-}
-
-#messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only {
-  width: clamp(72px, 10vw, 104px) !important;
-  height: clamp(72px, 10vw, 104px) !important;
-  min-width: clamp(72px, 10vw, 104px) !important;
-  min-height: clamp(72px, 10vw, 104px) !important;
-  padding: 6px !important;
-  border-radius: 18px !important;
-}
-
-#messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only .introduction-header-image {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  object-position: center center !important;
-  border-radius: 14px !important;
-}
-
 /* v124 follow-up: refreshed theme choices, driven by the existing Settings theme owner. */
 body[data-theme="sunny-day"] {
   --theme-page-surface: linear-gradient(180deg, #FFFDF7, #F1FAFF);
@@ -10890,10 +10647,6 @@ body[data-theme="sci-fi"] .image-options-panel {
   color: var(--theme-button-text) !important;
 }
 
-body[data-theme="sci-fi"] #messageBar:not(.submenu-titlebar) {
-  background: linear-gradient(145deg, #182426, #11191B) !important;
-}
-
 body[data-theme="high-contrast"] .tab,
 body[data-theme="high-contrast"] .grid-button,
 body[data-theme="high-contrast"] .settings-action-btn {
@@ -10940,34 +10693,6 @@ body {
   border-radius: var(--mnv-ui-radius) !important;
   box-shadow: 0 22px 48px rgba(15, 23, 42, 0.16) !important;
   gap: var(--mnv-ui-gap) !important;
-}
-
-#messageBar {
-  border: 1px solid var(--mnv-ui-line) !important;
-  border-radius: var(--mnv-ui-radius) !important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.42)),
-    var(--theme-card-surface, var(--message-bar-bg)) !important;
-  box-shadow: var(--mnv-ui-shadow-soft) !important;
-}
-
-#messageBar p,
-#messageBarText {
-  color: var(--mnv-ui-text) !important;
-  font-weight: 850 !important;
-  letter-spacing: 0 !important;
-}
-
-#messageBar.submenu-titlebar {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0)),
-    linear-gradient(135deg, var(--category-color, var(--primary-color)), var(--category-dark, var(--primary-dark))) !important;
-  color: #ffffff !important;
-}
-
-#messageBar.submenu-titlebar #messageBarText,
-#messageBar.submenu-titlebar p {
-  color: #ffffff !important;
 }
 
 .management-toggle,
@@ -12237,89 +11962,6 @@ body.submenu-open .submenu-titlebar .title-back-to-menu::before {
   line-height: 1 !important;
   text-align: center !important;
   pointer-events: none !important;
-}
-
-/* v124 polish: main-screen prompt/introduction header belongs to the app shell. */
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  justify-content: stretch !important;
-  min-height: clamp(72px, 9vw, 96px) !important;
-  padding: clamp(10px, 1.4vw, 16px) clamp(78px, 7vw, 104px) clamp(10px, 1.4vw, 16px) clamp(16px, 2.2vw, 28px) !important;
-  gap: clamp(10px, 1.6vw, 18px) !important;
-  border-radius: var(--mnv-ui-radius, 8px) !important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.60)),
-    var(--theme-card-surface, #ffffff) !important;
-  border: 1px solid var(--mnv-ui-line-soft, rgba(15,23,42,0.12)) !important;
-  box-shadow: 0 8px 22px rgba(15,23,42,0.08) !important;
-}
-
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) #messageBarText {
-  display: block !important;
-  grid-column: 1 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  min-width: 0 !important;
-  color: var(--mnv-ui-text, #233042) !important;
-  font-size: clamp(1.28rem, 2.5vw, 2rem) !important;
-  font-weight: 900 !important;
-  line-height: 1.08 !important;
-  text-align: left !important;
-  letter-spacing: 0 !important;
-}
-
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-button {
-  grid-column: 2 !important;
-  position: relative !important;
-  align-self: center !important;
-  justify-self: end !important;
-  width: clamp(62px, 7vw, 82px) !important;
-  height: clamp(62px, 7vw, 82px) !important;
-  min-width: clamp(62px, 7vw, 82px) !important;
-  min-height: clamp(62px, 7vw, 82px) !important;
-  margin: 0 !important;
-  padding: 5px !important;
-  border-radius: var(--mnv-ui-radius, 8px) !important;
-  border: 1px solid var(--mnv-ui-line, rgba(15,23,42,0.16)) !important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.64)),
-    var(--theme-button-surface, #ffffff) !important;
-  box-shadow: 0 6px 16px rgba(15,23,42,0.10) !important;
-  overflow: hidden !important;
-}
-
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only {
-  width: clamp(62px, 7vw, 82px) !important;
-  height: clamp(62px, 7vw, 82px) !important;
-  min-width: clamp(62px, 7vw, 82px) !important;
-  min-height: clamp(62px, 7vw, 82px) !important;
-  border-radius: var(--mnv-ui-radius, 8px) !important;
-}
-
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-image,
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only .introduction-header-image {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-  border-radius: calc(var(--mnv-ui-radius, 8px) - 2px) !important;
-}
-
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-fallback {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  font-size: clamp(1.8rem, 4vw, 2.4rem) !important;
-}
-
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-text,
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only .introduction-header-text,
-body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-button.photo-only .introduction-header-fallback {
-  display: none !important;
 }
 
 body:not(.submenu-open) .management-toggle {
