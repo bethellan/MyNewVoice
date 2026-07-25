@@ -3557,14 +3557,14 @@ function loadAppSettings() {
     }
 }
 
-function saveAppSettings({ render = true, persistContent = true } = {}) {
+function saveAppSettings({ render = true, persistContent = true, showSaveIndicator = true } = {}) {
     appSettings = normaliseAppSettings(appSettings);
     applyAppTheme();
     localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(appSettings));
     if (persistContent && typeof saveDataToStorage === 'function') {
         saveDataToStorage();
     }
-    showAutoSave();
+    if (showSaveIndicator) showAutoSave();
     updateSettingsControls();
     if (render) showMainMenu();
 }
@@ -3630,7 +3630,9 @@ function updateAppBarControls() {
     const labelToggle = document.getElementById('gridLabelsToggle');
     if (labelToggle) {
         const gridActive = appSettings.displayMode === 'grid';
-        labelToggle.hidden = !gridActive;
+        labelToggle.hidden = false;
+        labelToggle.disabled = !gridActive;
+        labelToggle.setAttribute('aria-disabled', gridActive ? 'false' : 'true');
         labelToggle.textContent = appSettings.gridLabelsVisible === false ? 'Images only' : 'Images + text';
         labelToggle.setAttribute('aria-pressed', appSettings.gridLabelsVisible === false ? 'true' : 'false');
     }
@@ -3651,8 +3653,7 @@ function getNextDisplayMode(displayMode) {
 function setDisplayModeFromAppBar(displayMode) {
     if (!DISPLAY_MODES.has(displayMode)) return;
     appSettings.displayMode = displayMode;
-    saveAppSettings({ render: true });
-    showToast(getDisplayModeToast(displayMode), 'success');
+    saveAppSettings({ render: true, persistContent: false, showSaveIndicator: false });
 }
 
 function cycleDisplayModeFromAppBar() {
@@ -3662,13 +3663,12 @@ function cycleDisplayModeFromAppBar() {
 function toggleGridLabelsFromAppBar() {
     appSettings.gridLabelsVisible = normaliseAppSettings(appSettings).gridLabelsVisible === false;
     const categoryToKeep = currentViewCategory;
-    saveAppSettings({ render: false });
+    saveAppSettings({ render: false, persistContent: false, showSaveIndicator: false });
     if (normaliseAppSettings(appSettings).displayMode === 'grid' && categoryToKeep) {
         showCategorySubmenu(categoryToKeep);
     } else {
         showMainMenu();
     }
-    showToast(appSettings.gridLabelsVisible ? 'Grid text shown' : 'Grid images only', 'success');
 }
 
 function updateIntroductionSettingsPanelVisibility() {
@@ -3930,9 +3930,9 @@ function ensureQuickYesNoStrip() {
     strip.id = 'quickYesNoStrip';
     strip.className = 'quick-communication-strip';
     strip.setAttribute('aria-label', 'Yes and No quick buttons');
-    const messageBar = document.getElementById('messageBar');
-    if (messageBar && messageBar.parentNode) {
-        messageBar.parentNode.insertBefore(strip, messageBar.nextSibling);
+    const appBar = document.querySelector('.mnv-app-bar');
+    if (appBar && appBar.parentNode) {
+        appBar.parentNode.insertBefore(strip, appBar.nextSibling);
     } else {
         document.body.insertBefore(strip, document.body.firstChild);
     }
@@ -3957,7 +3957,7 @@ function makeQuickYesNoButton(label, phraseText, className) {
 
 function renderQuickYesNoStrip() {
     const strip = ensureQuickYesNoStrip();
-    const visible = normaliseAppSettings(appSettings).quickYesNoEnabled === true && isMainScreenHeaderActive();
+    const visible = normaliseAppSettings(appSettings).quickYesNoEnabled === true;
     strip.hidden = !visible;
     strip.innerHTML = '';
     if (!visible) return;

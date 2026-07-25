@@ -11962,14 +11962,14 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 
 /* v126: optional main-screen Yes / No quick buttons. */
 .quick-communication-strip {
-  width: min(100%, 620px);
+  width: min(100%, 760px);
   margin: clamp(8px, 1.2vw, 14px) auto clamp(12px, 1.8vw, 22px);
-  padding: clamp(7px, 1vw, 11px);
+  padding: clamp(8px, 1vw, 12px);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(6px, 1vw, 10px);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.88);
+  gap: clamp(8px, 1.2vw, 14px);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.9);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
   box-sizing: border-box;
 }
@@ -11980,11 +11980,11 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 
 .quick-strip-button {
   min-width: 0;
-  min-height: clamp(54px, 7vw, 72px);
+  min-height: clamp(58px, 7vw, 76px);
   padding: 8px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   font: inherit;
-  font-size: clamp(1.05rem, 2.1vw, 1.45rem);
+  font-size: clamp(1.15rem, 2.1vw, 1.55rem);
   font-weight: 850;
   line-height: 1.08;
   text-align: center;
@@ -11994,15 +11994,15 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 }
 
 .quick-strip-button.yes {
-  border: 2px solid #7fcca0;
-  background: linear-gradient(180deg, #f5fff7, #dff4e4);
-  color: #185c2b;
+  border: 2px solid #7fcca0 !important;
+  background: linear-gradient(180deg, #f5fff7, #dff4e4) !important;
+  color: #185c2b !important;
 }
 
 .quick-strip-button.no {
-  border: 2px solid #8eafd2;
-  background: linear-gradient(180deg, #f5f9ff, #dfeaf7);
-  color: #1e426a;
+  border: 2px solid #df9b9b !important;
+  background: linear-gradient(180deg, #fff8f8, #f7dfdf) !important;
+  color: #7b1e1e !important;
 }
 
 .quick-strip-button:focus-visible {
@@ -12102,17 +12102,20 @@ body {
 
 .mnv-app-bar {
   display: grid;
-  grid-template-columns: minmax(110px, 1fr) auto auto auto;
+  grid-template-columns: minmax(0, 1fr) clamp(88px, 8.5vw, 116px) clamp(104px, 10vw, 136px) clamp(44px, 5vw, 54px);
   align-items: center;
   gap: clamp(6px, 1vw, 12px);
   min-height: clamp(58px, 7vw, 74px);
   padding: clamp(7px, 1vw, 10px);
-  border: 1px solid var(--mnv-ui-line-soft, rgba(15,23,42,0.12));
+  border: 1px solid color-mix(in srgb, var(--primary-color, #3f9f46) 18%, rgba(15,23,42,0.12));
   border-radius: 10px;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.72)),
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--primary-color, #3f9f46) 10%, rgba(255,255,255,0.96)),
+      rgba(255,255,255,0.88) 44%,
+      color-mix(in srgb, var(--category-light, #f6f1dc) 24%, rgba(255,255,255,0.92))),
     var(--theme-card-surface, #ffffff);
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255,255,255,0.86);
   box-sizing: border-box;
 }
 
@@ -12145,9 +12148,12 @@ body {
 .mnv-brand-name {
   min-width: 0;
   color: var(--mnv-ui-text, #233042);
-  font-size: clamp(1rem, 1.9vw, 1.55rem);
+  font-size: clamp(0.95rem, 1.6vw, 1.35rem);
   font-weight: 900;
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   overflow-wrap: anywhere;
 }
 
@@ -12176,10 +12182,10 @@ body {
 
 .mnv-view-cycle,
 .mnv-label-toggle {
-  width: auto !important;
+  width: 100% !important;
   inline-size: auto !important;
-  min-width: clamp(104px, 9.5vw, 128px) !important;
-  max-width: 150px !important;
+  min-width: 0 !important;
+  max-width: none !important;
   white-space: nowrap;
 }
 
@@ -12201,6 +12207,13 @@ body {
   font-size: clamp(1.25rem, 2.2vw, 1.5rem) !important;
 }
 
+.mnv-label-toggle:disabled,
+.mnv-label-toggle[aria-disabled="true"] {
+  opacity: 0.56;
+  cursor: default !important;
+  box-shadow: none !important;
+}
+
 #messageBar {
   display: none !important;
   visibility: hidden !important;
@@ -12212,8 +12225,7 @@ body {
   overflow: hidden !important;
 }
 
-.quick-communication-strip[hidden],
-body.grid-view-active .quick-communication-strip {
+.quick-communication-strip[hidden] {
   display: none !important;
 }
 
@@ -12236,31 +12248,16 @@ body.grid-view-active .tab-container {
   }
 
   .mnv-app-bar {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "brand settings"
-      "views labels";
+    grid-template-columns: minmax(0, 1fr) 82px 98px 42px;
+    gap: 6px;
   }
 
   .mnv-brand {
-    grid-area: brand;
-  }
-
-  .mnv-view-cycle {
-    grid-area: views;
-    min-width: 0;
-  }
-
-  .mnv-label-toggle {
-    grid-area: labels;
-  }
-
-  .mnv-app-bar .management-toggle {
-    grid-area: settings;
+    gap: 7px;
   }
 
   .mnv-brand-name {
-    font-size: clamp(1rem, 5vw, 1.35rem);
+    font-size: clamp(0.88rem, 4vw, 1.08rem);
   }
 }
 
@@ -12466,4 +12463,17 @@ body.grid-view-active .mnv-app-bar .management-toggle {
   body.grid-view-active .ipad-image-grid-panel {
     grid-template-columns: 1fr !important;
   }
+}
+
+/* v135: final scoped owner for the optional Yes / No quick buttons. */
+body .quick-communication-strip .quick-strip-button.yes {
+  border: 2px solid #7fcca0 !important;
+  background: linear-gradient(180deg, #f5fff7, #dff4e4) !important;
+  color: #185c2b !important;
+}
+
+body .quick-communication-strip .quick-strip-button.no {
+  border: 2px solid #df9b9b !important;
+  background: linear-gradient(180deg, #fff8f8, #f7dfdf) !important;
+  color: #7b1e1e !important;
 }
