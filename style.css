@@ -12632,6 +12632,10 @@ body .quick-communication-strip .quick-strip-button.no {
   gap: 6px !important;
 }
 
+#managementOverlay .content-phrase-card .move-button-stack .management-btn {
+  flex: 1 1 118px !important;
+}
+
 #managementOverlay .content-phrase-card .management-btn,
 #managementOverlay .content-phrase-card .small-management-btn {
   min-height: 40px !important;

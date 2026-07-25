@@ -5069,8 +5069,8 @@ function renderContentCategoryRows(allCategories) {
                 </td>
                 <td class="move-cell">
                     <div class="table-button-stack move-button-stack">
-                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" ${index <= 0 ? 'disabled' : ''}>↑</button>
-                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" ${index >= allCategories.length - 1 ? 'disabled' : ''}>↓</button>
+                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" ${index <= 0 ? 'disabled' : ''}>Up</button>
+                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" ${index >= allCategories.length - 1 ? 'disabled' : ''}>Down</button>
                     </div>
                 </td>
                 <td class="hidden-cell">
@@ -5165,8 +5165,8 @@ function renderContentPhraseRows(category, phrases) {
                     <section class="content-phrase-card-section">
                         <div class="content-phrase-card-section-title">Move</div>
                         <div class="table-button-stack move-button-stack">
-                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>â†‘</button>
-                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>â†“</button>
+                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>Move up</button>
+                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>Move down</button>
                         </div>
                     </section>
                     <section class="content-phrase-card-section">
@@ -5244,8 +5244,8 @@ function renderLegacyContentPhraseRows(category, phrases) {
                 </td>
                 <td class="move-cell">
                     <div class="table-button-stack move-button-stack">
-                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>↑</button>
-                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>↓</button>
+                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>Move up</button>
+                        <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>Move down</button>
                     </div>
                 </td>
                 <td class="hidden-cell">
