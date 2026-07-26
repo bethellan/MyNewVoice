@@ -4481,7 +4481,8 @@ function finishContentEditorNavigation(destination) {
 function showContentEditorChoiceDialog({
     title = 'Choose an action',
     message = '',
-    actions = []
+    actions = [],
+    panelClass = ''
 } = {}) {
     return new Promise((resolve) => {
         let overlay = document.getElementById('contentEditorUnsavedDialog');
@@ -4508,6 +4509,10 @@ function showContentEditorChoiceDialog({
         const titleEl = overlay.querySelector('#contentUnsavedTitle');
         const messageEl = overlay.querySelector('[data-content-choice-message]');
         const actionsEl = overlay.querySelector('[data-content-choice-actions]');
+        const panelEl = overlay.querySelector('.content-unsaved-panel');
+        if (panelEl) {
+            panelEl.className = `content-unsaved-panel${panelClass ? ` ${panelClass}` : ''}`;
+        }
         if (titleEl) titleEl.textContent = title;
         if (messageEl) messageEl.textContent = message;
         if (actionsEl) {
@@ -5102,6 +5107,7 @@ async function showGridPhraseMoveDialog(pending) {
     const choice = await showContentEditorChoiceDialog({
         title: 'Move to another submenu',
         message: `Move "${phrase?.text || 'this phrase'}" to which submenu?`,
+        panelClass: 'content-move-dialog',
         actions: [
             ...targets.map((category, index) => ({
                 id: `move-${index}`,

@@ -11955,6 +11955,32 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   transform: none !important;
 }
 
+.content-unsaved-panel.content-move-dialog {
+  width: min(720px, calc(100vw - 28px));
+  max-height: min(86vh, 740px);
+  padding: clamp(18px, 3vw, 30px);
+}
+
+.content-unsaved-panel.content-move-dialog .content-unsaved-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(62px, auto);
+  max-height: min(54vh, 460px);
+  padding: 2px 6px 2px 2px;
+  scrollbar-gutter: stable;
+}
+
+.content-unsaved-panel.content-move-dialog .content-unsaved-actions .management-btn {
+  min-height: 62px !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  padding: 12px 16px !important;
+}
+
+.content-unsaved-panel.content-move-dialog .content-unsaved-actions .management-btn.close-btn {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
 .content-unsaved-actions .management-btn:hover,
 .content-unsaved-actions .management-btn:focus,
 .content-unsaved-actions .management-btn:focus-visible,
@@ -11974,6 +12000,11 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 @media (max-width: 640px) {
   .content-unsaved-actions {
     grid-template-columns: 1fr;
+  }
+
+  .content-unsaved-panel.content-move-dialog .content-unsaved-actions {
+    grid-template-columns: 1fr;
+    max-height: min(58vh, 520px);
   }
 }
 
