@@ -188,7 +188,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v137';
+const CURRENT_APP_VERSION = 'v138';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
@@ -1143,6 +1143,11 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
 
 function getPhraseSpeechText(buttonInfo) {
     if (!buttonInfo) return '';
+    if (isTeReoModeEnabled()) {
+        const reoSpokenText = String(buttonInfo.reoSpokenText || '').trim();
+        const reoText = String(buttonInfo.reoText || '').trim();
+        if (reoSpokenText || reoText) return reoSpokenText || reoText;
+    }
     const spokenText = String(buttonInfo.spokenText || '').trim();
     return spokenText || String(buttonInfo.text || '').trim();
 }
@@ -3352,6 +3357,7 @@ const DEFAULT_APP_SETTINGS = {
     theme: 'default',
     pressActivation: 'normal',
     quickYesNoEnabled: false,
+    teReoMode: false,
     gridLabelsVisible: true,
     autoUpdateCheck: false,
     popupCloseDelaySeconds: 2,
@@ -3473,6 +3479,102 @@ const THEME_CATEGORY_PALETTES = {
         memories: { colour: '#5E4634', dark: '#23160F', soft: '#F5EEE8' }
     }
 };
+const TE_REO_BRAND_NAME = 'Tōku Reo Hou';
+const TE_REO_FLUENCY_WARNING = 'If you are not fluent in te reo Māori, please check wording and pronunciation with a fluent speaker.';
+const TE_REO_STARTER_PACK = {
+    categories: {
+        quick: 'Kupu Tere',
+        health: 'Hauora',
+        selfcare: 'Tiaki Whaiaro',
+        food: 'Kai me te Inu',
+        comfort: 'Whakamarie',
+        MyPeople: 'Āku Tāngata',
+        feelings: 'Ngā Kare ā-roto',
+        routine: 'Mahinga o ia rā',
+        social: 'Kōrero',
+        activities: 'Ngā Mahi',
+        memories: 'Ngā Mahara'
+    },
+    phrases: {
+        quick01: ['Āe', 'Ae'],
+        quick02: ['Kāo', 'Kao'],
+        quick03: ['Tērā pea', 'Tera pea'],
+        quick04: ['Kāore au i te mōhio', 'Kaore au i te mohio'],
+        quick05: ['Taihoa koa', 'Taihoa koa'],
+        quick06: ['Kāti', 'Kati'],
+        quick07: ['Ehara i tēnā', 'Ehara i tena'],
+        quick08: ['Tēnei', 'Tenei'],
+        quick09: ['Kei te hiahia āwhina ahau', 'Kei te hiahia awhina ahau'],
+        quick10: ['Kōrero pōturi mai koa', 'Korero poturi mai koa'],
+        quick11: ['Tuhia mai koa', 'Tuhia mai koa'],
+        quick12: ['Homai he wā ki ahau', 'Homai he wa ki ahau'],
+        health01: ['Me āwhina ahau ināianei', 'Me awhina ahau inaianei'],
+        health02: ['He mea akiaki tēnei', 'He mea akiaki tenei'],
+        health03: ['Kua hinga ahau, me āwhina', 'Kua hinga ahau, me awhina'],
+        health04: ['He uaua taku hā', 'He uaua taku ha'],
+        health05: ['Kei te mamae taku uma', 'Kei te mamae taku uma'],
+        health06: ['Waea atu ki te waka tūroro koa', 'Waea atu ki te waka turoro koa'],
+        health07: ['Waea atu ki te tapuhi koa', 'Waea atu ki te tapuhi koa'],
+        health08: ['Kāore au i te pai', 'Kaore au i te pai'],
+        health09: ['Kei te māuiui ahau', 'Kei te mauiui ahau'],
+        health10: ['Kei te pōkaikaha taku māhunga', 'Kei te pokaikaha taku mahunga'],
+        health12: ['Kei te mamae ahau', 'Kei te mamae ahau'],
+        health13: ['Kei te hiahia ahau ki aku rongoā mamae', 'Kei te hiahia ahau ki aku rongoa mamae'],
+        selfcare01: ['Me haere au ki te wharepaku', 'Me haere au ki te wharepaku'],
+        selfcare02: ['Me huri taku tūnga', 'Me huri taku tunga'],
+        selfcare03: ['Kei te hiahia ahau ki aku mōhiti', 'Kei te hiahia ahau ki aku mohiti'],
+        selfcare07: ['Kei te hiahia ahau ki aku rongoā', 'Kei te hiahia ahau ki aku rongoa'],
+        selfcare08: ['Kei te hiahia ahau ki te kaukau', 'Kei te hiahia ahau ki te kaukau'],
+        selfcare12: ['Āwhinatia ahau ki te kākahu', 'Awhinatia ahau ki te kakahu'],
+        selfcare14: ['Kua rite ahau mō te moe', 'Kua rite ahau mo te moe'],
+        selfcare15: ['He wera rawa ahau', 'He wera rawa ahau'],
+        selfcare16: ['He makariri rawa ahau', 'He makariri rawa ahau'],
+        food01: ['Kei te hiainu ahau', 'Kei te hiainu ahau'],
+        food02: ['He wai māku koa', 'He wai maku koa'],
+        food03: ['Kei te hiakai ahau', 'Kei te hiakai ahau'],
+        food04: ['Ka taea he paramanawa?', 'Ka taea he paramanawa?'],
+        food06: ['He kawhe māku koa', 'He kawhe maku koa'],
+        food07: ['He tī māku koa', 'He ti maku koa'],
+        food10: ['Kāore au i te hiakai', 'Kaore au i te hiakai'],
+        food11: ['Kua kī ahau', 'Kua ki ahau'],
+        food12: ['Kāore anō, tēnā koe', 'Kaore ano, tena koe'],
+        comfort01: ['Kei te hiahia ahau ki te whakatā', 'Kei te hiahia ahau ki te whakataa'],
+        comfort02: ['Kei te hiahia ahau ki te noho muna', 'Kei te hiahia ahau ki te noho muna'],
+        comfort03: ['Katia te kūaha koa', 'Katia te kuaha koa'],
+        comfort04: ['He makariri rawa i konei', 'He makariri rawa i konei'],
+        comfort05: ['He mahana rawa', 'He mahana rawa'],
+        comfort06: ['He kanapa rawa te rama', 'He kanapa rawa te rama'],
+        comfort07: ['Me nui ake te rama', 'Me nui ake te rama'],
+        comfort09: ['Whakatūwheratia te matapihi koa', 'Whakatuwheratia te matapihi koa'],
+        feelings01: ['Kei te mamae ahau', 'Kei te mamae ahau'],
+        feelings02: ['Kei te mataku ahau', 'Kei te mataku ahau'],
+        feelings03: ['Kei te māharahara ahau', 'Kei te maharahara ahau'],
+        feelings04: ['Kei te pōraruraru ahau', 'Kei te poraruraru ahau'],
+        feelings06: ['Kei te hiahia ahau ki te āio', 'Kei te hiahia ahau ki te aio'],
+        feelings08: ['Kei te pōuri ahau', 'Kei te pouri ahau'],
+        feelings09: ['Kei te harikoa ahau', 'Kei te harikoa ahau'],
+        feelings10: ['Kei te ngenge ahau', 'Kei te ngenge ahau'],
+        routine01: ['He aha te mea ka whai ake?', 'He aha te mea ka whai ake?'],
+        routine03: ['He aha te rā?', 'He aha te ra?'],
+        routine04: ['He aha ngā mahi o tēnei rā?', 'He aha nga mahi o tenei ra?'],
+        routine08: ['Āhea taku wāhui?', 'Ahea taku wahui?'],
+        routine11: ['Kei te pēhea te huarere?', 'Kei te pehea te huarere?'],
+        social01: ['Kōrero pōturi mai koa', 'Korero poturi mai koa'],
+        social02: ['Kōrero anō mai koa', 'Korero ano mai koa'],
+        social03: ['Tuhia mai koa', 'Tuhia mai koa'],
+        social04: ['Homai he wā ki ahau', 'Homai he wa ki ahau'],
+        social07: ['Kāore au i te mārama', 'Kaore au i te marama'],
+        social09: ['Tēnā koe mō tō āwhina', 'Tena koe mo to awhina'],
+        social14: ['Kei te pēhea koe i tēnei rā?', 'Kei te pehea koe i tenei ra?'],
+        activities01: ['Kei te hiahia ahau ki te mātakitaki pouaka whakaata', 'Kei te hiahia ahau ki te matakitaki pouaka whakaata'],
+        activities02: ['Ka haere tāua ki te hīkoi?', 'Ka haere taua ki te hikoi?'],
+        activities03: ['Kei te hiahia ahau ki te whakarongo waiata', 'Kei te hiahia ahau ki te whakarongo waiata'],
+        activities04: ['Kei te hiahia ahau ki te titiro whakaahua', 'Kei te hiahia ahau ki te titiro whakaahua'],
+        activities06: ['Ka tākaro tāua?', 'Ka takaro taua?'],
+        memories04: ['Kei te hiahia ahau ki te kōrero mō ngā tamariki i a rātou e nohinohi ana', 'Kei te hiahia ahau ki te korero mo nga tamariki i a ratou e nohinohi ana'],
+        memories09: ['Kei te hiahia ahau ki te titiro ki ngā whakaahua tawhito', 'Kei te hiahia ahau ki te titiro ki nga whakaahua tawhito']
+    }
+};
 function normaliseThemeName(value) {
     const raw = String(value || '').trim();
     if (THEMES.has(raw)) return raw;
@@ -3492,6 +3594,7 @@ let activePressButton = null;
 let suppressNextPhraseClick = false;
 let suppressNextPhraseClickUntil = 0;
 let editModeUnlocked = false;
+let pendingTeReoModeTarget = null;
 let gridRearrangeState = null;
 let pendingGridTransitionDirection = 0;
 
@@ -3506,6 +3609,7 @@ function normaliseAppSettings(rawSettings) {
         ? raw.pressActivation
         : DEFAULT_APP_SETTINGS.pressActivation;
     const quickYesNoEnabled = raw.quickYesNoEnabled === true || raw.quickYesNoEnabled === 'on';
+    const teReoMode = raw.teReoMode === true || raw.teReoMode === 'on';
     const gridLabelsVisible = raw.gridLabelsVisible !== false && raw.gridLabelsVisible !== 'off';
     const autoUpdateCheck = false;
     const speechEnabled = raw.speechEnabled !== false && raw.speechEnabled !== 'off';
@@ -3521,7 +3625,7 @@ function normaliseAppSettings(rawSettings) {
         text: String(rawIntro.text || '').slice(0, 500),
         fallbackIcon: String(rawIntro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
     };
-    return { displayMode, theme, pressActivation, quickYesNoEnabled, gridLabelsVisible, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
+    return { displayMode, theme, pressActivation, quickYesNoEnabled, teReoMode, gridLabelsVisible, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
 }
 
 function getDisplayModeToast(displayMode) {
@@ -3531,9 +3635,11 @@ function getDisplayModeToast(displayMode) {
 }
 
 function applyAppTheme() {
-    const theme = normaliseAppSettings(appSettings).theme;
+    const normalised = normaliseAppSettings(appSettings);
+    const theme = normalised.theme;
     appSettings.theme = theme;
     document.body.dataset.theme = theme;
+    document.body.dataset.teReoMode = normalised.teReoMode ? 'on' : 'off';
 }
 
 function getPopupCloseDelayMs() {
@@ -3639,9 +3745,21 @@ function updateAppBarControls() {
         editButton.title = editModeUnlocked ? 'Edit mode on' : 'Unlock edit mode';
         editButton.setAttribute('aria-label', editModeUnlocked ? 'Turn edit mode off' : 'Unlock edit mode');
         editButton.setAttribute('aria-pressed', editModeUnlocked ? 'true' : 'false');
-        const label = editButton.querySelector('.mnv-edit-toggle-label');
-        if (label) label.textContent = editModeUnlocked ? 'On' : 'Edit';
     }
+
+    const teReoButton = document.getElementById('teReoModeToggle');
+    if (teReoButton) {
+        const teReoOn = Boolean(appSettings.teReoMode);
+        teReoButton.classList.toggle('active', teReoOn);
+        teReoButton.title = teReoOn ? 'Te Reo mode on' : 'Switch Te Reo mode on';
+        teReoButton.setAttribute('aria-label', teReoOn ? 'Switch Te Reo mode off' : 'Switch Te Reo mode on');
+        teReoButton.setAttribute('aria-pressed', teReoOn ? 'true' : 'false');
+    }
+
+    const brandName = document.querySelector('.mnv-brand-name');
+    if (brandName) brandName.textContent = appSettings.teReoMode ? TE_REO_BRAND_NAME : 'MyNewVoice';
+    const brand = document.querySelector('.mnv-brand');
+    if (brand) brand.setAttribute('aria-label', appSettings.teReoMode ? TE_REO_BRAND_NAME : 'MyNewVoice');
 
     const cycleButton = document.getElementById('displayModeCycle');
     if (cycleButton) {
@@ -3717,6 +3835,27 @@ function toggleEditModeFromAppBar() {
         return;
     }
     showPasswordModal('editMode');
+}
+
+function setTeReoModeEnabled(value) {
+    const enabled = Boolean(value);
+    appSettings.teReoMode = enabled;
+    if (enabled) applyTeReoStarterPack();
+    saveAppSettings({ render: true, persistContent: enabled, showSaveIndicator: true });
+    if (enabled) {
+        showContentEditorChoiceDialog({
+            title: 'Te Reo mode',
+            message: TE_REO_FLUENCY_WARNING,
+            actions: [{ id: 'ok', label: 'OK', className: 'management-btn close-btn' }]
+        });
+    } else {
+        showToast('Te Reo mode off', 'info');
+    }
+}
+
+function toggleTeReoModeFromAppBar() {
+    pendingTeReoModeTarget = !normaliseAppSettings(appSettings).teReoMode;
+    showPasswordModal('teReoMode');
 }
 
 function updateIntroductionSettingsPanelVisibility() {
@@ -4009,8 +4148,9 @@ function renderQuickYesNoStrip() {
     strip.hidden = !visible;
     strip.innerHTML = '';
     if (!visible) return;
-    strip.appendChild(makeQuickYesNoButton('Yes', 'Yes.', 'yes'));
-    strip.appendChild(makeQuickYesNoButton('No', 'No.', 'no'));
+    const teReo = isTeReoModeEnabled();
+    strip.appendChild(makeQuickYesNoButton(teReo ? 'Āe' : 'Yes', teReo ? 'Ae.' : 'Yes.', 'yes'));
+    strip.appendChild(makeQuickYesNoButton(teReo ? 'Kāo' : 'No', teReo ? 'Kao.' : 'No.', 'no'));
 }
 
 function getPressActivationDelay() {
@@ -4665,6 +4805,42 @@ function normaliseCategoryConfig(rawConfig) {
     return { order, categories };
 }
 
+function applyTeReoStarterPack() {
+    categoryConfig = normaliseCategoryConfig(categoryConfig);
+    Object.entries(TE_REO_STARTER_PACK.categories).forEach(([category, reoLabel]) => {
+        if (!categoryConfig.categories[category]) return;
+        if (!String(categoryConfig.categories[category].reoLabel || '').trim()) {
+            categoryConfig.categories[category].reoLabel = reoLabel;
+        }
+    });
+
+    const phraseByEnglish = new Map();
+    Object.entries(TE_REO_STARTER_PACK.phrases).forEach(([id, values]) => {
+        const defaultPhrase = Object.values(defaultButtonData || {})
+            .flat()
+            .find(phrase => phrase && phrase.id === id);
+        if (defaultPhrase && defaultPhrase.text) {
+            phraseByEnglish.set(String(defaultPhrase.text).trim().toLowerCase(), values);
+        }
+    });
+
+    Object.values(buttonData || {}).forEach(phrases => {
+        if (!Array.isArray(phrases)) return;
+        phrases.forEach(phrase => {
+            if (!phrase || typeof phrase !== 'object') return;
+            const byId = TE_REO_STARTER_PACK.phrases[phrase.id];
+            const byText = phraseByEnglish.get(String(phrase.text || '').trim().toLowerCase());
+            const values = byId || byText;
+            if (!values) return;
+            if (!String(phrase.reoText || '').trim()) phrase.reoText = values[0];
+            if (!String(phrase.reoSpokenText || '').trim()) phrase.reoSpokenText = values[1] || values[0];
+        });
+    });
+
+    saveCategoryConfig();
+    saveDataToStorage();
+}
+
 function loadCategoryConfig() {
     try {
         const stored = localStorage.getItem(CATEGORY_CONFIG_KEY);
@@ -4927,6 +5103,7 @@ function showPasswordModal(action = 'management') {
         clearAllImages: ['Remove All Images', 'Enter password to remove all locally saved images from this device:'],
         clearAllAudio: ['Remove All Audio', 'Enter password to remove all locally recorded voices from this device:'],
         editMode: ['Edit Mode Access', 'Enter password to unlock editing:'],
+        teReoMode: ['Te Reo Mode Access', 'Enter password to change Te Reo mode:'],
         gridEditPhrase: ['Edit Phrase Access', 'Enter password to edit this phrase:'],
         gridAddPhrase: ['Add Phrase Access', 'Enter password to add a phrase to this topic:'],
         management: ['Content Management Access', 'Enter password to manage content:'],
@@ -4945,6 +5122,7 @@ function hidePasswordModal() {
     document.getElementById('passwordModal').style.display = 'none';
     document.getElementById('passwordInput').value = '';
     pendingPasswordAction = 'management';
+    if (action === 'teReoMode') pendingTeReoModeTarget = null;
     if (action === 'settings' && returnToSettingsEntryAfterPasswordCancel) {
         returnToSettingsEntryAfterPasswordCancel = false;
         showSettingsEntryOverlay();
@@ -4956,6 +5134,7 @@ function checkPassword() {
     
     if (input === MANAGEMENT_PASSWORD) {
         const action = pendingPasswordAction;
+        const teReoTarget = pendingTeReoModeTarget;
         hidePasswordModal();
         if (action === 'settings') {
             returnToSettingsEntryAfterPasswordCancel = false;
@@ -4975,6 +5154,9 @@ function checkPassword() {
             confirmAndClearAllAudio();
         } else if (action === 'editMode') {
             setEditModeUnlocked(true);
+        } else if (action === 'teReoMode') {
+            setTeReoModeEnabled(teReoTarget);
+            pendingTeReoModeTarget = null;
         } else if (action === 'gridPhraseOptions') {
             showGridPhraseActionMenu();
         } else if (action === 'gridEditPhrase' || action === 'gridAddPhrase') {
@@ -5498,6 +5680,15 @@ function renderContentPhraseRows(category, phrases) {
                         <div class="help-text">Optional. If blank, the app speaks the visible phrase text unless a voice recording exists.</div>
                         <button type="button" class="management-btn small-management-btn" data-preview-spoken-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}">Play spoken wording</button>
                     </section>
+                    <section class="content-phrase-card-section content-phrase-card-spoken">
+                        <label class="content-phrase-card-label">Te Reo wording</label>
+                        <input type="text" class="management-input spoken-text-input" data-content-inline-phrase-reo-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.reoText || '')}" placeholder="${escapeHtml(phrase.text || 'Optional Te Reo wording')}" aria-label="Te Reo wording">
+                        <div class="help-text">Shown on buttons only when Te Reo mode is on. Leave blank to keep the English text.</div>
+                        <label class="content-phrase-card-label">Te Reo pronunciation</label>
+                        <input type="text" class="management-input spoken-text-input" data-content-inline-phrase-reo-spoken-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.reoSpokenText || '')}" placeholder="${escapeHtml(phrase.reoText || phrase.text || 'Optional pronunciation')}" aria-label="Te Reo pronunciation">
+                        <div class="help-text">Optional. If blank, Te Reo mode speaks the Te Reo wording above.</div>
+                        <button type="button" class="management-btn small-management-btn" data-preview-reo-spoken-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}">Play Te Reo wording</button>
+                    </section>
                     <section class="content-phrase-card-section">
                         <label class="content-phrase-card-label">Fallback icon</label>
                         <input type="text" class="management-input icon-input" data-content-inline-phrase-icon="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(phrase.icon || '')}" placeholder="${escapeHtml(fallbackIcon)}" aria-label="Fallback icon">
@@ -5761,16 +5952,19 @@ async function handleContentManagementClick(event) {
         return;
     }
 
-    const previewSpokenButton = target.closest('[data-preview-spoken-text]');
+    const previewSpokenButton = target.closest('[data-preview-spoken-text], [data-preview-reo-spoken-text]');
     if (previewSpokenButton) {
-        const phraseId = previewSpokenButton.dataset.previewSpokenText;
+        const isReoPreview = previewSpokenButton.hasAttribute('data-preview-reo-spoken-text');
+        const phraseId = isReoPreview ? previewSpokenButton.dataset.previewReoSpokenText : previewSpokenButton.dataset.previewSpokenText;
         const category = previewSpokenButton.dataset.category || contentSetupPhraseCategory;
         const phrase = findPhraseById(category, phraseId);
         const card = previewSpokenButton.closest('.content-phrase-card');
+        const inputSelector = isReoPreview ? '[data-content-inline-phrase-reo-spoken-text]' : '[data-content-inline-phrase-spoken-text]';
+        const inputAttribute = isReoPreview ? 'data-content-inline-phrase-reo-spoken-text' : 'data-content-inline-phrase-spoken-text';
         const input = card
-            ? Array.from(card.querySelectorAll('[data-content-inline-phrase-spoken-text]')).find(item => item.getAttribute('data-content-inline-phrase-spoken-text') === phraseId)
+            ? Array.from(card.querySelectorAll(inputSelector)).find(item => item.getAttribute(inputAttribute) === phraseId)
             : null;
-        const text = String(input?.value || phrase?.spokenText || phrase?.text || '').trim();
+        const text = String(input?.value || (isReoPreview ? phrase?.reoSpokenText || phrase?.reoText : phrase?.spokenText) || phrase?.text || '').trim();
         if (!text) {
             showToast('Enter wording to preview first.', 'warning');
             return;
@@ -6048,6 +6242,8 @@ function handleContentManagementInput(event) {
         target.hasAttribute('data-content-inline-category-icon') ||
         target.hasAttribute('data-content-inline-phrase-text') ||
         target.hasAttribute('data-content-inline-phrase-spoken-text') ||
+        target.hasAttribute('data-content-inline-phrase-reo-text') ||
+        target.hasAttribute('data-content-inline-phrase-reo-spoken-text') ||
         target.hasAttribute('data-content-inline-phrase-icon') ||
         target.id === 'contentCategoryLabel' ||
         target.id === 'contentPhraseText' ||
@@ -6135,6 +6331,35 @@ function handleContentManagementChange(event) {
             const spokenText = String(event.target.value || '').trim();
             if (spokenText) phrase.spokenText = spokenText;
             else delete phrase.spokenText;
+            saveDataToStorage();
+            updateContentEditorSaveState();
+        }
+        return;
+    }
+
+    const inlinePhraseReoText = event.target && event.target.getAttribute('data-content-inline-phrase-reo-text');
+    if (inlinePhraseReoText) {
+        const category = event.target.dataset.category || contentSetupPhraseCategory;
+        const phrase = findPhraseById(category, inlinePhraseReoText);
+        if (phrase) {
+            const reoText = String(event.target.value || '').trim();
+            if (reoText) phrase.reoText = reoText;
+            else delete phrase.reoText;
+            saveDataToStorage();
+            refreshCurrentCategoryView(category);
+            updateContentEditorSaveState();
+        }
+        return;
+    }
+
+    const inlinePhraseReoSpokenText = event.target && event.target.getAttribute('data-content-inline-phrase-reo-spoken-text');
+    if (inlinePhraseReoSpokenText) {
+        const category = event.target.dataset.category || contentSetupPhraseCategory;
+        const phrase = findPhraseById(category, inlinePhraseReoSpokenText);
+        if (phrase) {
+            const reoSpokenText = String(event.target.value || '').trim();
+            if (reoSpokenText) phrase.reoSpokenText = reoSpokenText;
+            else delete phrase.reoSpokenText;
             saveDataToStorage();
             updateContentEditorSaveState();
         }
@@ -7079,6 +7304,28 @@ function getCategoryMeta(category) {
     };
 }
 
+function isTeReoModeEnabled() {
+    return Boolean(normaliseAppSettings(appSettings).teReoMode);
+}
+
+function getCategoryDisplayLabel(category) {
+    const meta = getCategoryMeta(category);
+    if (isTeReoModeEnabled()) {
+        const reoLabel = String(meta.reoLabel || '').trim();
+        if (reoLabel) return reoLabel;
+    }
+    return meta.label || category;
+}
+
+function getPhraseDisplayText(phrase) {
+    if (!phrase) return '';
+    if (isTeReoModeEnabled()) {
+        const reoText = String(phrase.reoText || '').trim();
+        if (reoText) return reoText;
+    }
+    return String(phrase.text || '').trim();
+}
+
 function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, function(char) {
         return {
@@ -7167,6 +7414,7 @@ function renderCategoryMenuCards() {
 
     visibleCategories.forEach(category => {
         const meta = getCategoryMeta(category);
+        const displayLabel = getCategoryDisplayLabel(category);
         const imagePath = getMenuImagePath(category);
         const tab = document.createElement('button');
         tab.className = 'tab';
@@ -7174,14 +7422,14 @@ function renderCategoryMenuCards() {
         tab.dataset.category = category;
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-selected', 'false');
-        tab.setAttribute('aria-label', meta.label);
+        tab.setAttribute('aria-label', displayLabel);
         tab.style.setProperty('--tab-color', meta.colour);
         tab.style.setProperty('--tab-dark', meta.dark);
         tab.style.setProperty('--tab-soft', meta.soft);
         tab.innerHTML = `
-            <span class="menu-card-title">${escapeHtml(meta.label)}</span>
+            <span class="menu-card-title">${escapeHtml(displayLabel)}</span>
             <span class="menu-card-image-shell private-media-shell private-media-pending">
-                <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(meta.label)}" loading="lazy" data-private-media-key="${escapeHtml(getPrivateMediaKey('menu', category))}" data-private-media-state="pending" class="private-media-pending" onload="this.classList.add('loaded'); this.nextElementSibling.hidden=true;" onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(displayLabel)}" loading="lazy" data-private-media-key="${escapeHtml(getPrivateMediaKey('menu', category))}" data-private-media-state="pending" class="private-media-pending" onload="this.classList.add('loaded'); this.nextElementSibling.hidden=true;" onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
                 <span class="menu-card-fallback" aria-hidden="true" hidden style="display:none;">${meta.icon}</span>
             </span>
         `;
@@ -7257,12 +7505,13 @@ function showCategorySubmenu(category) {
     const messageBar = document.getElementById('messageBar');
     const backToMenu = document.getElementById('backToMenu');
     const meta = getCategoryMeta(category);
+    const displayLabel = getCategoryDisplayLabel(category);
 
     if (gridRearrangeState && gridRearrangeState.category !== category) gridRearrangeState = null;
     currentViewCategory = category;
     document.body.classList.add('submenu-open');
     document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
-    setMessageBarText(meta.label);
+    setMessageBarText(displayLabel);
     renderQuickYesNoStrip();
 
     if (messageBar) messageBar.classList.add('submenu-titlebar');
@@ -7293,7 +7542,7 @@ function showCategorySubmenu(category) {
 function createButtonMediaHTML(buttonInfo, category, extraClass = '') {
     const imagePath = getImagePath(category, buttonInfo.image);
     const icon = buttonInfo.icon || getFallbackIcon(category, buttonInfo.text);
-    const safeAlt = escapeHtml(buttonInfo.text || getCategoryMeta(category).label);
+    const safeAlt = escapeHtml(getPhraseDisplayText(buttonInfo) || getCategoryDisplayLabel(category));
     const privateKey = getPrivateMediaKey('phrase', buttonInfo);
     const safeSrc = imagePath ? `src="${escapeHtml(imagePath)}"` : '';
     const initialStyle = imagePath ? '' : 'style="display:none;"';
@@ -7428,7 +7677,7 @@ function createIpadImageGridPhraseButton(buttonInfo, category) {
     const phraseForClick = { ...buttonInfo, category };
     const button = document.createElement('button');
     button.type = 'button';
-    const text = String(buttonInfo.text || '');
+    const text = getPhraseDisplayText(buttonInfo);
     const isMyPeople = category === 'MyPeople';
     button.className = `ipad-image-grid-button${isMyPeople ? ' person-grid-button' : ''}`;
     const isRearrangingThis = gridRearrangeState && gridRearrangeState.category === category && gridRearrangeState.phraseId === buttonInfo.id;
@@ -7498,8 +7747,8 @@ function renderIpadImageGrid(category) {
 
     const previousCategory = getAdjacentVisibleCategory(category, -1);
     const nextCategory = getAdjacentVisibleCategory(category, 1);
-    const previousMeta = previousCategory ? getCategoryMeta(previousCategory) : null;
-    const nextMeta = nextCategory ? getCategoryMeta(nextCategory) : null;
+    const previousLabel = previousCategory ? getCategoryDisplayLabel(previousCategory) : '';
+    const nextLabel = nextCategory ? getCategoryDisplayLabel(nextCategory) : '';
 
     const nav = document.createElement('div');
     nav.className = 'ipad-topic-nav';
@@ -7508,19 +7757,19 @@ function renderIpadImageGrid(category) {
     previousButton.type = 'button';
     previousButton.className = 'ipad-topic-arrow';
     previousButton.textContent = '‹';
-    previousButton.setAttribute('aria-label', previousMeta ? `Previous topic: ${previousMeta.label}` : 'Previous topic');
+    previousButton.setAttribute('aria-label', previousLabel ? `Previous topic: ${previousLabel}` : 'Previous topic');
     previousButton.disabled = !previousCategory;
     if (previousCategory) previousButton.addEventListener('click', () => showCategorySubmenuWithGridTransition(previousCategory, -1));
 
     const title = document.createElement('div');
     title.className = 'ipad-topic-nav-title';
-    title.textContent = getCategoryMeta(category).label;
+    title.textContent = getCategoryDisplayLabel(category);
 
     const nextButton = document.createElement('button');
     nextButton.type = 'button';
     nextButton.className = 'ipad-topic-arrow';
     nextButton.textContent = '›';
-    nextButton.setAttribute('aria-label', nextMeta ? `Next topic: ${nextMeta.label}` : 'Next topic');
+    nextButton.setAttribute('aria-label', nextLabel ? `Next topic: ${nextLabel}` : 'Next topic');
     nextButton.disabled = !nextCategory;
     if (nextCategory) nextButton.addEventListener('click', () => showCategorySubmenuWithGridTransition(nextCategory, 1));
 
@@ -7564,7 +7813,8 @@ function createPhraseButton(buttonInfo, category) {
     if (buttonInfo.id) button.dataset.phraseId = buttonInfo.id;
     applyCategoryThemeToElement(button, category);
 
-    const safeText = escapeHtml(buttonInfo.text || '');
+    const displayText = getPhraseDisplayText(buttonInfo);
+    const safeText = escapeHtml(displayText);
     const isMyPeople = category === 'MyPeople';
 
     if (isMyPeople) {
@@ -7612,12 +7862,13 @@ function renderSimpleVocabularyView(grid) {
         const phrases = getDisplayPhrases(category);
         if (!phrases.length) return;
         const meta = getCategoryMeta(category);
+        const displayLabel = getCategoryDisplayLabel(category);
         const heading = document.createElement('div');
         heading.className = 'simple-vocabulary-heading';
         heading.style.setProperty('--category-color', meta.colour);
         heading.style.setProperty('--category-dark', meta.dark);
         heading.style.setProperty('--category-soft', meta.soft);
-        heading.innerHTML = `<span class="simple-heading-icon" aria-hidden="true">${escapeHtml(meta.icon)}</span><span>${escapeHtml(meta.label)}</span>`;
+        heading.innerHTML = `<span class="simple-heading-icon" aria-hidden="true">${escapeHtml(meta.icon)}</span><span>${escapeHtml(displayLabel)}</span>`;
         grid.appendChild(heading);
 
         phrases.forEach(buttonInfo => {
@@ -7722,7 +7973,7 @@ async function showZoomImageForPhrase(buttonInfo) {
     const caption = overlay.querySelector('.zoom-image-caption');
     if (!img || !caption) return;
 
-    const safeText = String(buttonInfo.text || '');
+    const safeText = getPhraseDisplayText(buttonInfo);
 
     const showSource = (source) => {
         img.onload = () => {
@@ -7880,7 +8131,7 @@ function closePhrasePopupAfterMinimum(token) {
 
 function showPhrasePopup(buttonInfoOrText) {
     const buttonInfo = typeof buttonInfoOrText === 'object' && buttonInfoOrText !== null ? buttonInfoOrText : null;
-    const text = buttonInfo ? String(buttonInfo.text || '') : String(buttonInfoOrText || '');
+    const text = buttonInfo ? getPhraseDisplayText(buttonInfo) : String(buttonInfoOrText || '');
     const overlay = getPhrasePopupOverlay();
     const textElement = overlay.querySelector('.phrase-popup-text');
     const image = overlay.querySelector('.phrase-popup-image');
@@ -7929,7 +8180,7 @@ async function applyPhrasePopupZoomImage(buttonInfo, token) {
     const imageShell = overlay.querySelector('.phrase-popup-image-shell');
     if (!image || !imageShell) return;
 
-    const safeText = String(buttonInfo.text || '');
+    const safeText = getPhraseDisplayText(buttonInfo);
 
     const showSource = (source) => {
         if (token !== phrasePopupToken) return;
@@ -8247,7 +8498,7 @@ function speakText(text, buttonElement, options = {}) {
       utterance.voice = preferredVoice;
       utterance.lang = preferredVoice.lang || 'en-NZ';
     } else {
-      utterance.lang = 'en-NZ';
+      utterance.lang = isTeReoModeEnabled() ? 'mi-NZ' : 'en-NZ';
     }
 
     utterance.onstart = () => {
@@ -8923,6 +9174,14 @@ installSingleButtonPressVisualGuard();
         editModeToggle.addEventListener('click', (event) => {
             event.preventDefault();
             toggleEditModeFromAppBar();
+        });
+    }
+
+    const teReoModeToggle = document.getElementById('teReoModeToggle');
+    if (teReoModeToggle) {
+        teReoModeToggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            toggleTeReoModeFromAppBar();
         });
     }
 
