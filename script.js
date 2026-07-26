@@ -188,7 +188,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v138';
+const CURRENT_APP_VERSION = 'v139';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
@@ -3518,26 +3518,45 @@ const TE_REO_STARTER_PACK = {
         health08: ['Kāore au i te pai', 'Kaore au i te pai'],
         health09: ['Kei te māuiui ahau', 'Kei te mauiui ahau'],
         health10: ['Kei te pōkaikaha taku māhunga', 'Kei te pokaikaha taku mahunga'],
+        health11: ['Tērā pea ka hemo ahau', 'Tera pea ka hemo ahau'],
         health12: ['Kei te mamae ahau', 'Kei te mamae ahau'],
         health13: ['Kei te hiahia ahau ki aku rongoā mamae', 'Kei te hiahia ahau ki aku rongoa mamae'],
+        health14: ['Kei te mamae taku tuarā', 'Kei te mamae taku tuara'],
+        health15: ['Kei te kikī taku waewae', 'Kei te kiki taku waewae'],
+        health16: ['Tirohia taku pēhanga toto koa', 'Tirohia taku pehanga toto koa'],
+        health17: ['Ki taku whakaaro he kirikā tōku', 'Ki taku whakaaro he kirika toku'],
+        health18: ['Waea atu ki tōku whānau ināianei', 'Waea atu ki toku whanau inaianei'],
         selfcare01: ['Me haere au ki te wharepaku', 'Me haere au ki te wharepaku'],
         selfcare02: ['Me huri taku tūnga', 'Me huri taku tunga'],
         selfcare03: ['Kei te hiahia ahau ki aku mōhiti', 'Kei te hiahia ahau ki aku mohiti'],
+        selfcare04: ['Me whakatika taku taonga whakarongo', 'Me whakatika taku taonga whakarongo'],
+        selfcare05: ['Āwhinatia ahau ki te huri koa', 'Awhinatia ahau ki te huri koa'],
+        selfcare06: ['Whakatikahia taku urunga koa', 'Whakatikahia taku urunga koa'],
         selfcare07: ['Kei te hiahia ahau ki aku rongoā', 'Kei te hiahia ahau ki aku rongoa'],
         selfcare08: ['Kei te hiahia ahau ki te kaukau', 'Kei te hiahia ahau ki te kaukau'],
+        selfcare09: ['Kei te hiahia ahau ki te parai i aku niho', 'Kei te hiahia ahau ki te parai i aku niho'],
+        selfcare10: ['Kei te hiahia ahau ki te horoi i taku kanohi', 'Kei te hiahia ahau ki te horoi i taku kanohi'],
+        selfcare11: ['Me heu ahau', 'Me heu ahau'],
         selfcare12: ['Āwhinatia ahau ki te kākahu', 'Awhinatia ahau ki te kakahu'],
+        selfcare13: ['Āwhinatia ahau ki aku hū koa', 'Awhinatia ahau ki aku hu koa'],
         selfcare14: ['Kua rite ahau mō te moe', 'Kua rite ahau mo te moe'],
         selfcare15: ['He wera rawa ahau', 'He wera rawa ahau'],
         selfcare16: ['He makariri rawa ahau', 'He makariri rawa ahau'],
+        selfcare17: ['He makariri aku waewae', 'He makariri aku waewae'],
+        selfcare18: ['Whakakorukorutia aku urunga koa', 'Whakakorukorutia aku urunga koa'],
         food01: ['Kei te hiainu ahau', 'Kei te hiainu ahau'],
         food02: ['He wai māku koa', 'He wai maku koa'],
         food03: ['Kei te hiakai ahau', 'Kei te hiakai ahau'],
         food04: ['Ka taea he paramanawa?', 'Ka taea he paramanawa?'],
+        food05: ['He aha hei kai māku?', 'He aha hei kai maku?'],
         food06: ['He kawhe māku koa', 'He kawhe maku koa'],
         food07: ['He tī māku koa', 'He ti maku koa'],
+        food08: ['He tōhi māku koa', 'He tohi maku koa'],
+        food09: ['He hupa māku koa', 'He hupa maku koa'],
         food10: ['Kāore au i te hiakai', 'Kaore au i te hiakai'],
         food11: ['Kua kī ahau', 'Kua ki ahau'],
         food12: ['Kāore anō, tēnā koe', 'Kaore ano, tena koe'],
+        food13: ['He reka rawa tēnā', 'He reka rawa tena'],
         comfort01: ['Kei te hiahia ahau ki te whakatā', 'Kei te hiahia ahau ki te whakataa'],
         comfort02: ['Kei te hiahia ahau ki te noho muna', 'Kei te hiahia ahau ki te noho muna'],
         comfort03: ['Katia te kūaha koa', 'Katia te kuaha koa'],
@@ -3545,15 +3564,32 @@ const TE_REO_STARTER_PACK = {
         comfort05: ['He mahana rawa', 'He mahana rawa'],
         comfort06: ['He kanapa rawa te rama', 'He kanapa rawa te rama'],
         comfort07: ['Me nui ake te rama', 'Me nui ake te rama'],
-        comfort09: ['Whakatūwheratia te matapihi koa', 'Whakatuwheratia te matapihi koa'],
+        comfort08: ['Kei te whakararuraru tēnei haruru i ahau', 'Kei te whakararuraru tenei haruru i ahau'],
+        comfort09: ['He kaha rawa te tangi o te pouaka whakaata', 'He kaha rawa te tangi o te pouaka whakaata'],
+        comfort10: ['Whakatūwheratia te matapihi koa', 'Whakatuwheratia te matapihi koa'],
+        comfort11: ['Katia te matapihi koa', 'Katia te matapihi koa'],
+        comfort12: ['Katia ngā ārai koa', 'Katia nga arai koa'],
+        comfort13: ['He kūpā rawa te rūma', 'He kupa rawa te ruma'],
+        comfort14: ['Whakakāngia te powhiriwhiri koa', 'Whakakangia te powhiriwhiri koa'],
+        comfort15: ['Kei te hiahia ahau ki te hau māori', 'Kei te hiahia ahau ki te hau maori'],
+        comfort16: ['Nekehia tēnei kia tata mai koa', 'Nekehia tenei kia tata mai koa'],
+        comfort17: ['Nekehia tēnei kia tawhiti atu koa', 'Nekehia tenei kia tawhiti atu koa'],
+        comfort18: ['Whakatikahia taku tūru koa', 'Whakatikahia taku turu koa'],
+        comfort19: ['Kei te hiahia ahau ki te noho ki waho', 'Kei te hiahia ahau ki te noho ki waho'],
         feelings01: ['Kei te mamae ahau', 'Kei te mamae ahau'],
         feelings02: ['Kei te mataku ahau', 'Kei te mataku ahau'],
         feelings03: ['Kei te māharahara ahau', 'Kei te maharahara ahau'],
         feelings04: ['Kei te pōraruraru ahau', 'Kei te poraruraru ahau'],
+        feelings05: ['Kei te taumaha rawa aku kare ā-roto', 'Kei te taumaha rawa aku kare a-roto'],
         feelings06: ['Kei te hiahia ahau ki te āio', 'Kei te hiahia ahau ki te aio'],
+        feelings07: ['Kei te hiahia ahau ki te whakamarie', 'Kei te hiahia ahau ki te whakamarie'],
         feelings08: ['Kei te pōuri ahau', 'Kei te pouri ahau'],
         feelings09: ['Kei te harikoa ahau', 'Kei te harikoa ahau'],
         feelings10: ['Kei te ngenge ahau', 'Kei te ngenge ahau'],
+        feelings11: ['Kei te hōhā ahau', 'Kei te hoha ahau'],
+        feelings12: ['Kei te hiahia awhi ahau', 'Kei te hiahia awhi ahau'],
+        feelings13: ['Kei te tau taku noho', 'Kei te tau taku noho'],
+        feelings14: ['Kei te tino pai ahau i tēnei rā', 'Kei te tino pai ahau i tenei ra'],
         routine01: ['He aha te mea ka whai ake?', 'He aha te mea ka whai ake?'],
         routine03: ['He aha te rā?', 'He aha te ra?'],
         routine04: ['He aha ngā mahi o tēnei rā?', 'He aha nga mahi o tenei ra?'],
@@ -5636,6 +5672,19 @@ function renderVoiceStatusBadge(voiceKey) {
     `;
 }
 
+function renderTeReoStatusBadge(phrase) {
+    const hasReoText = Boolean(String(phrase?.reoText || '').trim());
+    const hasReoPronunciation = Boolean(String(phrase?.reoSpokenText || '').trim());
+    const className = hasReoText ? 'te-reo-ready' : 'te-reo-missing';
+    const label = hasReoText
+        ? (hasReoPronunciation ? 'Te Reo ready + pronunciation' : 'Te Reo ready')
+        : 'Te Reo missing';
+    const title = hasReoText
+        ? (hasReoPronunciation ? 'This phrase has Te Reo wording and a pronunciation field.' : 'This phrase has Te Reo wording. It will speak that wording unless a recording exists.')
+        : 'Add Te Reo wording in the expanded card if this phrase should change in Te Reo mode.';
+    return `<span class="te-reo-status-badge ${className}" title="${escapeHtml(title)}">${escapeHtml(label)}</span>`;
+}
+
 function renderContentPhraseRows(category, phrases) {
     const people = category === 'MyPeople';
     const cards = phrases.map((phrase, index) => {
@@ -5654,7 +5703,10 @@ function renderContentPhraseRows(category, phrases) {
                     </div>
                     <div class="content-phrase-card-text">
                         <input type="text" class="management-input table-title-input" data-content-inline-phrase-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.text || '')}" placeholder="Enter phrase text" aria-label="Phrase text">
-                        <div class="help-text table-id-line">ID: <code>${escapeHtml(phraseId)}</code></div>
+                        <div class="content-phrase-card-badges">
+                            <span class="help-text table-id-line">ID: <code>${escapeHtml(phraseId)}</code></span>
+                            ${renderTeReoStatusBadge(phrase)}
+                        </div>
                         ${people ? renderMyPeopleRelationshipSelect(phrase, category) : ''}
                     </div>
                     <button type="button" class="content-phrase-card-toggle" data-content-phrase-card-toggle aria-expanded="${expandedState}" aria-controls="${escapeHtml(detailsId)}" aria-label="More options for ${escapeHtml(phrase.text || 'this phrase')}">...</button>

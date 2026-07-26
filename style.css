@@ -12903,6 +12903,39 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   gap: 4px !important;
 }
 
+#managementOverlay .content-phrase-card-badges {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+
+#managementOverlay .te-reo-status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 22px !important;
+  padding: 3px 8px !important;
+  border-radius: 999px !important;
+  border: 1px solid transparent !important;
+  font-size: 0.72rem !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+#managementOverlay .te-reo-status-badge.te-reo-ready {
+  border-color: rgba(22, 101, 52, 0.22) !important;
+  background: #dcfce7 !important;
+  color: #14532d !important;
+}
+
+#managementOverlay .te-reo-status-badge.te-reo-missing {
+  border-color: rgba(146, 64, 14, 0.25) !important;
+  background: #fef3c7 !important;
+  color: #78350f !important;
+}
+
 #managementOverlay .content-phrase-card .table-title-input {
   width: 100% !important;
   min-width: 0 !important;
