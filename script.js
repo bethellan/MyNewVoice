@@ -1141,6 +1141,12 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
     }
 }
 
+function getPhraseSpeechText(buttonInfo) {
+    if (!buttonInfo) return '';
+    const spokenText = String(buttonInfo.spokenText || '').trim();
+    return spokenText || String(buttonInfo.text || '').trim();
+}
+
 function speakPhrase(buttonInfo, buttonElement) {
     const popupToken = showPhrasePopup(buttonInfo);
 
@@ -1156,13 +1162,13 @@ function speakPhrase(buttonInfo, buttonElement) {
     // index so phrases without recordings call text-to-speech immediately within
     // the original tap event.
     if (!hasKnownPrivateVoice(buttonInfo)) {
-        speakText(buttonInfo.text || '', buttonElement, { popupToken, showPopup: false });
+        speakText(getPhraseSpeechText(buttonInfo), buttonElement, { popupToken, showPopup: false });
         return;
     }
 
     playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken).then(playedPrivateVoice => {
         if (!playedPrivateVoice) {
-            speakText(buttonInfo.text || '', buttonElement, { popupToken, showPopup: false });
+            speakText(getPhraseSpeechText(buttonInfo), buttonElement, { popupToken, showPopup: false });
         }
     });
 }
@@ -4869,9 +4875,10 @@ function showAutoSave() {
 }
 
 
-function showToast(message, type = 'info') {
+function showToast(message, type = 'info', durationMs = 3000) {
     const toast = document.getElementById('toast');
     if (!toast) return;
+    if (toast._hideTimer) clearTimeout(toast._hideTimer);
     
     toast.textContent = message;
     toast.className = 'toast show';
@@ -4884,10 +4891,10 @@ function showToast(message, type = 'info') {
         toast.classList.add(type);
     }
     
-    // Auto-hide after 3 seconds
-    setTimeout(() => {
+    toast._hideTimer = setTimeout(() => {
         toast.classList.remove('show');
-    }, 3000);
+        toast._hideTimer = null;
+    }, Math.max(1200, Number(durationMs) || 3000));
 }
 
 // ============================================================================
@@ -5082,7 +5089,7 @@ function createIpadGridDropZone(category, index, placement = 'before') {
             return;
         }
         gridRearrangeState = { category, phraseId: result.phrase.id };
-        showToast('Phrase moved. Tap another button to move it.', 'success');
+        showToast('Moved. Tap the same image to finish, or tap another image to move it.', 'success', 5500);
     });
     return zone;
 }
@@ -5485,6 +5492,12 @@ function renderContentPhraseRows(category, phrases) {
                             </div>
                         </div>
                     </section>
+                    <section class="content-phrase-card-section content-phrase-card-spoken">
+                        <label class="content-phrase-card-label">Spoken wording / pronunciation</label>
+                        <input type="text" class="management-input spoken-text-input" data-content-inline-phrase-spoken-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.spokenText || '')}" placeholder="${escapeHtml(phrase.text || 'Optional wording to speak')}" aria-label="Spoken wording or pronunciation">
+                        <div class="help-text">Optional. If blank, the app speaks the visible phrase text unless a voice recording exists.</div>
+                        <button type="button" class="management-btn small-management-btn" data-preview-spoken-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}">Play spoken wording</button>
+                    </section>
                     <section class="content-phrase-card-section">
                         <label class="content-phrase-card-label">Fallback icon</label>
                         <input type="text" class="management-input icon-input" data-content-inline-phrase-icon="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(phrase.icon || '')}" placeholder="${escapeHtml(fallbackIcon)}" aria-label="Fallback icon">
@@ -5511,7 +5524,7 @@ function renderContentPhraseRows(category, phrases) {
         <div class="content-phrase-card-list" data-content-phrase-card-list>
             ${cards}
             <div class="management-add-row content-phrase-add-row">
-                <button type="button" class="management-add-line" data-content-add-phrase-row>ï¼‹ Add new phrase</button>
+                <button type="button" class="management-add-line" data-content-add-phrase-row>+ Add new phrase</button>
             </div>
         </div>
     `;
@@ -5601,7 +5614,7 @@ function renderLegacyContentPhraseRows(category, phrases) {
             <tbody>
                 ${rows}
                 <tr class="management-add-row">
-                    <td colspan="7"><button type="button" class="management-add-line" data-content-add-phrase-row>＋ Add new phrase</button></td>
+                    <td colspan="7"><button type="button" class="management-add-line" data-content-add-phrase-row>+ Add new phrase</button></td>
                 </tr>
             </tbody>
         </table>
@@ -5745,6 +5758,24 @@ async function handleContentManagementClick(event) {
     const playButton = target.closest('[data-play-voice]');
     if (playButton) {
         playSetupVoice(playButton.dataset.key);
+        return;
+    }
+
+    const previewSpokenButton = target.closest('[data-preview-spoken-text]');
+    if (previewSpokenButton) {
+        const phraseId = previewSpokenButton.dataset.previewSpokenText;
+        const category = previewSpokenButton.dataset.category || contentSetupPhraseCategory;
+        const phrase = findPhraseById(category, phraseId);
+        const card = previewSpokenButton.closest('.content-phrase-card');
+        const input = card
+            ? Array.from(card.querySelectorAll('[data-content-inline-phrase-spoken-text]')).find(item => item.getAttribute('data-content-inline-phrase-spoken-text') === phraseId)
+            : null;
+        const text = String(input?.value || phrase?.spokenText || phrase?.text || '').trim();
+        if (!text) {
+            showToast('Enter wording to preview first.', 'warning');
+            return;
+        }
+        speakText(text, previewSpokenButton, { showPopup: false });
         return;
     }
 
@@ -6016,6 +6047,7 @@ function handleContentManagementInput(event) {
         target.hasAttribute('data-content-inline-category-label') ||
         target.hasAttribute('data-content-inline-category-icon') ||
         target.hasAttribute('data-content-inline-phrase-text') ||
+        target.hasAttribute('data-content-inline-phrase-spoken-text') ||
         target.hasAttribute('data-content-inline-phrase-icon') ||
         target.id === 'contentCategoryLabel' ||
         target.id === 'contentPhraseText' ||
@@ -6090,6 +6122,20 @@ function handleContentManagementChange(event) {
             else delete phrase.icon;
             saveDataToStorage();
             refreshCurrentCategoryView(category);
+            updateContentEditorSaveState();
+        }
+        return;
+    }
+
+    const inlinePhraseSpokenText = event.target && event.target.getAttribute('data-content-inline-phrase-spoken-text');
+    if (inlinePhraseSpokenText) {
+        const category = event.target.dataset.category || contentSetupPhraseCategory;
+        const phrase = findPhraseById(category, inlinePhraseSpokenText);
+        if (phrase) {
+            const spokenText = String(event.target.value || '').trim();
+            if (spokenText) phrase.spokenText = spokenText;
+            else delete phrase.spokenText;
+            saveDataToStorage();
             updateContentEditorSaveState();
         }
         return;

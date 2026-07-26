@@ -11985,6 +11985,8 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 .content-unsaved-actions .management-btn:focus,
 .content-unsaved-actions .management-btn:focus-visible,
 .content-unsaved-actions .management-btn:active {
+  outline: 2px solid color-mix(in srgb, var(--primary-color, #3f9f46) 34%, transparent) !important;
+  outline-offset: 2px !important;
   transform: none !important;
 }
 
@@ -12254,9 +12256,9 @@ body {
 
 .mnv-edit-toggle {
   display: grid !important;
-  grid-template-columns: minmax(34px, 1fr) auto !important;
+  grid-template-columns: minmax(34px, 1fr) !important;
   align-items: center !important;
-  gap: 7px !important;
+  gap: 0 !important;
   padding: 7px 9px !important;
   background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.72)) !important;
   color: #334155 !important;
@@ -12286,9 +12288,7 @@ body {
 }
 
 .mnv-edit-toggle-label {
-  font-size: clamp(0.7rem, 1.2vw, 0.82rem);
-  font-weight: 900;
-  line-height: 1;
+  display: none;
 }
 
 .mnv-edit-toggle.active .mnv-edit-toggle-track {
