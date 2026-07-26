@@ -3630,10 +3630,11 @@ function updateAppBarControls() {
     const editButton = document.getElementById('editModeToggle');
     if (editButton) {
         editButton.classList.toggle('active', editModeUnlocked);
-        editButton.textContent = editModeUnlocked ? '✓' : '✎';
         editButton.title = editModeUnlocked ? 'Edit mode on' : 'Unlock edit mode';
         editButton.setAttribute('aria-label', editModeUnlocked ? 'Turn edit mode off' : 'Unlock edit mode');
         editButton.setAttribute('aria-pressed', editModeUnlocked ? 'true' : 'false');
+        const label = editButton.querySelector('.mnv-edit-toggle-label');
+        if (label) label.textContent = editModeUnlocked ? 'On' : 'Edit';
     }
 
     const cycleButton = document.getElementById('displayModeCycle');
