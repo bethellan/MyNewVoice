@@ -3480,7 +3480,7 @@ const THEME_CATEGORY_PALETTES = {
     }
 };
 const TE_REO_BRAND_NAME = 'Tōku Reo Hou';
-const TE_REO_FLUENCY_WARNING = 'If you are not fluent in te reo Māori, please check wording and pronunciation with a fluent speaker.';
+const TE_REO_FLUENCY_WARNING = 'Te Reo mode is ready. If you are not fluent in te reo Māori, please ask a fluent speaker to check important wording and pronunciation before relying on it.';
 const TE_REO_STARTER_PACK = {
     categories: {
         quick: 'Kupu Tere',
@@ -5577,6 +5577,10 @@ function renderContentCategoryRows(allCategories) {
                     <input type="text" class="management-input table-title-input" data-content-inline-category-label="${escapeHtml(category)}" value="${escapeHtml(meta.label)}" aria-label="Section title">
                     <div class="help-text table-id-line">ID: <code>${escapeHtml(category)}</code></div>
                 </td>
+                <td class="title-cell te-reo-title-cell">
+                    <input type="text" class="management-input table-title-input" data-content-inline-category-reo-label="${escapeHtml(category)}" value="${escapeHtml(meta.reoLabel || '')}" placeholder="${escapeHtml(meta.label)}" aria-label="Te Reo section title">
+                    <div class="help-text">Shown when Te Reo mode is on.</div>
+                </td>
                 <td class="icon-cell">
                     <input type="text" class="management-input icon-input" data-content-inline-category-icon="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(meta.icon || '')}" placeholder="${escapeHtml(meta.icon || '🗂️')}" aria-label="Fallback icon">
                 </td>
@@ -5597,7 +5601,7 @@ function renderContentCategoryRows(allCategories) {
                 </td>
             </tr>
         `;
-    }).join('') || '<tr><td colspan="7" class="empty-table-cell">No topics found.</td></tr>';
+    }).join('') || '<tr><td colspan="8" class="empty-table-cell">No topics found.</td></tr>';
 
     return `
         <table class="management-editor-table topic-editor-table one-row-editor-table">
@@ -5605,6 +5609,7 @@ function renderContentCategoryRows(allCategories) {
                 <tr>
                     <th>Picture</th>
                     <th>Title</th>
+                    <th>Te Reo title</th>
                     <th>Icon</th>
                     <th>Edit</th>
                     <th>Move</th>
@@ -5615,7 +5620,7 @@ function renderContentCategoryRows(allCategories) {
             <tbody>
                 ${rows}
                 <tr class="management-add-row">
-                    <td colspan="7"><button type="button" class="management-add-line" data-content-add-topic-row>＋ Add new main menu topic</button></td>
+                    <td colspan="8"><button type="button" class="management-add-line" data-content-add-topic-row>＋ Add new main menu topic</button></td>
                 </tr>
             </tbody>
         </table>
@@ -5831,6 +5836,10 @@ function renderContentSelectedEditor() {
             </div>
             <label>Section title
                 <input type="text" id="contentCategoryLabel" class="management-input" maxlength="40" value="${escapeHtml(meta.label)}">
+            </label>
+            <label>Te Reo title
+                <input type="text" id="contentCategoryReoLabel" class="management-input" maxlength="40" value="${escapeHtml(meta.reoLabel || '')}" placeholder="${escapeHtml(meta.label)}">
+                <span class="help-text">Optional. Shown when Te Reo mode is on.</span>
             </label>
             <label class="content-checkbox-row">
                 <input type="checkbox" id="contentCategoryHidden" ${meta.hidden ? 'checked' : ''}>
@@ -6118,10 +6127,14 @@ async function handleContentManagementClick(event) {
     if (saveCategoryButton && contentSetupSelected?.type === 'category') {
         const category = contentSetupSelected.category;
         const labelInput = document.getElementById('contentCategoryLabel');
+        const reoLabelInput = document.getElementById('contentCategoryReoLabel');
         const hiddenInput = document.getElementById('contentCategoryHidden');
         categoryConfig.categories[category] = categoryConfig.categories[category] || {};
         const label = String(labelInput?.value || getCategoryMeta(category).label || category).trim();
+        const reoLabel = String(reoLabelInput?.value || '').trim();
         categoryConfig.categories[category].label = label || getCategoryMeta(category).label || category;
+        if (reoLabel) categoryConfig.categories[category].reoLabel = reoLabel;
+        else delete categoryConfig.categories[category].reoLabel;
         categoryConfig.categories[category].hidden = Boolean(hiddenInput?.checked);
         if (!getCategoryOrder({ includeHidden: false }).length) {
             categoryConfig.categories[category].hidden = false;
@@ -6230,7 +6243,7 @@ async function handleContentManagementClick(event) {
 function handleContentManagementFocusIn(event) {
     const target = event.target;
     if (!target || !target.matches?.('.table-title-input')) return;
-    if (!target.hasAttribute('data-content-inline-category-label') && !target.hasAttribute('data-content-inline-phrase-text')) return;
+    if (!target.hasAttribute('data-content-inline-category-label') && !target.hasAttribute('data-content-inline-category-reo-label') && !target.hasAttribute('data-content-inline-phrase-text')) return;
     selectDefaultContentEditorText(target);
 }
 
@@ -6239,6 +6252,7 @@ function handleContentManagementInput(event) {
     if (!target) return;
     if (
         target.hasAttribute('data-content-inline-category-label') ||
+        target.hasAttribute('data-content-inline-category-reo-label') ||
         target.hasAttribute('data-content-inline-category-icon') ||
         target.hasAttribute('data-content-inline-phrase-text') ||
         target.hasAttribute('data-content-inline-phrase-spoken-text') ||
@@ -6246,6 +6260,7 @@ function handleContentManagementInput(event) {
         target.hasAttribute('data-content-inline-phrase-reo-spoken-text') ||
         target.hasAttribute('data-content-inline-phrase-icon') ||
         target.id === 'contentCategoryLabel' ||
+        target.id === 'contentCategoryReoLabel' ||
         target.id === 'contentPhraseText' ||
         target.id === 'contentPhraseIcon'
     ) {
@@ -6320,6 +6335,19 @@ function handleContentManagementChange(event) {
             refreshCurrentCategoryView(category);
             updateContentEditorSaveState();
         }
+        return;
+    }
+
+    const inlineCategoryReoLabel = event.target && event.target.getAttribute('data-content-inline-category-reo-label');
+    if (inlineCategoryReoLabel) {
+        categoryConfig.categories[inlineCategoryReoLabel] = categoryConfig.categories[inlineCategoryReoLabel] || {};
+        const reoLabel = String(event.target.value || '').trim();
+        if (reoLabel) categoryConfig.categories[inlineCategoryReoLabel].reoLabel = reoLabel;
+        else delete categoryConfig.categories[inlineCategoryReoLabel].reoLabel;
+        saveCategoryConfig();
+        renderCategoryMenuCards();
+        refreshCurrentCategoryView(inlineCategoryReoLabel);
+        updateContentEditorSaveState();
         return;
     }
 
