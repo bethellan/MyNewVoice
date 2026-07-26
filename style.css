@@ -12427,6 +12427,17 @@ body.grid-view-active .ipad-image-grid-button .ipad-image-grid-media {
   overflow: hidden !important;
 }
 
+body.grid-view-active .ipad-image-grid-button .button-media[data-private-media-state="fallback"],
+body.grid-view-active .ipad-image-grid-button .ipad-image-grid-media[data-private-media-state="fallback"] {
+  display: grid !important;
+  place-items: center !important;
+  border: 1px solid color-mix(in srgb, var(--category-color, #3f9f46) 24%, rgba(15,23,42,0.10)) !important;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,255,255,0.96), rgba(248,250,252,0.74) 60%, rgba(226,232,240,0.58)),
+    linear-gradient(145deg, color-mix(in srgb, var(--category-soft, #eef8ec) 72%, #ffffff), #ffffff) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 6px 16px rgba(15, 23, 42, 0.07) !important;
+}
+
 body.grid-view-active .ipad-image-grid-button .button-media img,
 body.grid-view-active .ipad-image-grid-button .button-fallback-icon {
   width: 100% !important;
@@ -12440,13 +12451,16 @@ body.grid-view-active .ipad-image-grid-button .button-media img {
 
 body.grid-view-active .ipad-image-grid-button .button-fallback-icon:not([hidden]) {
   display: flex !important;
+  position: absolute !important;
+  inset: 0 !important;
   align-items: center !important;
   justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  color: var(--category-dark, #1f5b31) !important;
   font-size: clamp(4.2rem, 12vw, 8.8rem) !important;
   line-height: 1 !important;
-  background:
-    radial-gradient(circle at 50% 38%, rgba(255,255,255,0.92), rgba(248,250,252,0.76) 62%, rgba(226,232,240,0.62)),
-    color-mix(in srgb, var(--category-soft, #eef8ec) 58%, #ffffff) !important;
+  background: transparent !important;
 }
 
 body.grid-view-active .ipad-image-grid-button > span:not(.ipad-grid-add-icon) {
@@ -12490,6 +12504,12 @@ body.grid-view-active .ipad-image-grid-button.person-grid-button .button-media i
 
 body.grid-view-active .ipad-image-grid-button.person-grid-button .button-fallback-icon:not([hidden]) {
   font-size: clamp(3.6rem, 10vw, 7.4rem) !important;
+}
+
+body.grid-view-active .ipad-image-grid-button.person-grid-button .button-media[data-private-media-state="fallback"],
+body.grid-view-active .ipad-image-grid-button.person-grid-button .ipad-image-grid-media[data-private-media-state="fallback"] {
+  border-radius: 50% !important;
+  border-color: color-mix(in srgb, var(--category-color, #3f9f46) 34%, rgba(15,23,42,0.12)) !important;
 }
 
 body.grid-view-active .ipad-image-grid-button.grid-editor-hold {
