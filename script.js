@@ -188,7 +188,9 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v139';
+const CURRENT_APP_VERSION = 'v140';
+const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
+const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.80;
 const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
@@ -205,7 +207,8 @@ const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
         limits: {
             menu: { maxWidth: 1400, maxHeight: 600 },
             intro: { maxWidth: 1100, maxHeight: 800 },
-            phrase: { maxWidth: 500, maxHeight: 500 }
+            phrase: { maxWidth: 500, maxHeight: 500 },
+            photoMemory: { maxWidth: 1600, maxHeight: 1600 }
         }
     },
     smaller: {
@@ -215,7 +218,8 @@ const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
         limits: {
             menu: { maxWidth: 1200, maxHeight: 520 },
             intro: { maxWidth: 900, maxHeight: 650 },
-            phrase: { maxWidth: 420, maxHeight: 420 }
+            phrase: { maxWidth: 420, maxHeight: 420 },
+            photoMemory: { maxWidth: 1200, maxHeight: 1200 }
         }
     },
     tiny: {
@@ -225,7 +229,8 @@ const PRIVATE_IMAGE_OPTIMISATION_PRESETS = {
         limits: {
             menu: { maxWidth: 960, maxHeight: 420 },
             intro: { maxWidth: 720, maxHeight: 520 },
-            phrase: { maxWidth: 320, maxHeight: 320 }
+            phrase: { maxWidth: 320, maxHeight: 320 },
+            photoMemory: { maxWidth: 900, maxHeight: 900 }
         }
     }
 };
@@ -233,6 +238,7 @@ const PRIVATE_CROP_OUTPUTS = {
     menu: { width: 1400, height: 1000, aspect: 1.4, shape: 'rectangle', label: 'main menu button picture', cropRole: 'menu' },
     phrase: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' },
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
+    photoMemory: { width: 1600, height: 1600, aspect: null, shape: 'natural', label: 'photo memory' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
 const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v134';
@@ -714,8 +720,23 @@ function getPrivateMediaKindFromKey(key) {
     return kind === 'menu' || kind === 'zoom' || kind === 'intro' ? kind : 'phrase';
 }
 
-function getCropConfigForKey(key) {
+function isPhotoMemoriesCategory(category) {
+    return String(category || '') === PHOTO_MEMORIES_CATEGORY;
+}
+
+function getImageRoleForContext(keyOrId = '', category = '') {
+    const value = String(keyOrId || '');
+    if (isPhotoMemoriesCategory(category) && value.startsWith('phrase:')) return 'photoMemory';
+    if (value.startsWith('menu:')) return 'menu';
+    if (value.startsWith('intro:')) return 'intro';
+    return 'phrase';
+}
+
+function getCropConfigForKey(key, category = '') {
     const kind = getPrivateMediaKindFromKey(key);
+    if (kind === 'phrase' && isPhotoMemoriesCategory(category)) {
+        return PRIVATE_CROP_OUTPUTS.photoMemory;
+    }
     if (kind === 'phrase' && /^phrase:people/i.test(String(key || ''))) {
         return PRIVATE_CROP_OUTPUTS.people;
     }
@@ -723,11 +744,8 @@ function getCropConfigForKey(key) {
     return PRIVATE_CROP_OUTPUTS[kind] || PRIVATE_CROP_OUTPUTS.phrase;
 }
 
-function getImageOptimisationRole(keyOrId = '') {
-    const value = String(keyOrId || '');
-    if (value.startsWith('menu:')) return 'menu';
-    if (value.startsWith('intro:')) return 'intro';
-    return 'phrase';
+function getImageOptimisationRole(keyOrId = '', category = '') {
+    return getImageRoleForContext(keyOrId, category);
 }
 
 function getImageOptimisationOutput(baseWidth, baseHeight, role, presetName = 'original') {
@@ -832,6 +850,7 @@ function openImageCropper(file, options = {}) {
 
         let objectUrl = URL.createObjectURL(file);
         let selectedShape = options.shape || (options.aspect === 1 ? 'square' : 'rectangle');
+        const naturalPhotoMode = selectedShape === 'natural';
         let aspect = selectedShape === 'circle' ? 1 : (options.aspect || 1);
         let crop = { x: 0, y: 0, width: 100, height: 100 };
         let imageBounds = { left: 0, top: 0, width: 100, height: 100 };
@@ -851,6 +870,7 @@ function openImageCropper(file, options = {}) {
             window.removeEventListener('resize', syncImageBoundsAndCrop);
             optimisationButtons.forEach(btn => btn.removeEventListener('click', handleOptimisationChoice));
             cropBox.classList.remove('circle-crop');
+            cropBox.hidden = false;
         };
 
         const finishResolve = (blob) => {
@@ -1010,6 +1030,30 @@ function openImageCropper(file, options = {}) {
 
         const saveCrop = () => {
             try {
+                if (naturalPhotoMode) {
+                    const output = getImageOptimisationOutput(
+                        img.naturalWidth || PRIVATE_IMAGE_MAX_SIZE,
+                        img.naturalHeight || PRIVATE_IMAGE_MAX_SIZE,
+                        options.optimisationRole || 'photoMemory',
+                        optimisationPreset
+                    );
+                    const canvas = document.createElement('canvas');
+                    canvas.width = output.width;
+                    canvas.height = output.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, 0, 0, output.width, output.height);
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            finishReject(new Error('Could not save image.'));
+                            return;
+                        }
+                        finishResolve(blob);
+                    }, 'image/jpeg', output.quality);
+                    return;
+                }
+
                 const scaleX = img.naturalWidth / imageBounds.width;
                 const scaleY = img.naturalHeight / imageBounds.height;
                 const sourceX = Math.round((crop.x - imageBounds.left) * scaleX);
@@ -1063,16 +1107,19 @@ function openImageCropper(file, options = {}) {
             }
         };
 
-        const shapeText = selectedShape === 'circle' ? 'circle' : selectedShape === 'rectangle' ? 'rectangle' : 'square';
+        const shapeText = selectedShape === 'circle' ? 'circle' : selectedShape === 'rectangle' ? 'rectangle' : selectedShape === 'natural' ? 'full photo' : 'square';
         const isMenuButtonCrop = selectedShape === 'rectangle' && options.cropRole === 'menu';
         title.textContent = `Crop ${options.label || 'photo'}`;
-        help.textContent = selectedShape === 'circle'
+        help.textContent = naturalPhotoMode
+            ? 'This photo memory keeps the whole photo shape. Choose a file size, then save it for the photo memories section.'
+            : selectedShape === 'circle'
             ? 'Move and resize the circle so the face or important part is inside it. The saved image is compressed for local storage.'
             : isMenuButtonCrop
                 ? 'Main menu pictures use a wide crop matched to the visible menu-button image area. Move and resize the crop box so the area you choose is the area you see on the main menu.'
                 : 'Move and resize the crop box so the important part is inside it. The saved image is compressed for local storage.';
-        if (shapeLabel) shapeLabel.textContent = isMenuButtonCrop ? 'Menu button visible-area crop' : `Fixed ${shapeText} crop`;
+        if (shapeLabel) shapeLabel.textContent = naturalPhotoMode ? 'Whole photo memory' : isMenuButtonCrop ? 'Menu button visible-area crop' : `Fixed ${shapeText} crop`;
         cropBox.classList.toggle('circle-crop', selectedShape === 'circle');
+        cropBox.hidden = naturalPhotoMode;
         renderOptimisationChoice();
 
         img.onload = () => {
@@ -1080,7 +1127,7 @@ function openImageCropper(file, options = {}) {
             requestAnimationFrame(() => {
                 overlay.classList.add('show');
                 syncImageBoundsAndCrop();
-                cropBox.focus({ preventScroll: true });
+                if (!naturalPhotoMode) cropBox.focus({ preventScroll: true });
             });
         };
         img.onerror = () => finishReject(new Error('Could not load selected image.'));
@@ -2706,7 +2753,7 @@ function handlePrivateSetupChange(event) {
     }
 }
 
-async function choosePrivateImage(key, label = '', text = '') {
+async function choosePrivateImage(key, label = '', text = '', category = '') {
     let input = document.getElementById('privateImagePicker');
     if (!input) {
         input = document.createElement('input');
@@ -2729,7 +2776,7 @@ async function choosePrivateImage(key, label = '', text = '') {
         }
 
         try {
-            const cropConfig = getCropConfigForKey(key);
+            const cropConfig = getCropConfigForKey(key, category);
             const downsizedForCrop = await resizeImageFile(file, PRIVATE_IMAGE_MAX_SIZE, 0.86);
             const croppedBlob = await openImageCropper(downsizedForCrop, {
                 label: label || cropConfig.label,
@@ -2738,7 +2785,7 @@ async function choosePrivateImage(key, label = '', text = '') {
                 outputWidth: cropConfig.width,
                 outputHeight: cropConfig.height,
                 cropRole: cropConfig.cropRole,
-                optimisationRole: getImageOptimisationRole(key)
+                optimisationRole: getImageOptimisationRole(key, category)
             });
             const blob = croppedBlob;
             await putPrivateMediaRecord(key, 'image', blob, { label, text, mime: blob.type || 'image/jpeg' });
@@ -2791,7 +2838,7 @@ function ensureManagementImageOptionsOverlay() {
         if (event.target.closest('[data-image-options-load]')) {
             overlay.classList.remove('show');
             overlay.style.display = 'none';
-            choosePrivateImage(state.key, state.label, state.text);
+            choosePrivateImage(state.key, state.label, state.text, state.category || '');
             window.__mnvImageOptions = null;
             return;
         }
@@ -2804,7 +2851,7 @@ function ensureManagementImageOptionsOverlay() {
             overlay.classList.remove('show');
             overlay.style.display = 'none';
             try {
-                const cropConfig = getCropConfigForKey(state.key);
+                const cropConfig = getCropConfigForKey(state.key, state.category || '');
                 const croppedBlob = await openImageCropper(record.blob, {
                     label: state.label || cropConfig.label,
                     aspect: cropConfig.aspect,
@@ -2812,7 +2859,7 @@ function ensureManagementImageOptionsOverlay() {
                     outputWidth: cropConfig.width,
                     outputHeight: cropConfig.height,
                     cropRole: cropConfig.cropRole,
-                    optimisationRole: getImageOptimisationRole(state.key)
+                    optimisationRole: getImageOptimisationRole(state.key, state.category || '')
                 });
                 const finalBlob = croppedBlob;
                 await putPrivateMediaRecord(state.key, 'image', finalBlob, { label: state.label, text: state.text, mime: finalBlob.type || 'image/jpeg' });
@@ -2854,10 +2901,14 @@ async function showManagementImageOptions(kind, id, category = '') {
     const textEl = overlay.querySelector('#managementImageOptionsText');
     const editBtn = overlay.querySelector('[data-image-options-edit]');
     const deleteBtn = overlay.querySelector('[data-image-options-delete]');
-    const label = kind === 'menu' ? `${getCategoryMeta(id).label} main menu button picture` : `${(findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || id} phrase picture`;
-    const phraseText = kind === 'menu' ? '' : ((findPhraseById(category || contentSetupPhraseCategory, id) || {}).text || '');
-    window.__mnvImageOptions = { kind, id, category, key, label, text: phraseText };
-    if (textEl) textEl.textContent = record ? 'This picture box already has a saved picture. You can crop it again, replace it, delete it, or choose a fallback icon.' : 'This picture box does not yet have a saved picture. You can load/take a picture or choose a fallback icon.';
+    const targetCategory = category || contentSetupPhraseCategory;
+    const photoMemories = kind !== 'menu' && isPhotoMemoriesCategory(targetCategory);
+    const label = kind === 'menu' ? `${getCategoryMeta(id).label} main menu button picture` : `${(findPhraseById(targetCategory, id) || {}).text || id} ${photoMemories ? 'photo memory' : 'phrase picture'}`;
+    const phraseText = kind === 'menu' ? '' : ((findPhraseById(targetCategory, id) || {}).text || '');
+    window.__mnvImageOptions = { kind, id, category: targetCategory, key, label, text: phraseText };
+    if (textEl) textEl.textContent = record
+        ? (photoMemories ? 'This photo memory already has a saved photo. You can replace it, reduce it, delete it, or choose a fallback icon.' : 'This picture box already has a saved picture. You can crop it again, replace it, delete it, or choose a fallback icon.')
+        : (photoMemories ? 'This photo memory does not yet have a saved photo. You can load/take a photo or choose a fallback icon.' : 'This picture box does not yet have a saved picture. You can load/take a picture or choose a fallback icon.');
     if (editBtn) editBtn.disabled = !record;
     if (deleteBtn) deleteBtn.disabled = !record;
     overlay.style.display = 'flex';
@@ -3420,6 +3471,7 @@ const THEME_CATEGORY_PALETTES = {
         food: { colour: '#3DAF60', dark: '#0F5E28', soft: '#E8F8E8' },
         environment: { colour: '#4090D0', dark: '#0A3A6B', soft: '#E8F4FF' },
         MyPeople: { colour: '#E07B2A', dark: '#7B3D00', soft: '#FFF1DC' },
+        photoMemories: { colour: '#B97848', dark: '#68401F', soft: '#F7E7D8' },
         feelings: { colour: '#D96CA8', dark: '#7A2458', soft: '#FFE6F4' },
         routine: { colour: '#2AA6A1', dark: '#0B5C58', soft: '#E2F7F4' },
         social: { colour: '#F0A43A', dark: '#7B4B00', soft: '#FFF0C4' },
@@ -3433,6 +3485,7 @@ const THEME_CATEGORY_PALETTES = {
         food: { colour: '#CA8A04', dark: '#713F12', soft: '#FEF9C3' },
         environment: { colour: '#EC4899', dark: '#831843', soft: '#FCE7F3' },
         MyPeople: { colour: '#1A7EC8', dark: '#0A3A6B', soft: '#E0F2FF' },
+        photoMemories: { colour: '#64748B', dark: '#334155', soft: '#E2E8F0' },
         feelings: { colour: '#8B5CF6', dark: '#4C1D95', soft: '#F3E8FF' },
         routine: { colour: '#0891B2', dark: '#164E63', soft: '#CFFAFE' },
         social: { colour: '#6366F1', dark: '#312E81', soft: '#E0E7FF' },
@@ -3446,6 +3499,7 @@ const THEME_CATEGORY_PALETTES = {
         food: { colour: '#00897B', dark: '#004D40', soft: '#E0F2F1' },
         environment: { colour: '#E64A19', dark: '#7B2300', soft: '#FBE9E7' },
         MyPeople: { colour: '#3B7A57', dark: '#1B4D35', soft: '#EAF5ED' },
+        photoMemories: { colour: '#8D6E63', dark: '#4E342E', soft: '#EFEBE9' },
         feelings: { colour: '#6D8F45', dark: '#304E1F', soft: '#EFF6E6' },
         routine: { colour: '#7A8F3B', dark: '#3E4A1E', soft: '#F2F5DF' },
         social: { colour: '#9B6B3D', dark: '#593B1F', soft: '#F3E7D8' },
@@ -3459,6 +3513,7 @@ const THEME_CATEGORY_PALETTES = {
         food: { colour: '#FFC857', dark: '#FFF1C2', soft: '#302514' },
         environment: { colour: '#4DD0E1', dark: '#D7FAFF', soft: '#102A31' },
         MyPeople: { colour: '#25D6A2', dark: '#D8FFF3', soft: '#102A25' },
+        photoMemories: { colour: '#B7C1CC', dark: '#F2F6FA', soft: '#202832' },
         feelings: { colour: '#FF8FB8', dark: '#FFE2EF', soft: '#351626' },
         routine: { colour: '#7BE3C8', dark: '#E0FFF7', soft: '#132D28' },
         social: { colour: '#7AA7FF', dark: '#E0EAFF', soft: '#17233B' },
@@ -3472,6 +3527,7 @@ const THEME_CATEGORY_PALETTES = {
         food: { colour: '#007A3D', dark: '#003316', soft: '#E8FFF1' },
         environment: { colour: '#B85C00', dark: '#402000', soft: '#FFF1E0' },
         MyPeople: { colour: '#005FCC', dark: '#001F4D', soft: '#EAF2FF' },
+        photoMemories: { colour: '#5E4634', dark: '#23160F', soft: '#F5EEE8' },
         feelings: { colour: '#B0005B', dark: '#3A001E', soft: '#FFE8F4' },
         routine: { colour: '#006C70', dark: '#002C2E', soft: '#E5FEFF' },
         social: { colour: '#3D2BB8', dark: '#140C48', soft: '#EFECFF' },
@@ -3489,6 +3545,7 @@ const TE_REO_STARTER_PACK = {
         food: 'Kai me te Inu',
         comfort: 'Whakamarie',
         MyPeople: 'Āku Tāngata',
+        photoMemories: 'Ngā Whakaahua Mahara',
         feelings: 'Ngā Kare ā-roto',
         routine: 'Mahinga o ia rā',
         social: 'Kōrero',
@@ -3608,7 +3665,11 @@ const TE_REO_STARTER_PACK = {
         activities04: ['Kei te hiahia ahau ki te titiro whakaahua', 'Kei te hiahia ahau ki te titiro whakaahua'],
         activities06: ['Ka tākaro tāua?', 'Ka takaro taua?'],
         memories04: ['Kei te hiahia ahau ki te kōrero mō ngā tamariki i a rātou e nohinohi ana', 'Kei te hiahia ahau ki te korero mo nga tamariki i a ratou e nohinohi ana'],
-        memories09: ['Kei te hiahia ahau ki te titiro ki ngā whakaahua tawhito', 'Kei te hiahia ahau ki te titiro ki nga whakaahua tawhito']
+        memories09: ['Kei te hiahia ahau ki te titiro ki ngā whakaahua tawhito', 'Kei te hiahia ahau ki te titiro ki nga whakaahua tawhito'],
+        photoMemory01: ['Whakaahua whānau', 'Whakaahua whanau'],
+        photoMemory02: ['He rā motuhake', 'He ra motuhake'],
+        photoMemory03: ['He haerenga pai', 'He haerenga pai'],
+        photoMemory04: ['Ngā mokopuna', 'Nga mokopuna']
     }
 };
 function normaliseThemeName(value) {
@@ -4497,6 +4558,15 @@ const CATEGORY_META = {
         "soft": "#EAF2F8",
         "icon": "👤"
     },
+    "photoMemories": {
+        "label": "Photo Memories",
+        "prefix": "photoMemory",
+        "menuImage": "menu12_photo_memories.jpg",
+        "colour": "#8E5A2A",
+        "dark": "#5F370F",
+        "soft": "#FFF5E8",
+        "icon": "📷"
+    },
     "feelings": {
         "label": "Feelings",
         "prefix": "feelings",
@@ -5013,6 +5083,17 @@ function saveDataToStorage() {
   }
 }
 
+function ensurePhotoMemoriesDefaultCategory() {
+  if (!buttonData || typeof buttonData !== 'object') return false;
+  if (Object.prototype.hasOwnProperty.call(buttonData, PHOTO_MEMORIES_CATEGORY)) return false;
+  if (localStorage.getItem(PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY)) return false;
+
+  buttonData[PHOTO_MEMORIES_CATEGORY] = JSON.parse(JSON.stringify(defaultButtonData[PHOTO_MEMORIES_CATEGORY] || []));
+  categoryConfig = normaliseCategoryConfig(categoryConfig);
+  localStorage.setItem(PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY, '1');
+  return true;
+}
+
 
 // Function to load data from localStorage
 function loadDataFromStorage() {
@@ -5029,6 +5110,9 @@ function loadDataFromStorage() {
         if (parsed.appSettings && !hasStoredAppSettings()) {
           appSettings = normaliseAppSettings(parsed.appSettings);
           saveAppSettings({ render: false, persistContent: false });
+        }
+        if (ensurePhotoMemoriesDefaultCategory()) {
+          saveDataToStorage();
         }
         console.log('Loaded uncompressed legacy data — re-saving as compressed.');
         saveDataToStorage(); // Re-compress and store safely
@@ -5051,6 +5135,10 @@ function loadDataFromStorage() {
       }
       if (parsed.lastModified)
         console.log('Loaded compressed data last modified:', parsed.lastModified);
+      if (ensurePhotoMemoriesDefaultCategory()) {
+        saveCategoryConfig();
+        saveDataToStorage();
+      }
 
     } else {
       console.warn('No stored data found — loading defaults.');
@@ -5561,18 +5649,22 @@ function renderContentTopicsScreen(panel, allCategories) {
 function renderContentPhraseScreen(panel, category) {
     const phrases = buttonData[category] || [];
     const meta = getCategoryMeta(category);
+    const photoMemories = isPhotoMemoriesCategory(category);
+    const editorSubtitle = photoMemories ? 'Edit photo memories.' : 'Edit submenu phrases.';
+    const sectionTitle = photoMemories ? 'Photo memories' : 'Submenu phrases';
+    const tipItemName = photoMemories ? 'photo memory' : 'phrase card';
     panel.innerHTML = `
         <div class="content-setup-header editor-style-header compact-editor-header table-editor-header phrase-table-editor-header">
             <div class="compact-editor-title">
                 <h3 id="managementPanelTitle">${escapeHtml(meta.label)}</h3>
-                <p class="editor-header-subtitle">Edit submenu phrases.</p>
+                <p class="editor-header-subtitle">${escapeHtml(editorSubtitle)}</p>
             </div>
         </div>
 
         <div class="private-section-details editor-details open-editor-section table-editor-body phrase-table-editor-body">
-            <div class="editor-section-title">Submenu phrases</div>
+            <div class="editor-section-title">${escapeHtml(sectionTitle)}</div>
             ${renderContentSectionMediaTotals(category)}
-            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> tap ... on a phrase card to edit voice, icon, order, visibility or delete options.</div>
+            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> tap ... on a ${escapeHtml(tipItemName)} to edit voice, icon, order, visibility or delete options.</div>
             <div class="editor-table-wrap one-row-table-wrap" role="region" aria-label="Phrases in ${escapeHtml(meta.label)}" tabindex="0">
                 ${renderContentPhraseRows(category, phrases)}
             </div>
@@ -5586,12 +5678,12 @@ function renderContentPhraseScreen(panel, category) {
 }
 
 
-function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = '') {
+function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = '', category = '') {
     const key = getPrivateMediaKey(kind, kind === 'menu' ? id : { id });
     const roundClass = people ? ' people-thumb' : '';
     const iconText = fallbackIcon || (kind === 'menu' ? getCategoryMeta(id).icon : '🖼️');
     return `
-        <button type="button" class="management-media-thumb${roundClass}" data-management-image-options data-key="${escapeHtml(key)}" data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-people="${people ? '1' : '0'}" aria-label="Edit picture">
+        <button type="button" class="management-media-thumb${roundClass}" data-management-image-options data-key="${escapeHtml(key)}" data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-category="${escapeHtml(category)}" data-people="${people ? '1' : '0'}" aria-label="Edit picture">
             <img alt="" data-private-media-key="${escapeHtml(key)}" style="display:none;">
             <span class="management-thumb-fallback" data-management-thumb-key="${escapeHtml(key)}">${escapeHtml(iconText)}</span>
         </button>
@@ -5687,6 +5779,8 @@ function renderTeReoStatusBadge(phrase) {
 
 function renderContentPhraseRows(category, phrases) {
     const people = category === 'MyPeople';
+    const photoMemories = isPhotoMemoriesCategory(category);
+    const itemName = photoMemories ? 'photo memory' : 'phrase';
     const cards = phrases.map((phrase, index) => {
         const active = contentSetupSelected?.type === 'phrase' && contentSetupSelected.category === category && contentSetupSelected.phraseId === phrase.id;
         const voiceKey = getPrivateMediaKey('voice', phrase);
@@ -5699,24 +5793,24 @@ function renderContentPhraseRows(category, phrases) {
             <article class="content-phrase-card${active ? ' selected-row' : ''}${expanded}" data-phrase-row="${escapeHtml(phraseId)}">
                 <div class="content-phrase-card-main">
                     <div class="content-phrase-card-picture">
-                        ${renderMediaThumbForManagement('phrase', phraseId, people, fallbackIcon)}
+                        ${renderMediaThumbForManagement('phrase', phraseId, people, fallbackIcon, category)}
                     </div>
                     <div class="content-phrase-card-text">
-                        <input type="text" class="management-input table-title-input" data-content-inline-phrase-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.text || '')}" placeholder="Enter phrase text" aria-label="Phrase text">
+                        <input type="text" class="management-input table-title-input" data-content-inline-phrase-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.text || '')}" placeholder="${photoMemories ? 'Enter photo caption' : 'Enter phrase text'}" aria-label="${photoMemories ? 'Photo caption' : 'Phrase text'}">
                         <div class="content-phrase-card-badges">
                             <span class="help-text table-id-line">ID: <code>${escapeHtml(phraseId)}</code></span>
                             ${renderTeReoStatusBadge(phrase)}
                         </div>
                         ${people ? renderMyPeopleRelationshipSelect(phrase, category) : ''}
                     </div>
-                    <button type="button" class="content-phrase-card-toggle" data-content-phrase-card-toggle aria-expanded="${expandedState}" aria-controls="${escapeHtml(detailsId)}" aria-label="More options for ${escapeHtml(phrase.text || 'this phrase')}">...</button>
+                    <button type="button" class="content-phrase-card-toggle" data-content-phrase-card-toggle aria-expanded="${expandedState}" aria-controls="${escapeHtml(detailsId)}" aria-label="More options for ${escapeHtml(phrase.text || `this ${itemName}`)}">...</button>
                 </div>
                 <div class="content-phrase-card-details" id="${escapeHtml(detailsId)}" ${active ? '' : 'hidden'}>
                     <div class="content-phrase-card-divider"></div>
                     <section class="content-phrase-card-section content-phrase-card-media">
                         <div class="content-phrase-card-section-title">Picture</div>
                         <div class="content-phrase-card-support">
-                            ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), 'Image')}
+                            ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), photoMemories ? 'Photo' : 'Image')}
                         </div>
                     </section>
                     <section class="content-phrase-card-section content-phrase-card-voice">
@@ -5761,18 +5855,18 @@ function renderContentPhraseRows(category, phrases) {
                         <label class="content-checkbox-row compact-checkbox"><input type="checkbox" data-content-inline-phrase-hidden="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" ${phrase.hidden ? 'checked' : ''}> Hidden</label>
                     </section>
                     <section class="content-phrase-card-section">
-                        <button type="button" class="management-btn remove-btn small-management-btn content-phrase-delete" data-content-delete-phrase-row="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" data-index="${index}">Delete phrase</button>
+                        <button type="button" class="management-btn remove-btn small-management-btn content-phrase-delete" data-content-delete-phrase-row="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" data-index="${index}">Delete ${photoMemories ? 'photo' : 'phrase'}</button>
                     </section>
                 </div>
             </article>
         `;
-    }).join('') || '<div class="empty-table-cell content-phrase-empty">No phrases in this section yet.</div>';
+    }).join('') || `<div class="empty-table-cell content-phrase-empty">No ${photoMemories ? 'photo memories' : 'phrases'} in this section yet.</div>`;
 
     return `
         <div class="content-phrase-card-list" data-content-phrase-card-list>
             ${cards}
             <div class="management-add-row content-phrase-add-row">
-                <button type="button" class="management-add-line" data-content-add-phrase-row>+ Add new phrase</button>
+                <button type="button" class="management-add-line" data-content-add-phrase-row>+ Add new ${photoMemories ? 'photo' : 'phrase'}</button>
             </div>
         </div>
     `;
@@ -5801,6 +5895,7 @@ function toggleContentPhraseCard(toggleButton) {
 
 function renderLegacyContentPhraseRows(category, phrases) {
     const people = category === 'MyPeople';
+    const photoMemories = isPhotoMemoriesCategory(category);
     const rows = phrases.map((phrase, index) => {
         const active = contentSetupSelected?.type === 'phrase' && contentSetupSelected.category === category && contentSetupSelected.phraseId === phrase.id;
         const voiceKey = getPrivateMediaKey('voice', phrase);
@@ -5808,8 +5903,8 @@ function renderLegacyContentPhraseRows(category, phrases) {
         return `
             <tr class="management-table-row ${active ? 'selected-row' : ''}" data-phrase-row="${escapeHtml(phrase.id || '')}">
                 <td class="picture-cell">
-                    ${renderMediaThumbForManagement('phrase', phrase.id || '', people, fallbackIcon)}
-                    ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), 'Image')}
+                    ${renderMediaThumbForManagement('phrase', phrase.id || '', people, fallbackIcon, category)}
+                    ${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), photoMemories ? 'Photo' : 'Image')}
                 </td>
                 <td class="title-cell phrase-text-cell">
                     <input type="text" class="management-input table-title-input" data-content-inline-phrase-text="${escapeHtml(phrase.id || '')}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.text || '')}" placeholder="Enter phrase text" aria-label="Phrase text">
@@ -5844,7 +5939,7 @@ function renderLegacyContentPhraseRows(category, phrases) {
                 </td>
             </tr>
         `;
-    }).join('') || '<tr><td colspan="7" class="empty-table-cell">No phrases in this section yet.</td></tr>';
+    }).join('') || `<tr><td colspan="7" class="empty-table-cell">No ${photoMemories ? 'photo memories' : 'phrases'} in this section yet.</td></tr>`;
 
     return `
         <table class="management-editor-table phrase-editor-table one-row-editor-table">
@@ -5862,7 +5957,7 @@ function renderLegacyContentPhraseRows(category, phrases) {
             <tbody>
                 ${rows}
                 <tr class="management-add-row">
-                    <td colspan="7"><button type="button" class="management-add-line" data-content-add-phrase-row>+ Add new phrase</button></td>
+                    <td colspan="7"><button type="button" class="management-add-line" data-content-add-phrase-row>+ Add new ${photoMemories ? 'photo' : 'phrase'}</button></td>
                 </tr>
             </tbody>
         </table>
@@ -5911,22 +6006,24 @@ function renderContentSelectedEditor() {
 
     const phraseList = buttonData[category] || [];
     const index = phraseList.indexOf(phrase);
+    const photoMemories = isPhotoMemoriesCategory(category);
+    const selectedItemName = photoMemories ? 'photo memory' : 'phrase';
     return `
-        <h4>Phrase item</h4>
-        <p class="private-selected-help">Edit the wording Dad sees and hears. Add one picture for this phrase and optionally record a voice. Use Hide if you may want this phrase again later.</p>
+        <h4>${photoMemories ? 'Photo memory' : 'Phrase item'}</h4>
+        <p class="private-selected-help">Edit the wording Dad sees and hears. Add one ${photoMemories ? 'photo' : 'picture'} for this ${escapeHtml(selectedItemName)} and optionally record a voice. Use Hide if you may want this ${escapeHtml(selectedItemName)} again later.</p>
         <code>${escapeHtml(phrase.id || '')} · ${escapeHtml(getPhraseFilenameForSetup(category, phrase))}</code>
         <div class="content-media-summary selected-media-summary">
-            <span>${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), 'Image')}</span>
+            <span>${renderMediaSizeLine(getPrivateMediaKey('phrase', phrase), photoMemories ? 'Photo' : 'Image')}</span>
             <span>${renderMediaSizeLine(getPrivateMediaKey('voice', phrase), 'Audio')}</span>
         </div>
         <div class="content-button-row">
-            <button type="button" class="management-btn" data-pick-image data-key="${escapeHtml(getPrivateMediaKey('phrase', phrase))}" data-label="${escapeHtml((phrase.text || 'Selected phrase') + ' phrase picture')}" data-text="${escapeHtml(phrase.text || '')}">Choose / take phrase picture</button>
-            <button type="button" class="management-btn remove-btn" data-delete-media data-key="${escapeHtml(getPrivateMediaKey('phrase', phrase))}">Remove phrase picture</button>
+            <button type="button" class="management-btn" data-pick-image data-key="${escapeHtml(getPrivateMediaKey('phrase', phrase))}" data-label="${escapeHtml((phrase.text || (photoMemories ? 'Selected photo memory' : 'Selected phrase')) + (photoMemories ? ' photo memory' : ' phrase picture'))}" data-text="${escapeHtml(phrase.text || '')}" data-category="${escapeHtml(category)}">Choose / take ${photoMemories ? 'photo memory' : 'phrase picture'}</button>
+            <button type="button" class="management-btn remove-btn" data-delete-media data-key="${escapeHtml(getPrivateMediaKey('phrase', phrase))}">Remove ${photoMemories ? 'photo' : 'phrase picture'}</button>
             <button type="button" class="management-btn" data-record-voice data-key="${escapeHtml(getPrivateMediaKey('voice', phrase))}" data-text="${escapeHtml(phrase.text || '')}">🎙️ Record / re-record voice</button>
             <button type="button" class="management-btn" data-play-voice data-key="${escapeHtml(getPrivateMediaKey('voice', phrase))}">▶️ Play voice</button>
             <button type="button" class="management-btn remove-btn" data-delete-media data-key="${escapeHtml(getPrivateMediaKey('voice', phrase))}">Delete voice</button>
         </div>
-        <label>Phrase text
+        <label>${photoMemories ? 'Photo caption' : 'Phrase text'}
             <input type="text" id="contentPhraseText" class="management-input" maxlength="200" value="${escapeHtml(phrase.text || '')}">
         </label>
         <label>Optional fallback icon
@@ -5940,7 +6037,7 @@ function renderContentSelectedEditor() {
             <button type="button" class="management-btn" data-content-move-phrase="up" ${index <= 0 ? 'disabled' : ''}>Move up</button>
             <button type="button" class="management-btn" data-content-move-phrase="down" ${index >= phraseList.length - 1 ? 'disabled' : ''}>Move down</button>
             <button type="button" class="management-btn save-private-setup" data-content-save-phrase>Save</button>
-            <button type="button" class="management-btn remove-btn" data-content-delete-phrase>Delete phrase</button>
+            <button type="button" class="management-btn remove-btn" data-content-delete-phrase>Delete ${photoMemories ? 'photo' : 'phrase'}</button>
         </div>
     `;
 }
@@ -5979,7 +6076,7 @@ async function handleContentManagementClick(event) {
     if (imageOptionsButton) {
         const kind = imageOptionsButton.dataset.kind;
         const id = imageOptionsButton.dataset.id;
-        showManagementImageOptions(kind, id, contentSetupPhraseCategory);
+        showManagementImageOptions(kind, id, imageOptionsButton.dataset.category || contentSetupPhraseCategory);
         return;
     }
 
@@ -5997,7 +6094,7 @@ async function handleContentManagementClick(event) {
 
     const pickImageButton = target.closest('[data-pick-image]');
     if (pickImageButton) {
-        choosePrivateImage(pickImageButton.dataset.key, pickImageButton.dataset.label, pickImageButton.dataset.text || '');
+        choosePrivateImage(pickImageButton.dataset.key, pickImageButton.dataset.label, pickImageButton.dataset.text || '', pickImageButton.dataset.category || contentSetupPhraseCategory);
         return;
     }
 
@@ -6075,14 +6172,15 @@ async function handleContentManagementClick(event) {
         const category = contentSetupPhraseCategory;
         if (!buttonData[category]) buttonData[category] = [];
         const id = generateNextPhraseId(category);
-        const phrase = { text: 'New phrase', image: `${id}.jpg`, id };
+        const photoMemories = isPhotoMemoriesCategory(category);
+        const phrase = { text: photoMemories ? 'New photo memory' : 'New phrase', image: `${id}.jpg`, id };
         buttonData[category].push(phrase);
         contentSetupSelected = { type: 'phrase', category, phraseId: id };
         saveDataToStorage();
         refreshCurrentCategoryView(category);
         renderContentManagementPanel();
         focusNewContentEditorRow('phrase', id);
-        showToast('New phrase row added. Type the wording into the row.', 'success');
+        showToast(photoMemories ? 'New photo memory added. Add a caption and photo.' : 'New phrase row added. Type the wording into the row.', 'success');
         return;
     }
 
@@ -7016,6 +7114,32 @@ const defaultButtonData = {
             "additionalInfo": ""
         }
     ],
+    "photoMemories": [
+        {
+            "text": "Family photo",
+            "image": "photoMemory01.jpg",
+            "id": "photoMemory01",
+            "icon": "📷"
+        },
+        {
+            "text": "Special day",
+            "image": "photoMemory02.jpg",
+            "id": "photoMemory02",
+            "icon": "📷"
+        },
+        {
+            "text": "Holiday memory",
+            "image": "photoMemory03.jpg",
+            "id": "photoMemory03",
+            "icon": "🌄"
+        },
+        {
+            "text": "Grandkids photo",
+            "image": "photoMemory04.jpg",
+            "id": "photoMemory04",
+            "icon": "👨‍👩‍👧‍👦"
+        }
+    ],
     "feelings": [
         {
             "text": "I'm in pain",
@@ -7759,7 +7883,8 @@ function createIpadImageGridPhraseButton(buttonInfo, category) {
     button.type = 'button';
     const text = getPhraseDisplayText(buttonInfo);
     const isMyPeople = category === 'MyPeople';
-    button.className = `ipad-image-grid-button${isMyPeople ? ' person-grid-button' : ''}`;
+    const isPhotoMemory = isPhotoMemoriesCategory(category);
+    button.className = `ipad-image-grid-button${isMyPeople ? ' person-grid-button' : ''}${isPhotoMemory ? ' photo-memory-grid-button' : ''}`;
     const isRearrangingThis = gridRearrangeState && gridRearrangeState.category === category && gridRearrangeState.phraseId === buttonInfo.id;
     if (isRearrangingThis) button.classList.add('grid-rearrange-source');
     if (text.length > 34) button.classList.add('long-label');
@@ -7769,7 +7894,7 @@ function createIpadImageGridPhraseButton(buttonInfo, category) {
     applyCategoryThemeToElement(button, category);
 
     const safeText = escapeHtml(text);
-    const mediaClass = isMyPeople ? 'person-button-media ipad-image-grid-media' : 'ipad-image-grid-media';
+    const mediaClass = isMyPeople ? 'person-button-media ipad-image-grid-media' : isPhotoMemory ? 'photo-memory-button-media ipad-image-grid-media' : 'ipad-image-grid-media';
     button.innerHTML = `
         ${createButtonMediaHTML(buttonInfo, category, mediaClass)}
         <span>${safeText}</span>
@@ -7800,7 +7925,8 @@ function createIpadImageGridAddButton(category) {
     button.dataset.category = category;
     applyCategoryThemeToElement(button, category);
     const isMyPeople = category === 'MyPeople';
-    const label = isMyPeople ? 'Add person' : 'Add phrase';
+    const isPhotoMemory = isPhotoMemoriesCategory(category);
+    const label = isMyPeople ? 'Add person' : isPhotoMemory ? 'Add photo' : 'Add phrase';
     button.innerHTML = `
         <span class="ipad-grid-add-icon" aria-hidden="true">+</span>
         <span>${escapeHtml(label)}</span>
@@ -7808,7 +7934,7 @@ function createIpadImageGridAddButton(category) {
     attachGridEditorLongPress(button, { type: 'add', category });
     button.addEventListener('click', (event) => {
         event.preventDefault();
-        showToast(`Hold for 2 seconds to ${isMyPeople ? 'add a person' : 'add a phrase'}`, 'info');
+        showToast(`Hold for 2 seconds to ${isMyPeople ? 'add a person' : isPhotoMemory ? 'add a photo' : 'add a phrase'}`, 'info');
     });
     return button;
 }
@@ -7896,6 +8022,8 @@ function createPhraseButton(buttonInfo, category) {
     const displayText = getPhraseDisplayText(buttonInfo);
     const safeText = escapeHtml(displayText);
     const isMyPeople = category === 'MyPeople';
+    const isPhotoMemory = isPhotoMemoriesCategory(category);
+    if (isPhotoMemory) button.classList.add('photo-memory-grid-button');
 
     if (isMyPeople) {
         const countdown = getBirthdayCountdown(buttonInfo.birthday);
@@ -7918,7 +8046,7 @@ function createPhraseButton(buttonInfo, category) {
         `;
     } else {
         button.innerHTML = `
-            ${createButtonMediaHTML(buttonInfo, category)}
+            ${createButtonMediaHTML(buttonInfo, category, isPhotoMemory ? 'photo-memory-button-media' : '')}
             <span>${safeText}</span>
         `;
     }
@@ -8194,7 +8322,7 @@ function hidePhrasePopup(token = null) {
     }
     if (imageShell) imageShell.hidden = true;
 
-    overlay.classList.remove('show', 'manual-close', 'my-people-popup', 'quick-yes-popup', 'quick-no-popup');
+    overlay.classList.remove('show', 'manual-close', 'my-people-popup', 'photo-memory-popup', 'quick-yes-popup', 'quick-no-popup');
     overlay.removeAttribute('data-popup-category');
     overlay.setAttribute('aria-hidden', 'true');
 }
@@ -8240,6 +8368,7 @@ function showPhrasePopup(buttonInfoOrText) {
         : '';
     overlay.dataset.popupCategory = popupCategory;
     overlay.classList.toggle('my-people-popup', popupCategory === 'MyPeople');
+    overlay.classList.toggle('photo-memory-popup', isPhotoMemoriesCategory(popupCategory));
     overlay.classList.add('show');
     overlay.setAttribute('aria-hidden', 'false');
 
