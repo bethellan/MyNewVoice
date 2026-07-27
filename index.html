@@ -1,12 +1,12 @@
-﻿<!--
-Copyright Â© Andrew Bethell. All rights reserved.
+<!--
+Copyright &copy; Andrew Bethell. All rights reserved.
 Created by Andrew Bethell in his own time for his father following a stroke.
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <script src="assets/vendor/lz-string-1.5.0.min.js"></script>
     <title>MyNewVoice - Communication Tool</title>
     <meta name="theme-color" content="#008f91">
@@ -18,14 +18,14 @@ Created by Andrew Bethell in his own time for his father following a stroke.
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Copyright Â© Andrew Bethell. All rights reserved. Created by Andrew Bethell in his own time for his father following a stroke. -->
+    <!-- Copyright &copy; Andrew Bethell. All rights reserved. Created by Andrew Bethell in his own time for his father following a stroke. -->
     <div class="container">
         <!-- Toast Notifications -->
         <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
         <!-- Auto-Save Indicator -->
 
 	<div id="autosaveIndicator" class="autosave-indicator" aria-live="polite" aria-atomic="true">
-        ðŸ’¾ Saved
+        Saved
 	</div>
 
         <!-- Main app bar -->
@@ -52,7 +52,7 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 
         <!-- Message Display Bar: kept for older render/state ownership; visually retired by the app bar. -->
         <div id="messageBar" role="status" aria-live="polite">
-            <button id="backToMenu" class="back-to-menu title-back-to-menu" type="button" aria-label="Return to main menu" hidden>â†</button>
+            <button id="backToMenu" class="back-to-menu title-back-to-menu" type="button" aria-label="Return to main menu" hidden>&larr;</button>
             <p id="messageBarText">Select a button to speak...</p>
         </div>
         
@@ -106,7 +106,7 @@ Created by Andrew Bethell in his own time for his father following a stroke.
             <div class="modal-content about-content">
                 <h3 id="aboutModalTitle">About MyNewVoice</h3>
                 <p>MyNewVoice was created by Andrew Bethell for his father following a stroke, in the hope of helping him engage with people and the world in a better way.</p>
-                <p><strong>Copyright Â© Andrew Bethell. All rights reserved.</strong></p>
+                <p><strong>Copyright &copy; Andrew Bethell. All rights reserved.</strong></p>
                 <p><strong id="aboutVersionText">Version: v137</strong></p>
                 <section class="about-summary-block" aria-label="Backup size summary">
                     <h4>Backup size</h4>
@@ -123,7 +123,7 @@ Created by Andrew Bethell in his own time for his father following a stroke.
             </div>
         </div>
 
-        <!-- Content Management Overlay â€” content is rendered dynamically by renderContentManagementPanel() -->
+        <!-- Content Management Overlay - content is rendered dynamically by renderContentManagementPanel() -->
         <div id="managementOverlay" class="management-overlay">
             <div id="managementPanel" class="management-panel" role="dialog" aria-labelledby="managementPanelTitle" aria-modal="true">
                 <!-- Populated by script.js -->
