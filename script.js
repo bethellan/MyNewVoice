@@ -2792,7 +2792,10 @@ async function choosePrivateImage(key, label = '', text = '', category = '') {
             showToast('📷 Cropped photo saved locally on this device', 'success');
             refreshAfterPrivateMediaChange();
         } catch (error) {
-            if (error && /cancelled/i.test(error.message || '')) return;
+            if (error && /cancelled/i.test(error.message || '')) {
+                contentEditorRestorePosition = null;
+                return;
+            }
             console.error(error);
             showToast('Could not crop or save photo locally', 'error');
         }
@@ -2833,6 +2836,7 @@ function ensureManagementImageOptionsOverlay() {
             overlay.classList.remove('show');
             overlay.style.display = 'none';
             window.__mnvImageOptions = null;
+            contentEditorRestorePosition = null;
             return;
         }
         if (event.target.closest('[data-image-options-load]')) {
@@ -2866,7 +2870,11 @@ function ensureManagementImageOptionsOverlay() {
                 showToast('Picture updated', 'success');
                 refreshAfterPrivateMediaChange();
             } catch (error) {
-                if (error && /cancelled/i.test(error.message || '')) return;
+                if (error && /cancelled/i.test(error.message || '')) {
+                    window.__mnvImageOptions = null;
+                    contentEditorRestorePosition = null;
+                    return;
+                }
                 console.error(error);
                 showToast('Could not edit picture', 'error');
             }
@@ -2938,7 +2946,7 @@ function ensureFallbackIconOverlay() {
     `;
     overlay.addEventListener('click', (event) => {
         if (event.target.closest('[data-icon-cancel]')) {
-            overlay.classList.remove('show'); overlay.style.display = 'none'; window.__mnvIconTarget = null; return;
+            overlay.classList.remove('show'); overlay.style.display = 'none'; window.__mnvIconTarget = null; contentEditorRestorePosition = null; return;
         }
         const choice = event.target.closest('[data-icon-choice]');
         if (!choice || !window.__mnvIconTarget) return;
@@ -2971,6 +2979,13 @@ function ensureFallbackIconOverlay() {
 }
 
 function showFallbackIconMenu(kind, id, category = '') {
+    if (kind !== 'menu' && kind !== 'introduction') {
+        contentEditorRestorePosition = {
+            type: 'phrase',
+            id: String(id || ''),
+            relativeTop: contentEditorRestorePosition?.relativeTop ?? 0
+        };
+    }
     window.__mnvIconTarget = { kind, id, category };
     const overlay = ensureFallbackIconOverlay();
     overlay.style.display = 'flex';
@@ -5564,6 +5579,48 @@ function hideManagementPanel() {
 // V14 CARER CONTENT SETUP DASHBOARD
 // ============================================================================
 
+let contentEditorRestorePosition = null;
+
+function queueContentEditorPositionRestoreFromElement(element) {
+    if (!element) return;
+    const card = element.closest('[data-phrase-row], [data-topic-row]');
+    if (!card) return;
+    const panel = document.getElementById('managementPanel');
+    const scrollContainer = card.closest('.editor-table-wrap') || panel;
+    const rect = card.getBoundingClientRect();
+    const containerRect = scrollContainer && scrollContainer.getBoundingClientRect
+        ? scrollContainer.getBoundingClientRect()
+        : { top: 0 };
+    contentEditorRestorePosition = {
+        type: card.hasAttribute('data-phrase-row') ? 'phrase' : 'topic',
+        id: card.getAttribute('data-phrase-row') || card.getAttribute('data-topic-row') || '',
+        relativeTop: rect.top - containerRect.top
+    };
+}
+
+function restoreQueuedContentEditorPosition() {
+    const pending = contentEditorRestorePosition;
+    if (!pending || !pending.id) return;
+    contentEditorRestorePosition = null;
+
+    requestAnimationFrame(() => {
+        const panel = document.getElementById('managementPanel');
+        if (!panel) return;
+        const attributeName = pending.type === 'topic' ? 'data-topic-row' : 'data-phrase-row';
+        const target = Array.from(panel.querySelectorAll(`[${attributeName}]`))
+            .find(item => item.getAttribute(attributeName) === pending.id);
+        if (!target) return;
+
+        const scrollContainer = target.closest('.editor-table-wrap') || panel;
+        if (scrollContainer && typeof scrollContainer.scrollTop === 'number' && scrollContainer.getBoundingClientRect) {
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            scrollContainer.scrollTop += (targetRect.top - containerRect.top) - pending.relativeTop;
+        }
+        target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    });
+}
+
 function renderContentManagementPanel() {
     const panel = document.getElementById('managementPanel');
     if (!panel) return;
@@ -5588,6 +5645,7 @@ function renderContentManagementPanel() {
     panel.onfocusin = handleContentManagementFocusIn;
     applyPrivateImagesIn(panel);
     updateContentEditorSaveState();
+    restoreQueuedContentEditorPosition();
 }
 
 function selectDefaultContentEditorText(input) {
@@ -6074,6 +6132,7 @@ async function handleContentManagementClick(event) {
 
     const imageOptionsButton = target.closest('[data-management-image-options]');
     if (imageOptionsButton) {
+        queueContentEditorPositionRestoreFromElement(imageOptionsButton);
         const kind = imageOptionsButton.dataset.kind;
         const id = imageOptionsButton.dataset.id;
         showManagementImageOptions(kind, id, imageOptionsButton.dataset.category || contentSetupPhraseCategory);
@@ -6082,6 +6141,7 @@ async function handleContentManagementClick(event) {
 
     const iconMenuButton = target.closest('[data-icon-menu]');
     if (iconMenuButton) {
+        queueContentEditorPositionRestoreFromElement(iconMenuButton);
         showFallbackIconMenu(iconMenuButton.dataset.kind, iconMenuButton.dataset.id, iconMenuButton.dataset.category || contentSetupPhraseCategory);
         return;
     }
@@ -6220,6 +6280,7 @@ async function handleContentManagementClick(event) {
 
     const rowMovePhraseButton = target.closest('[data-content-move-phrase-row]');
     if (rowMovePhraseButton) {
+        queueContentEditorPositionRestoreFromElement(rowMovePhraseButton);
         const phrases = buttonData[contentSetupPhraseCategory] || [];
         const index = Number(rowMovePhraseButton.dataset.index);
         const direction = rowMovePhraseButton.dataset.contentMovePhraseRow;
@@ -6300,6 +6361,7 @@ async function handleContentManagementClick(event) {
 
     const movePhraseButton = target.closest('[data-content-move-phrase]');
     if (movePhraseButton && contentSetupSelected?.type === 'phrase') {
+        queueContentEditorPositionRestoreFromElement(movePhraseButton);
         const phrases = buttonData[contentSetupSelected.category] || [];
         const index = phrases.findIndex(item => item.id === contentSetupSelected.phraseId);
         const direction = movePhraseButton.dataset.contentMovePhrase;
