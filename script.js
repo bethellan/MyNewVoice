@@ -3914,16 +3914,6 @@ function updateAppBarControls() {
         teReoButton.setAttribute('aria-pressed', teReoOn ? 'true' : 'false');
     }
 
-    const appBarBackToMenu = document.getElementById('appBarBackToMenu');
-    if (appBarBackToMenu) {
-        const showBackToMenu = Boolean(currentViewCategory) && appSettings.displayMode !== 'grid';
-        appBarBackToMenu.classList.toggle('is-hidden', !showBackToMenu);
-        appBarBackToMenu.disabled = !showBackToMenu;
-        appBarBackToMenu.setAttribute('aria-hidden', showBackToMenu ? 'false' : 'true');
-        appBarBackToMenu.setAttribute('aria-label', showBackToMenu ? 'Return to main menu' : 'Return to main menu unavailable');
-        appBarBackToMenu.title = showBackToMenu ? 'Return to main menu' : '';
-    }
-
     const brandName = document.querySelector('.mnv-brand-name');
     if (brandName) brandName.textContent = appSettings.teReoMode ? TE_REO_BRAND_NAME : 'MyNewVoice';
     const brand = document.querySelector('.mnv-brand');
@@ -8185,6 +8175,27 @@ function createPhraseButton(buttonInfo, category) {
     return button;
 }
 
+function createSubmenuContentNav(category) {
+    const nav = document.createElement('div');
+    nav.className = 'submenu-content-nav';
+    applyCategoryThemeToElement(nav, category);
+
+    const backButton = document.createElement('button');
+    backButton.type = 'button';
+    backButton.className = 'submenu-content-back';
+    backButton.textContent = '←';
+    backButton.setAttribute('aria-label', 'Return to main menu');
+    backButton.addEventListener('click', showMainMenu);
+
+    const title = document.createElement('div');
+    title.className = 'submenu-content-title';
+    title.textContent = getCategoryDisplayLabel(category);
+
+    nav.appendChild(backButton);
+    nav.appendChild(title);
+    return nav;
+}
+
 function renderSimpleVocabularyView(grid) {
     if (!grid) return;
     grid.innerHTML = '';
@@ -8230,19 +8241,20 @@ function populateGrid(category) {
 
     const buttons = getDisplayPhrases(category);
 
+    grid.removeAttribute('data-view');
+    grid.classList.remove('simple-vocabulary-list');
+    grid.classList.remove('ipad-image-grid');
+    grid.appendChild(createSubmenuContentNav(category));
+
     if (!buttonData[category]) {
-        grid.innerHTML = '<p>Category not found.</p>';
+        grid.insertAdjacentHTML('beforeend', '<p>Category not found.</p>');
         return;
     }
 
     if (!buttons.length) {
-        grid.innerHTML = '<p class="empty-category-message">No visible phrases in this section.</p>';
+        grid.insertAdjacentHTML('beforeend', '<p class="empty-category-message">No visible phrases in this section.</p>');
         return;
     }
-
-    grid.removeAttribute('data-view');
-    grid.classList.remove('simple-vocabulary-list');
-    grid.classList.remove('ipad-image-grid');
 
     buttons.forEach(buttonInfo => {
         grid.appendChild(createPhraseButton(buttonInfo, category));
@@ -9488,14 +9500,6 @@ installSingleButtonPressVisualGuard();
         backToMenu.addEventListener('click', showMainMenu);
     }
 
-    const appBarBackToMenu = document.getElementById('appBarBackToMenu');
-    if (appBarBackToMenu) {
-        appBarBackToMenu.addEventListener('click', (event) => {
-            event.preventDefault();
-            if (!appBarBackToMenu.disabled) showMainMenu();
-        });
-    }
-    
     // Set up settings gateway button
     const toggleBtn = document.getElementById('managementToggle');
     if (toggleBtn) {
