@@ -3914,6 +3914,16 @@ function updateAppBarControls() {
         teReoButton.setAttribute('aria-pressed', teReoOn ? 'true' : 'false');
     }
 
+    const appBarBackToMenu = document.getElementById('appBarBackToMenu');
+    if (appBarBackToMenu) {
+        const showBackToMenu = Boolean(currentViewCategory) && appSettings.displayMode !== 'grid';
+        appBarBackToMenu.classList.toggle('is-hidden', !showBackToMenu);
+        appBarBackToMenu.disabled = !showBackToMenu;
+        appBarBackToMenu.setAttribute('aria-hidden', showBackToMenu ? 'false' : 'true');
+        appBarBackToMenu.setAttribute('aria-label', showBackToMenu ? 'Return to main menu' : 'Return to main menu unavailable');
+        appBarBackToMenu.title = showBackToMenu ? 'Return to main menu' : '';
+    }
+
     const brandName = document.querySelector('.mnv-brand-name');
     if (brandName) brandName.textContent = appSettings.teReoMode ? TE_REO_BRAND_NAME : 'MyNewVoice';
     const brand = document.querySelector('.mnv-brand');
@@ -9476,6 +9486,14 @@ installSingleButtonPressVisualGuard();
     const backToMenu = document.getElementById('backToMenu');
     if (backToMenu) {
         backToMenu.addEventListener('click', showMainMenu);
+    }
+
+    const appBarBackToMenu = document.getElementById('appBarBackToMenu');
+    if (appBarBackToMenu) {
+        appBarBackToMenu.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (!appBarBackToMenu.disabled) showMainMenu();
+        });
     }
     
     // Set up settings gateway button

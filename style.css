@@ -12193,7 +12193,7 @@ body {
 
 .mnv-app-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) repeat(5, clamp(42px, 5vw, 54px));
+  grid-template-columns: minmax(0, 1fr) repeat(6, clamp(40px, 4.8vw, 52px));
   align-items: center;
   gap: clamp(6px, 1vw, 12px);
   min-height: clamp(58px, 7vw, 74px);
@@ -12211,7 +12211,7 @@ body {
 }
 
 .mnv-app-bar.grid-label-toggle-visible {
-  grid-template-columns: minmax(0, 1fr) repeat(5, clamp(42px, 5vw, 54px));
+  grid-template-columns: minmax(0, 1fr) repeat(6, clamp(40px, 4.8vw, 52px));
 }
 
 .mnv-brand {
@@ -12273,6 +12273,7 @@ body[data-te-reo-mode="on"] .mnv-logo {
 
 .mnv-view-cycle,
 .mnv-label-toggle,
+.mnv-app-back-to-menu,
 .mnv-edit-toggle,
 .mnv-switch-toggle,
 .mnv-app-bar .management-toggle {
@@ -12298,6 +12299,7 @@ body[data-te-reo-mode="on"] .mnv-logo {
 
 .mnv-view-cycle,
 .mnv-label-toggle,
+.mnv-app-back-to-menu,
 .mnv-edit-toggle,
 .mnv-switch-toggle {
   width: 100% !important;
@@ -12313,6 +12315,19 @@ body[data-te-reo-mode="on"] .mnv-logo {
   color: #ffffff !important;
   border-color: color-mix(in srgb, var(--primary-color, #3f9f46) 72%, #ffffff) !important;
   box-shadow: 0 5px 13px rgba(15, 23, 42, 0.14) !important;
+}
+
+.mnv-app-back-to-menu {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: clamp(1.35rem, 2.4vw, 1.65rem) !important;
+}
+
+.mnv-app-back-to-menu.is-hidden {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .mnv-edit-toggle,
@@ -12425,12 +12440,12 @@ body.grid-view-active .tab-container {
   }
 
   .mnv-app-bar {
-    grid-template-columns: minmax(0, 1fr) repeat(5, 40px);
+    grid-template-columns: minmax(0, 1fr) repeat(6, 38px);
     gap: 6px;
   }
 
   .mnv-app-bar.grid-label-toggle-visible {
-    grid-template-columns: minmax(0, 1fr) repeat(5, 40px);
+    grid-template-columns: minmax(0, 1fr) repeat(6, 38px);
   }
 
   .mnv-brand {
@@ -12451,6 +12466,7 @@ body.grid-view-active .tab-container {
 
   .mnv-view-cycle,
   .mnv-label-toggle,
+  .mnv-app-back-to-menu,
   .mnv-edit-toggle,
   .mnv-switch-toggle,
   .mnv-app-bar .management-toggle {
