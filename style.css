@@ -1832,6 +1832,12 @@ body[data-theme="dark"] .private-media-main code {
     margin-bottom: 12px;
 }
 
+.image-crop-memory-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 .crop-mode-btn {
     min-height: 46px;
     border: 2px solid #d8dee9;

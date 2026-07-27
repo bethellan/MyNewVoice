@@ -801,6 +801,11 @@ function ensureImageCropOverlay() {
             </div>
             <div class="image-crop-mode-row" aria-live="polite">
                 <span id="imageCropShapeLabel" class="crop-shape-label">Fixed crop shape</span>
+                <div id="imageCropMemoryModes" class="image-crop-memory-modes" hidden>
+                    <button type="button" class="crop-mode-btn active" data-memory-crop-mode="natural">Whole photo</button>
+                    <button type="button" class="crop-mode-btn" data-memory-crop-mode="square">Square crop</button>
+                    <button type="button" class="crop-mode-btn" data-memory-crop-mode="free">Free crop</button>
+                </div>
             </div>
             <fieldset class="image-optimisation-control">
                 <legend>Photo file size</legend>
@@ -843,6 +848,8 @@ function openImageCropper(file, options = {}) {
         const title = overlay.querySelector('#imageCropTitle');
         const help = overlay.querySelector('#imageCropHelp');
         const shapeLabel = overlay.querySelector('#imageCropShapeLabel');
+        const memoryModes = overlay.querySelector('#imageCropMemoryModes');
+        const memoryModeButtons = Array.from(overlay.querySelectorAll('[data-memory-crop-mode]'));
         const optimisationHelp = overlay.querySelector('#imageOptimisationHelp');
         const optimisationButtons = Array.from(overlay.querySelectorAll('[data-image-optimisation]'));
         const saveButton = overlay.querySelector('[data-crop-save]');
@@ -850,8 +857,9 @@ function openImageCropper(file, options = {}) {
 
         let objectUrl = URL.createObjectURL(file);
         let selectedShape = options.shape || (options.aspect === 1 ? 'square' : 'rectangle');
-        const naturalPhotoMode = selectedShape === 'natural';
-        let aspect = selectedShape === 'circle' ? 1 : (options.aspect || 1);
+        const photoMemoryCropper = selectedShape === 'natural';
+        let naturalPhotoMode = photoMemoryCropper;
+        let aspect = selectedShape === 'circle' ? 1 : selectedShape === 'natural' ? null : (options.aspect || 1);
         let crop = { x: 0, y: 0, width: 100, height: 100 };
         let imageBounds = { left: 0, top: 0, width: 100, height: 100 };
         let pointerState = null;
@@ -869,8 +877,10 @@ function openImageCropper(file, options = {}) {
             window.removeEventListener('pointerup', handlePointerUp);
             window.removeEventListener('resize', syncImageBoundsAndCrop);
             optimisationButtons.forEach(btn => btn.removeEventListener('click', handleOptimisationChoice));
+            memoryModeButtons.forEach(btn => btn.removeEventListener('click', handleMemoryCropModeChoice));
             cropBox.classList.remove('circle-crop');
             cropBox.hidden = false;
+            if (memoryModes) memoryModes.hidden = true;
         };
 
         const finishResolve = (blob) => {
@@ -902,10 +912,10 @@ function openImageCropper(file, options = {}) {
         const setCenteredCrop = () => {
             const margin = 0.08;
             let width = imageBounds.width * (1 - margin * 2);
-            let height = width / aspect;
+            let height = aspect ? width / aspect : imageBounds.height * (1 - margin * 2);
             if (height > imageBounds.height * (1 - margin * 2)) {
                 height = imageBounds.height * (1 - margin * 2);
-                width = height * aspect;
+                if (aspect) width = height * aspect;
             }
             width = Math.max(50, width);
             height = Math.max(50, height);
@@ -934,11 +944,11 @@ function openImageCropper(file, options = {}) {
             const minSize = Math.min(50, imageBounds.width, imageBounds.height);
             if (crop.width > imageBounds.width) {
                 crop.width = imageBounds.width;
-                crop.height = crop.width / aspect;
+                if (aspect) crop.height = crop.width / aspect;
             }
             if (crop.height > imageBounds.height) {
                 crop.height = imageBounds.height;
-                crop.width = crop.height * aspect;
+                if (aspect) crop.width = crop.height * aspect;
             }
             crop.width = Math.max(minSize, crop.width);
             crop.height = Math.max(minSize, crop.height);
@@ -982,18 +992,25 @@ function openImageCropper(file, options = {}) {
             const anchorY = movingDown ? start.y : start.y + start.height;
             const rawWidth = Math.abs(point.x - anchorX);
             const rawHeight = Math.abs(point.y - anchorY);
-            let width = Math.max(50, rawWidth);
-            let height = width / aspect;
-            if (height > rawHeight && rawHeight >= 50) {
-                height = rawHeight;
-                width = height * aspect;
-            }
+            let width;
+            let height;
+            if (aspect) {
+                width = Math.max(50, rawWidth);
+                height = width / aspect;
+                if (height > rawHeight && rawHeight >= 50) {
+                    height = rawHeight;
+                    width = height * aspect;
+                }
 
-            width = Math.min(width, imageBounds.width);
-            height = width / aspect;
-            if (height > imageBounds.height) {
-                height = imageBounds.height;
-                width = height * aspect;
+                width = Math.min(width, imageBounds.width);
+                height = width / aspect;
+                if (height > imageBounds.height) {
+                    height = imageBounds.height;
+                    width = height * aspect;
+                }
+            } else {
+                width = Math.max(50, Math.min(rawWidth, imageBounds.width));
+                height = Math.max(50, Math.min(rawHeight, imageBounds.height));
             }
 
             let x = movingRight ? anchorX : anchorX - width;
@@ -1026,6 +1043,44 @@ function openImageCropper(file, options = {}) {
                 : 'original';
             optimisationPreset = PRIVATE_IMAGE_OPTIMISATION_PRESETS[requestedPreset] ? requestedPreset : 'original';
             renderOptimisationChoice();
+        };
+
+        const updateCropModeUi = () => {
+            const shapeText = selectedShape === 'circle' ? 'circle' : selectedShape === 'rectangle' ? 'rectangle' : selectedShape === 'natural' ? 'full photo' : selectedShape === 'free' ? 'free crop' : 'square';
+            const isMenuButtonCrop = selectedShape === 'rectangle' && options.cropRole === 'menu';
+            title.textContent = `Crop ${options.label || 'photo'}`;
+            help.textContent = naturalPhotoMode
+                ? 'This photo memory keeps the whole photo shape. Choose a file size, then save it.'
+                : selectedShape === 'free'
+                    ? 'Drag the crop box and resize it freely. The saved photo will keep the rectangle you choose.'
+                    : selectedShape === 'circle'
+                        ? 'Move and resize the circle so the face or important part is inside it. The saved image is compressed for local storage.'
+                        : isMenuButtonCrop
+                            ? 'Main menu pictures use a wide crop matched to the visible menu-button image area. Move and resize the crop box so the area you choose is the area you see on the main menu.'
+                            : 'Move and resize the crop box so the important part is inside it. The saved image is compressed for local storage.';
+            if (shapeLabel) shapeLabel.textContent = naturalPhotoMode ? 'Whole photo memory' : selectedShape === 'free' ? 'Free photo crop' : isMenuButtonCrop ? 'Menu button visible-area crop' : `Fixed ${shapeText}`;
+            if (memoryModes) memoryModes.hidden = !photoMemoryCropper;
+            memoryModeButtons.forEach(button => {
+                const active = button.dataset.memoryCropMode === selectedShape;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+            cropBox.classList.toggle('circle-crop', selectedShape === 'circle');
+            cropBox.hidden = naturalPhotoMode;
+            if (!naturalPhotoMode) {
+                setCenteredCrop();
+                cropBox.focus({ preventScroll: true });
+            }
+        };
+
+        const handleMemoryCropModeChoice = (event) => {
+            const requestedMode = event.currentTarget && event.currentTarget.dataset
+                ? event.currentTarget.dataset.memoryCropMode
+                : 'natural';
+            selectedShape = requestedMode === 'square' ? 'square' : requestedMode === 'free' ? 'free' : 'natural';
+            naturalPhotoMode = selectedShape === 'natural';
+            aspect = selectedShape === 'square' ? 1 : selectedShape === 'free' ? null : null;
+            updateCropModeUi();
         };
 
         const saveCrop = () => {
@@ -1061,9 +1116,11 @@ function openImageCropper(file, options = {}) {
                 const sourceW = Math.round(crop.width * scaleX);
                 const sourceH = Math.round(crop.height * scaleY);
                 const configuredWidth = options.outputWidth || 700;
-                const configuredHeight = options.outputHeight || Math.round(configuredWidth / aspect);
+                const configuredHeight = aspect
+                    ? (options.outputHeight || Math.round(configuredWidth / aspect))
+                    : Math.max(1, sourceH);
                 const output = getImageOptimisationOutput(
-                    configuredWidth,
+                    aspect ? configuredWidth : sourceW,
                     configuredHeight,
                     options.optimisationRole || 'phrase',
                     optimisationPreset
@@ -1107,20 +1164,8 @@ function openImageCropper(file, options = {}) {
             }
         };
 
-        const shapeText = selectedShape === 'circle' ? 'circle' : selectedShape === 'rectangle' ? 'rectangle' : selectedShape === 'natural' ? 'full photo' : 'square';
-        const isMenuButtonCrop = selectedShape === 'rectangle' && options.cropRole === 'menu';
-        title.textContent = `Crop ${options.label || 'photo'}`;
-        help.textContent = naturalPhotoMode
-            ? 'This photo memory keeps the whole photo shape. Choose a file size, then save it for the photo memories section.'
-            : selectedShape === 'circle'
-            ? 'Move and resize the circle so the face or important part is inside it. The saved image is compressed for local storage.'
-            : isMenuButtonCrop
-                ? 'Main menu pictures use a wide crop matched to the visible menu-button image area. Move and resize the crop box so the area you choose is the area you see on the main menu.'
-                : 'Move and resize the crop box so the important part is inside it. The saved image is compressed for local storage.';
-        if (shapeLabel) shapeLabel.textContent = naturalPhotoMode ? 'Whole photo memory' : isMenuButtonCrop ? 'Menu button visible-area crop' : `Fixed ${shapeText} crop`;
-        cropBox.classList.toggle('circle-crop', selectedShape === 'circle');
-        cropBox.hidden = naturalPhotoMode;
         renderOptimisationChoice();
+        updateCropModeUi();
 
         img.onload = () => {
             overlay.style.display = 'flex';
@@ -1140,6 +1185,7 @@ function openImageCropper(file, options = {}) {
         window.addEventListener('pointerup', handlePointerUp);
         window.addEventListener('resize', syncImageBoundsAndCrop);
         optimisationButtons.forEach(btn => btn.addEventListener('click', handleOptimisationChoice));
+        memoryModeButtons.forEach(btn => btn.addEventListener('click', handleMemoryCropModeChoice));
     });
 }
 
@@ -5184,9 +5230,7 @@ function resetToDefaultData() {
 
 function showAutoSave() {
   const indicator = document.getElementById('autosaveIndicator');
-  if (!indicator) return;
-  indicator.classList.add('show');
-  setTimeout(() => indicator.classList.remove('show'), 1500);
+  if (indicator) indicator.classList.remove('show');
 }
 
 
