@@ -325,15 +325,6 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-.title-back-to-menu {
-  position: absolute;
-  left: var(--space-md);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  white-space: nowrap;
-}
-
 .title-back-to-menu[hidden] {
   display: none !important;
 }
@@ -511,26 +502,6 @@ body {
   font-size: var(--font-lg);
   line-height: 1.15;
   text-align: right;
-}
-
-.back-to-menu {
-  border: 2px solid var(--category-color, var(--primary-color));
-  border-radius: var(--radius-md);
-  background: #ffffff;
-  color: var(--category-dark, var(--primary-dark));
-  font-size: var(--font-sm);
-  font-weight: 800;
-  padding: var(--space-sm) var(--space-md);
-  cursor: pointer;
-  min-height: 48px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.back-to-menu:hover,
-.back-to-menu:focus {
-  background: var(--category-color, var(--primary-color));
-  color: var(--text-light);
-  outline: none;
 }
 
 /* Stacked communication row layout
@@ -1968,13 +1939,6 @@ body.submenu-open .about-toggle {
   display: none !important;
 }
 
-.title-back-to-menu {
-  min-height: 36px;
-  padding: 0.38rem 0.72rem;
-  font-size: clamp(0.8rem, 2vw, 0.95rem);
-  border-radius: 12px;
-}
-
 .private-section-details {
   margin-top: 14px;
   border: 2px solid #e5e7eb;
@@ -3182,7 +3146,6 @@ button,
 .management-btn,
 .small-management-btn,
 .management-add-line,
-.back-to-menu,
 .settings-close,
 .fallback-icon-choice {
   transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, border-color 0.12s ease, background 0.12s ease;
@@ -3193,7 +3156,6 @@ button:active,
 .management-btn:active,
 .small-management-btn:active,
 .management-add-line:active,
-.back-to-menu:active,
 .settings-close:active,
 .fallback-icon-choice:active {
   transform: translateY(2px) scale(0.992);
@@ -3237,8 +3199,7 @@ button:active,
 .settings-action-btn:focus-visible,
 .management-btn:focus-visible,
 .small-management-btn:focus-visible,
-.management-media-thumb:focus-visible,
-.back-to-menu:focus-visible {
+.management-media-thumb:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring), var(--shadow-card);
 }
@@ -4055,8 +4016,6 @@ body[data-theme="midnight"] .settings-action-btn {
   box-shadow: 0 22px 50px rgba(15,23,42,0.24);
 }
 
-.title-back-to-menu,
-.back-to-menu,
 .management-toggle,
 .settings-close,
 button:not(.tab):not(.grid-button):not(.management-toggle),
@@ -4072,10 +4031,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle),
   box-shadow: 0 10px 22px rgba(15,23,42,0.12), inset 0 1px 0 rgba(255,255,255,0.42);
 }
 
-.title-back-to-menu:hover,
-.title-back-to-menu:focus,
-.back-to-menu:hover,
-.back-to-menu:focus,
 .management-toggle:hover,
 .management-toggle:focus,
 .settings-close:hover,
@@ -4342,34 +4297,6 @@ body[data-theme="midnight"] {
     inset 0 1px 0 var(--v50-edge-highlight),
     inset 0 -18px 36px rgba(15,23,42,0.035);
   backdrop-filter: blur(12px);
-}
-
-.title-back-to-menu,
-.back-to-menu {
-  border-radius: 999px !important;
-  border: 1px solid color-mix(in srgb, var(--category-color, var(--primary-color)) 56%, rgba(255,255,255,0.72)) !important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.22)),
-    color-mix(in srgb, var(--category-soft, var(--theme-button-surface)) 82%, #ffffff) !important;
-  color: var(--category-dark, var(--primary-dark)) !important;
-  box-shadow:
-    0 9px 18px rgba(15,23,42,0.14),
-    inset 0 1px 0 var(--v50-edge-highlight),
-    inset 0 -2px 5px rgba(15,23,42,0.08) !important;
-}
-
-.title-back-to-menu:active {
-  transform: translateY(-50%) scale(0.98);
-  box-shadow:
-    0 3px 8px rgba(15,23,42,0.18),
-    inset 0 2px 6px rgba(15,23,42,0.16) !important;
-}
-
-.back-to-menu:active {
-  transform: scale(0.98);
-  box-shadow:
-    0 3px 8px rgba(15,23,42,0.18),
-    inset 0 2px 6px rgba(15,23,42,0.16) !important;
 }
 
 .tab-container,
@@ -5548,7 +5475,6 @@ html {
   .management-btn:active,
   .small-management-btn:active,
   .management-add-line:active,
-  .back-to-menu:active,
   .settings-close:active,
   .fallback-icon-choice:active,
   .private-item-button:active,
@@ -5564,7 +5490,6 @@ html {
   .management-btn.mnv-pressing,
   .small-management-btn.mnv-pressing,
   .management-add-line.mnv-pressing,
-  .back-to-menu.mnv-pressing,
   .settings-close.mnv-pressing,
   .fallback-icon-choice.mnv-pressing,
   .private-item-button.mnv-pressing,
@@ -5637,7 +5562,6 @@ body,
   .management-btn,
   .small-management-btn,
   .management-add-line,
-  .back-to-menu,
   .settings-close,
   .fallback-icon-choice,
   .private-item-button,
@@ -5663,7 +5587,7 @@ body,
   .settings-action-btn,
   .management-btn,
   .small-management-btn,
-  .back-to-menu {
+  .settings-close {
     touch-action: manipulation;
   }
 }
@@ -5806,12 +5730,6 @@ body,
   margin-top: max(0px, env(safe-area-inset-top, 0px));
 }
 
-.title-back-to-menu,
-.back-to-menu {
-  min-height: 48px;
-  touch-action: manipulation;
-}
-
 .management-toggle {
   top: max(20px, calc(12px + env(safe-area-inset-top, 0px)));
 }
@@ -5857,17 +5775,6 @@ body {
       min-height: clamp(60px, 10vw, 74px);
     }
 
-    .title-back-to-menu {
-      top: 50% !important;
-      transform: translateY(-50%) !important;
-      left: var(--space-md) !important;
-      min-width: 52px;
-      min-height: 52px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     .management-toggle {
       top: calc(20px + var(--mnv-ios-top-control-clearance)) !important;
       right: 20px !important;
@@ -5878,60 +5785,6 @@ body {
     }
   }
 }
-
-/* ============================================================================
-   V87 SUBMENU BACK ARROW TOUCH TARGET FIX
-   ----------------------------------------------------------------------------
-   Keeps the iPhone safe-area correction from v86, but pulls the submenu back
-   arrow fully inside the rounded title bar and gives it a larger, easier tap
-   target. This does not alter menu content, phrase rows, media, speech or backup
-   schema.
-   ============================================================================ */
-.title-back-to-menu {
-  overflow: visible;
-  touch-action: manipulation;
-}
-
-#messageBar.submenu-titlebar .title-back-to-menu,
-.submenu-titlebar .title-back-to-menu {
-  left: max(18px, calc(env(safe-area-inset-left, 0px) + 18px)) !important;
-  top: 50% !important;
-  width: 58px !important;
-  min-width: 58px !important;
-  height: 58px !important;
-  min-height: 58px !important;
-  padding: 0 !important;
-  border-radius: 18px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-  z-index: 10 !important;
-  -webkit-tap-highlight-color: transparent;
-}
-
-@supports (-webkit-touch-callout: none) {
-  @media (max-width: 820px) {
-    #messageBar.submenu-titlebar {
-      overflow: visible !important;
-    }
-
-    #messageBar.submenu-titlebar .title-back-to-menu,
-    .submenu-titlebar .title-back-to-menu {
-      left: max(20px, calc(env(safe-area-inset-left, 0px) + 20px)) !important;
-      width: 60px !important;
-      min-width: 60px !important;
-      height: 60px !important;
-      min-height: 60px !important;
-    }
-
-    #messageBar.submenu-titlebar #messageBarText {
-      padding-left: 76px !important;
-      padding-right: 12px !important;
-    }
-  }
-}
-
 
 /* ============================================================================
    V90 COMMERCIAL UI AUDIT AND CONSOLIDATION
@@ -5978,35 +5831,6 @@ body {
   overflow: hidden !important;
   gap: clamp(12px, 2vw, 18px) !important;
   padding: clamp(12px, 2vw, 18px) !important;
-}
-
-.title-back-to-menu,
-#messageBar.submenu-titlebar .title-back-to-menu {
-  position: absolute !important;
-  left: max(14px, calc(env(safe-area-inset-left, 0px) + 14px)) !important;
-  top: calc(50% + (var(--mnv-v90-top-clearance) / 4)) !important;
-  transform: translateY(-50%) !important;
-  width: var(--mnv-v90-touch) !important;
-  min-width: var(--mnv-v90-touch) !important;
-  height: var(--mnv-v90-touch) !important;
-  min-height: var(--mnv-v90-touch) !important;
-  border-radius: 18px !important;
-  border: 1.5px solid color-mix(in srgb, var(--category-color, var(--primary-color)) 42%, white) !important;
-  background: rgba(255,255,255,0.92) !important;
-  color: var(--category-dark, var(--primary-dark)) !important;
-  box-shadow: 0 5px 13px rgba(27, 64, 44, 0.14) !important;
-  font-size: 2rem !important;
-  line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.title-back-to-menu:active,
-.title-back-to-menu.mnv-pressing {
-  transform: translateY(-50%) scale(0.97) !important;
-  box-shadow: var(--mnv-v90-shadow-pressed) !important;
 }
 
 .management-toggle {
@@ -6243,15 +6067,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
     right: max(14px, calc(10px + env(safe-area-inset-right, 0px))) !important;
   }
 
-  .title-back-to-menu,
-  #messageBar.submenu-titlebar .title-back-to-menu {
-    width: 54px !important;
-    min-width: 54px !important;
-    height: 54px !important;
-    min-height: 54px !important;
-    left: max(12px, calc(env(safe-area-inset-left, 0px) + 12px)) !important;
-  }
-
   .tab {
     min-height: clamp(162px, 38vw, 220px) !important;
   }
@@ -6281,7 +6096,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
   .tab,
   .grid-button,
   .management-toggle,
-  .title-back-to-menu,
   button {
     transition: none !important;
   }
@@ -10431,9 +10245,7 @@ body {
 }
 
 .management-toggle,
-.settings-v115-close,
-.title-back-to-menu,
-.back-to-menu {
+.settings-v115-close {
   border-radius: var(--mnv-ui-radius) !important;
   border: 1px solid var(--mnv-ui-line) !important;
   background:
@@ -11683,31 +11495,6 @@ body.submenu-open [data-category="MyPeople"] .grid-button > span {
   min-height: 0 !important;
 }
 
-/* v124 hotfix: center submenu back icon and use one polished row accent. */
-body.submenu-open #messageBar.submenu-titlebar .title-back-to-menu,
-body.submenu-open .submenu-titlebar .title-back-to-menu {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 58px !important;
-  min-width: 58px !important;
-  height: 58px !important;
-  min-height: 58px !important;
-  padding: 0 !important;
-  line-height: 1 !important;
-  font-size: 2rem !important;
-  text-align: center !important;
-  text-indent: 0 !important;
-  transform: translateY(-50%) !important;
-}
-
-body.submenu-open #messageBar.submenu-titlebar .title-back-to-menu > *,
-body.submenu-open .submenu-titlebar .title-back-to-menu > * {
-  display: block !important;
-  line-height: 1 !important;
-  margin: 0 !important;
-}
-
 body.submenu-open .grid-button {
   border-left-width: 1px !important;
   border-left-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 26%, rgba(15,23,42,0.12)) !important;
@@ -11740,29 +11527,6 @@ body.submenu-open .grid-button > * {
     bottom: 18px !important;
     width: 5px !important;
   }
-}
-
-/* v124 hotfix: draw submenu back arrow at the exact button centre. */
-body.submenu-open #messageBar.submenu-titlebar .title-back-to-menu,
-body.submenu-open .submenu-titlebar .title-back-to-menu {
-  color: transparent !important;
-  overflow: hidden !important;
-}
-
-body.submenu-open #messageBar.submenu-titlebar .title-back-to-menu::before,
-body.submenu-open .submenu-titlebar .title-back-to-menu::before {
-  content: "\2190" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: var(--mnv-ui-text, #233042) !important;
-  font-size: 2rem !important;
-  font-weight: 500 !important;
-  line-height: 1 !important;
-  text-align: center !important;
-  pointer-events: none !important;
 }
 
 body:not(.submenu-open) .management-toggle {
