@@ -7648,6 +7648,19 @@ function escapeHtml(value) {
     });
 }
 
+function normaliseTextForSpeech(value) {
+    return String(value ?? '')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/gi, ' and ')
+        .replace(/&lt;/gi, ' ')
+        .replace(/&gt;/gi, ' ')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;/gi, "'")
+        .replace(/[<>]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 function setMessageBarText(text) {
     const messageBar = document.getElementById('messageBar');
     if (!messageBar) return;
@@ -8756,16 +8769,18 @@ document.addEventListener('touchstart', primeSpeechSynthesis, { once: true, pass
 document.addEventListener('click', primeSpeechSynthesis, { once: true, passive: true });
 
 function speakText(text, buttonElement, options = {}) {
-  const spokenText = String(text || '').trim();
+  const rawSpokenText = String(text || '').trim();
+  const spokenText = normaliseTextForSpeech(rawSpokenText);
   const synth = window.speechSynthesis;
   const speechRunId = speechPlaybackRunId + 1;
   speechPlaybackRunId = speechRunId;
   const isCurrentSpeechRun = () => speechRunId === speechPlaybackRunId;
   if (synth) {
     try { synth.cancel(); } catch (_) {}
+    try { synth.resume(); } catch (_) {}
   }
 
-  const popupToken = options.popupToken || (options.showPopup === false ? null : showPhrasePopup(spokenText));
+  const popupToken = options.popupToken || (options.showPopup === false ? null : showPhrasePopup(rawSpokenText || spokenText));
 
   // --- Click sound ---
   playOptionalClickSound();
@@ -8837,6 +8852,7 @@ function speakText(text, buttonElement, options = {}) {
 
     activeSpeechUtterance = utterance; // keep a reference so some browsers do not garbage collect it mid-speech
     try {
+      try { synth.resume(); } catch (_) {}
       synth.speak(utterance);
       watchdog = setTimeout(() => {
         // If speech never starts, retry once after voices have loaded.
