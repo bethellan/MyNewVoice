@@ -3927,9 +3927,6 @@ function updateAppBarControls() {
         cycleButton.dataset.currentDisplayMode = appSettings.displayMode;
     }
 
-    const appBar = document.querySelector('.mnv-app-bar');
-    if (appBar) appBar.classList.toggle('grid-label-toggle-visible', gridActive);
-
     const labelToggle = document.getElementById('gridLabelsToggle');
     if (labelToggle) {
         labelToggle.disabled = !gridActive;
