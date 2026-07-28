@@ -11822,12 +11822,12 @@ body.grid-view-active .ipad-image-grid-panel {
 
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-right .ipad-topic-nav,
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-right .ipad-image-grid-panel {
-  animation: mnvGridEnterFromRight 220ms ease-out both;
+  animation: mnvGridEnterFromRight 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-topic-nav,
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-image-grid-panel {
-  animation: mnvGridEnterFromLeft 220ms ease-out both;
+  animation: mnvGridEnterFromLeft 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-topic-nav,
@@ -11840,24 +11840,24 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-image-grid
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-topic-nav,
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-image-grid-panel {
   transform: translateX(var(--mnv-grid-drag-x, 0px));
-  transition: transform 180ms ease-out !important;
+  transition: transform 210ms cubic-bezier(0.16, 1, 0.3, 1) !important;
   will-change: transform;
 }
 
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-topic-nav,
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-image-grid-panel {
-  animation: mnvGridLeaveLeft 150ms ease-in both;
+  animation: mnvGridLeaveLeft 180ms cubic-bezier(0.7, 0, 0.84, 0) both;
 }
 
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-topic-nav,
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-grid-panel {
-  animation: mnvGridLeaveRight 150ms ease-in both;
+  animation: mnvGridLeaveRight 180ms cubic-bezier(0.7, 0, 0.84, 0) both;
 }
 
 @keyframes mnvGridEnterFromRight {
   from {
-    opacity: 0.66;
-    transform: translateX(28px);
+    opacity: 0.72;
+    transform: translateX(min(18vw, 150px));
   }
   to {
     opacity: 1;
@@ -11867,8 +11867,8 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-g
 
 @keyframes mnvGridEnterFromLeft {
   from {
-    opacity: 0.66;
-    transform: translateX(-28px);
+    opacity: 0.72;
+    transform: translateX(max(-18vw, -150px));
   }
   to {
     opacity: 1;
@@ -11882,8 +11882,8 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-g
     transform: translateX(var(--mnv-grid-drag-x, 0px));
   }
   to {
-    opacity: 0.68;
-    transform: translateX(-42px);
+    opacity: 0.58;
+    transform: translateX(max(-22vw, -180px));
   }
 }
 
@@ -11893,8 +11893,8 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-g
     transform: translateX(var(--mnv-grid-drag-x, 0px));
   }
   to {
-    opacity: 0.68;
-    transform: translateX(42px);
+    opacity: 0.58;
+    transform: translateX(min(22vw, 180px));
   }
 }
 

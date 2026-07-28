@@ -3755,6 +3755,7 @@ let editModeUnlocked = false;
 let pendingTeReoModeTarget = null;
 let gridRearrangeState = null;
 let pendingGridTransitionDirection = 0;
+let gridTransitionInProgress = false;
 
 function normaliseAppSettings(rawSettings) {
     const raw = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
@@ -7892,8 +7893,11 @@ function prefersReducedMotion() {
 }
 
 function showCategorySubmenuWithGridTransition(category, direction) {
+    if (gridTransitionInProgress) return;
     if (direction && shouldUseIpadImageGrid() && !prefersReducedMotion()) {
         pendingGridTransitionDirection = direction;
+        gridTransitionInProgress = true;
+        setTimeout(() => { gridTransitionInProgress = false; }, 430);
     }
     showCategorySubmenu(category);
 }
@@ -7910,7 +7914,7 @@ function applyPendingIpadGridTransition(grid) {
 
     const clearTransition = () => grid.classList.remove(className);
     grid.addEventListener('animationend', clearTransition, { once: true });
-    setTimeout(clearTransition, 320);
+    setTimeout(clearTransition, 380);
 }
 
 function attachIpadImageGridSwipe(grid, category) {
@@ -7919,6 +7923,7 @@ function attachIpadImageGridSwipe(grid, category) {
 
     let startX = 0;
     let startY = 0;
+    let startTime = 0;
     let isDragging = false;
     let horizontalIntent = false;
 
@@ -7935,18 +7940,19 @@ function attachIpadImageGridSwipe(grid, category) {
     };
 
     const onTouchStart = (event) => {
-        if (gridRearrangeState) return;
+        if (gridRearrangeState || gridTransitionInProgress) return;
         const touch = event.touches && event.touches[0];
         if (!touch) return;
         clearDragVisual();
         startX = touch.clientX;
         startY = touch.clientY;
+        startTime = performance.now ? performance.now() : Date.now();
         isDragging = false;
         horizontalIntent = false;
     };
 
     const onTouchMove = (event) => {
-        if (gridRearrangeState || prefersReducedMotion()) return;
+        if (gridRearrangeState || gridTransitionInProgress || prefersReducedMotion()) return;
         const touch = event.touches && event.touches[0];
         if (!touch) return;
         const deltaX = touch.clientX - startX;
@@ -7982,18 +7988,26 @@ function attachIpadImageGridSwipe(grid, category) {
         if (!touch) return;
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
-        const threshold = Math.min(Math.max(grid.clientWidth * 0.18, 70), 130);
+        const elapsed = Math.max(1, (performance.now ? performance.now() : Date.now()) - startTime);
+        const velocity = Math.abs(deltaX) / elapsed;
+        const threshold = Math.min(Math.max(grid.clientWidth * 0.16, 62), 120);
+        const fastFlick = velocity > 0.62 && Math.abs(deltaX) > 44;
         if (!isDragging && (Math.abs(deltaX) < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4)) return;
         const direction = deltaX < 0 ? 1 : -1;
         const nextCategory = getAdjacentVisibleCategory(category, direction);
-        if (!nextCategory || Math.abs(deltaX) < threshold) {
+        if (!nextCategory || (Math.abs(deltaX) < threshold && !fastFlick)) {
             if (isDragging) snapBack();
             return;
         }
         event.preventDefault();
+        gridTransitionInProgress = true;
         grid.classList.remove('grid-swipe-dragging');
         grid.classList.add(direction > 0 ? 'grid-swipe-leave-left' : 'grid-swipe-leave-right');
-        setTimeout(() => showCategorySubmenuWithGridTransition(nextCategory, direction), 130);
+        setTimeout(() => {
+            pendingGridTransitionDirection = direction;
+            showCategorySubmenu(nextCategory);
+            setTimeout(() => { gridTransitionInProgress = false; }, 260);
+        }, 180);
     };
 
     const onTouchCancel = () => {
