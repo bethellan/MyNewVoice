@@ -4829,7 +4829,10 @@ function showContentEditorChoiceDialog({
         if (actionsEl) {
             actionsEl.dataset.actionCount = String(resolvedActions.length);
             actionsEl.innerHTML = resolvedActions.map(action => `
-                <button type="button" class="${escapeHtml(action.className || 'management-btn')}" data-choice-action="${escapeHtml(action.id)}">${escapeHtml(action.label)}</button>
+                <button type="button" class="${escapeHtml(action.className || 'management-btn')}" data-choice-action="${escapeHtml(action.id)}">
+                    <span class="content-choice-label">${escapeHtml(action.label)}</span>
+                    ${action.detail ? `<span class="content-choice-detail">${escapeHtml(action.detail)}</span>` : ''}
+                </button>
             `).join('');
         }
 
@@ -5482,6 +5485,7 @@ async function showGridPhraseMoveDialog(pending) {
             ...targets.map((category, index) => ({
                 id: `move-${index}`,
                 label: getCategoryMeta(category).label,
+                detail: `${(buttonData[category] || []).filter(item => !item.hidden).length} visible items`,
                 className: 'management-btn'
             })),
             { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn' }
