@@ -11918,24 +11918,43 @@ body.grid-view-active .ipad-grid-swipe-guide {
   left: 50%;
   top: var(--mnv-grid-guide-y, 50%);
   z-index: 12;
-  width: clamp(58px, 10vw, 86px);
-  height: clamp(58px, 10vw, 86px);
+  width: clamp(104px, 17vw, 150px);
+  height: clamp(42px, 7vw, 58px);
   border-radius: 999px;
   display: grid;
-  place-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-items: center;
   pointer-events: none;
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.84);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.72)),
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.68)),
     color-mix(in srgb, var(--category-soft, #ecf8e8) 64%, #ffffff);
   color: var(--category-dark, #1f5b31);
   border: 2px solid color-mix(in srgb, var(--category-color, #3f9f46) 44%, rgba(15,23,42,0.12));
   box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
-  font-size: clamp(2.8rem, 8vw, 4.2rem);
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 900;
   line-height: 1;
   transition: opacity 120ms ease, transform 120ms ease;
+}
+
+body.grid-view-active .ipad-grid-swipe-guide span {
+  display: grid;
+  place-items: center;
+}
+
+body.grid-view-active .ipad-grid-swipe-guide span:nth-child(1) {
+  opacity: 0.25;
+}
+
+body.grid-view-active .ipad-grid-swipe-guide span:nth-child(2) {
+  opacity: 0.58;
+}
+
+body.grid-view-active .ipad-grid-swipe-guide span:nth-child(3) {
+  opacity: 1;
 }
 
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-grid-swipe-guide {

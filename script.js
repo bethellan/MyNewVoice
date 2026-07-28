@@ -7968,7 +7968,8 @@ function attachIpadImageGridSwipe(grid, category) {
     const updateSwipeGuide = (direction, progress) => {
         const guide = grid.querySelector('.ipad-grid-swipe-guide');
         if (!guide) return;
-        guide.textContent = direction > 0 ? '›' : '‹';
+        const arrow = direction > 0 ? '&lsaquo;' : '&rsaquo;';
+        guide.innerHTML = `<span>${arrow}</span><span>${arrow}</span><span>${arrow}</span>`;
         guide.classList.toggle('commit-ready', progress >= 1);
     };
 
