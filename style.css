@@ -12143,6 +12143,30 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-ima
   animation: mnvGridEnterFromLeft 220ms ease-out both;
 }
 
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-topic-nav,
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-image-grid-panel {
+  transform: translateX(var(--mnv-grid-drag-x, 0px));
+  transition: none !important;
+  will-change: transform;
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-topic-nav,
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-image-grid-panel {
+  transform: translateX(var(--mnv-grid-drag-x, 0px));
+  transition: transform 180ms ease-out !important;
+  will-change: transform;
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-topic-nav,
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-image-grid-panel {
+  animation: mnvGridLeaveLeft 150ms ease-in both;
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-topic-nav,
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-grid-panel {
+  animation: mnvGridLeaveRight 150ms ease-in both;
+}
+
 @keyframes mnvGridEnterFromRight {
   from {
     opacity: 0.66;
@@ -12162,6 +12186,28 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-ima
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes mnvGridLeaveLeft {
+  from {
+    opacity: 1;
+    transform: translateX(var(--mnv-grid-drag-x, 0px));
+  }
+  to {
+    opacity: 0.68;
+    transform: translateX(-42px);
+  }
+}
+
+@keyframes mnvGridLeaveRight {
+  from {
+    opacity: 1;
+    transform: translateX(var(--mnv-grid-drag-x, 0px));
+  }
+  to {
+    opacity: 0.68;
+    transform: translateX(42px);
   }
 }
 
@@ -12484,9 +12530,18 @@ body.grid-view-active .mnv-app-bar .management-toggle {
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-right .ipad-topic-nav,
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-right .ipad-image-grid-panel,
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-topic-nav,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-image-grid-panel {
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-image-grid-panel,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-topic-nav,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-image-grid-panel,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-topic-nav,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-image-grid-panel,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-topic-nav,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-image-grid-panel,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-topic-nav,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-grid-panel {
     animation: none !important;
     transform: none !important;
+    transition: none !important;
   }
 }
 

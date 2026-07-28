@@ -7951,7 +7951,8 @@ function applyPendingIpadGridTransition(grid) {
     if (!grid || !direction || prefersReducedMotion()) return;
 
     const className = direction > 0 ? 'grid-swipe-enter-from-right' : 'grid-swipe-enter-from-left';
-    grid.classList.remove('grid-swipe-enter-from-right', 'grid-swipe-enter-from-left');
+    grid.classList.remove('grid-swipe-enter-from-right', 'grid-swipe-enter-from-left', 'grid-swipe-leave-left', 'grid-swipe-leave-right', 'grid-swipe-dragging', 'grid-swipe-snapback');
+    grid.style.removeProperty('--mnv-grid-drag-x');
     grid.classList.add(className);
 
     const clearTransition = () => grid.classList.remove(className);
@@ -7965,12 +7966,61 @@ function attachIpadImageGridSwipe(grid, category) {
 
     let startX = 0;
     let startY = 0;
+    let isDragging = false;
+    let horizontalIntent = false;
+
+    const clearDragVisual = () => {
+        grid.classList.remove('grid-swipe-dragging', 'grid-swipe-snapback', 'grid-swipe-leave-left', 'grid-swipe-leave-right');
+        grid.style.removeProperty('--mnv-grid-drag-x');
+    };
+
+    const setDragOffset = (deltaX, hasNextCategory) => {
+        const maxDrag = Math.min(Math.max(grid.clientWidth * 0.34, 90), 220);
+        const resistedDelta = hasNextCategory ? deltaX : deltaX * 0.28;
+        const clampedDelta = Math.max(-maxDrag, Math.min(maxDrag, resistedDelta));
+        grid.style.setProperty('--mnv-grid-drag-x', `${clampedDelta}px`);
+    };
 
     const onTouchStart = (event) => {
+        if (gridRearrangeState) return;
         const touch = event.touches && event.touches[0];
         if (!touch) return;
+        clearDragVisual();
         startX = touch.clientX;
         startY = touch.clientY;
+        isDragging = false;
+        horizontalIntent = false;
+    };
+
+    const onTouchMove = (event) => {
+        if (gridRearrangeState || prefersReducedMotion()) return;
+        const touch = event.touches && event.touches[0];
+        if (!touch) return;
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+
+        if (!horizontalIntent) {
+            if (absX < 12 && absY < 12) return;
+            if (absY > absX * 1.15) return;
+            horizontalIntent = true;
+            isDragging = true;
+            grid.classList.add('grid-swipe-dragging');
+        }
+
+        if (!isDragging) return;
+        event.preventDefault();
+        const direction = deltaX < 0 ? 1 : -1;
+        const nextCategory = getAdjacentVisibleCategory(category, direction);
+        setDragOffset(deltaX, Boolean(nextCategory));
+    };
+
+    const snapBack = () => {
+        grid.classList.remove('grid-swipe-dragging');
+        grid.classList.add('grid-swipe-snapback');
+        grid.style.setProperty('--mnv-grid-drag-x', '0px');
+        setTimeout(clearDragVisual, 220);
     };
 
     const onTouchEnd = (event) => {
@@ -7979,17 +8029,34 @@ function attachIpadImageGridSwipe(grid, category) {
         if (!touch) return;
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
-        if (Math.abs(deltaX) < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4) return;
+        const threshold = Math.min(Math.max(grid.clientWidth * 0.18, 70), 130);
+        if (!isDragging && (Math.abs(deltaX) < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4)) return;
         const direction = deltaX < 0 ? 1 : -1;
         const nextCategory = getAdjacentVisibleCategory(category, direction);
-        if (nextCategory) showCategorySubmenuWithGridTransition(nextCategory, direction);
+        if (!nextCategory || Math.abs(deltaX) < threshold) {
+            if (isDragging) snapBack();
+            return;
+        }
+        event.preventDefault();
+        grid.classList.remove('grid-swipe-dragging');
+        grid.classList.add(direction > 0 ? 'grid-swipe-leave-left' : 'grid-swipe-leave-right');
+        setTimeout(() => showCategorySubmenuWithGridTransition(nextCategory, direction), 130);
+    };
+
+    const onTouchCancel = () => {
+        if (isDragging) snapBack();
     };
 
     grid.addEventListener('touchstart', onTouchStart, { passive: true });
-    grid.addEventListener('touchend', onTouchEnd, { passive: true });
+    grid.addEventListener('touchmove', onTouchMove, { passive: false });
+    grid.addEventListener('touchend', onTouchEnd, { passive: false });
+    grid.addEventListener('touchcancel', onTouchCancel, { passive: true });
     grid._ipadImageGridCleanup = () => {
+        clearDragVisual();
         grid.removeEventListener('touchstart', onTouchStart);
+        grid.removeEventListener('touchmove', onTouchMove);
         grid.removeEventListener('touchend', onTouchEnd);
+        grid.removeEventListener('touchcancel', onTouchCancel);
     };
 }
 
