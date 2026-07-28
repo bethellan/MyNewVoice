@@ -12229,6 +12229,7 @@ body.grid-view-active .ipad-image-grid-button {
 
 body.grid-view-active .ipad-image-grid-button .button-media,
 body.grid-view-active .ipad-image-grid-button .ipad-image-grid-media {
+  position: relative !important;
   grid-column: 1 !important;
   grid-row: 1 !important;
   justify-self: stretch !important;
@@ -12240,6 +12241,7 @@ body.grid-view-active .ipad-image-grid-button .ipad-image-grid-media {
   max-width: none !important;
   max-height: none !important;
   aspect-ratio: 1 / 1 !important;
+  container-type: inline-size;
   overflow: hidden !important;
 }
 
@@ -12266,17 +12268,19 @@ body.grid-view-active .ipad-image-grid-button .button-media img {
 }
 
 body.grid-view-active .ipad-image-grid-button .button-fallback-icon:not([hidden]) {
-  display: flex !important;
+  display: grid !important;
   position: absolute !important;
   inset: 0 !important;
-  align-items: center !important;
-  justify-content: center !important;
+  place-items: center !important;
   width: 100% !important;
   height: 100% !important;
   color: var(--category-dark, #1f5b31) !important;
   font-size: clamp(4.2rem, 12vw, 8.8rem) !important;
+  font-size: clamp(3.2rem, 36cqw, 8.8rem) !important;
   line-height: 1 !important;
   background: transparent !important;
+  text-align: center !important;
+  overflow: hidden !important;
 }
 
 body.grid-view-active .ipad-image-grid-button > span:not(.ipad-grid-add-icon) {
@@ -12320,6 +12324,7 @@ body.grid-view-active .ipad-image-grid-button.person-grid-button .button-media i
 
 body.grid-view-active .ipad-image-grid-button.person-grid-button .button-fallback-icon:not([hidden]) {
   font-size: clamp(3.6rem, 10vw, 7.4rem) !important;
+  font-size: clamp(2.8rem, 31cqw, 7.4rem) !important;
 }
 
 body.grid-view-active .ipad-image-grid-button.person-grid-button .button-media[data-private-media-state="fallback"],
