@@ -11819,22 +11819,35 @@ body.grid-view-active .grid.ipad-image-grid {
   align-content: start !important;
   gap: clamp(10px, 1.4vw, 16px) !important;
   height: auto !important;
-  min-height: 0 !important;
+  min-height: max(360px, calc(100vh - 220px)) !important;
+  min-height: max(360px, calc(100dvh - 220px)) !important;
   padding: clamp(8px, 1.4vw, 16px) !important;
   overflow-y: auto !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+  isolation: isolate;
   touch-action: pan-y;
+  --mnv-grid-drag-x: 0px;
+  --mnv-grid-swipe-progress: 0;
+  --mnv-grid-current-opacity: 1;
+  --mnv-grid-preview-opacity: 0;
+  --mnv-grid-guide-opacity: 0;
+  --mnv-grid-guide-scale: 0.84;
 }
 
 body.grid-view-active .ipad-image-grid-panel {
   display: grid !important;
   width: min(100%, 1180px) !important;
   margin: 0 auto !important;
+  min-height: max(300px, calc(100vh - 310px)) !important;
+  min-height: max(300px, calc(100dvh - 310px)) !important;
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   grid-auto-flow: row !important;
   grid-auto-rows: minmax(min-content, auto) !important;
   align-items: start !important;
   align-content: start !important;
   gap: clamp(12px, 1.7vw, 20px) !important;
+  will-change: transform, opacity;
 }
 
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-right .ipad-topic-nav,
@@ -11847,28 +11860,92 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-ima
   animation: mnvGridEnterFromLeft 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-topic-nav,
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-image-grid-panel {
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-image-grid-panel:not(.ipad-grid-swipe-preview) {
   transform: translateX(var(--mnv-grid-drag-x, 0px));
+  opacity: var(--mnv-grid-current-opacity, 1);
   transition: none !important;
   will-change: transform;
 }
 
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-topic-nav,
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-image-grid-panel {
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-grid-panel:not(.ipad-grid-swipe-preview),
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-committing .ipad-image-grid-panel:not(.ipad-grid-swipe-preview) {
   transform: translateX(var(--mnv-grid-drag-x, 0px));
-  transition: transform 210ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  opacity: var(--mnv-grid-current-opacity, 1);
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), opacity 240ms ease !important;
   will-change: transform;
 }
 
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-topic-nav,
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-image-grid-panel {
-  animation: mnvGridLeaveLeft 180ms cubic-bezier(0.7, 0, 0.84, 0) both;
+body.grid-view-active .ipad-image-grid-panel.ipad-grid-swipe-preview {
+  position: absolute !important;
+  margin: 0 !important;
+  z-index: 6;
+  pointer-events: none;
+  opacity: var(--mnv-grid-preview-opacity, 0);
+  transition: none !important;
 }
 
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-topic-nav,
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-grid-panel {
-  animation: mnvGridLeaveRight 180ms cubic-bezier(0.7, 0, 0.84, 0) both;
+body.grid-view-active .ipad-image-grid-panel.ipad-grid-swipe-preview.preview-next {
+  transform: translateX(calc(100% + var(--mnv-grid-drag-x, 0px)));
+}
+
+body.grid-view-active .ipad-image-grid-panel.ipad-grid-swipe-preview.preview-previous {
+  transform: translateX(calc(-100% + var(--mnv-grid-drag-x, 0px)));
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-grid-panel.ipad-grid-swipe-preview,
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-committing .ipad-image-grid-panel.ipad-grid-swipe-preview {
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), opacity 240ms ease !important;
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-committing .ipad-image-grid-panel.ipad-grid-swipe-preview.preview-next,
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-committing .ipad-image-grid-panel.ipad-grid-swipe-preview.preview-previous {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-grid-panel.ipad-grid-swipe-preview.preview-next {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-grid-panel.ipad-grid-swipe-preview.preview-previous {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+body.grid-view-active .ipad-grid-swipe-guide {
+  position: absolute;
+  left: 50%;
+  top: var(--mnv-grid-guide-y, 50%);
+  z-index: 12;
+  width: clamp(58px, 10vw, 86px);
+  height: clamp(58px, 10vw, 86px);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.84);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.72)),
+    color-mix(in srgb, var(--category-soft, #ecf8e8) 64%, #ffffff);
+  color: var(--category-dark, #1f5b31);
+  border: 2px solid color-mix(in srgb, var(--category-color, #3f9f46) 44%, rgba(15,23,42,0.12));
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
+  font-size: clamp(2.8rem, 8vw, 4.2rem);
+  font-weight: 900;
+  line-height: 1;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-grid-swipe-guide {
+  opacity: var(--mnv-grid-guide-opacity, 0);
+  transform: translate(-50%, -50%) scale(var(--mnv-grid-guide-scale, 0.84));
+}
+
+body.grid-view-active .grid.ipad-image-grid.grid-swipe-commit-ready .ipad-grid-swipe-guide {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.06);
 }
 
 @keyframes mnvGridEnterFromRight {
@@ -11890,28 +11967,6 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-g
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@keyframes mnvGridLeaveLeft {
-  from {
-    opacity: 1;
-    transform: translateX(var(--mnv-grid-drag-x, 0px));
-  }
-  to {
-    opacity: 0.58;
-    transform: translateX(var(--mnv-grid-leave-x, -150px));
-  }
-}
-
-@keyframes mnvGridLeaveRight {
-  from {
-    opacity: 1;
-    transform: translateX(var(--mnv-grid-drag-x, 0px));
-  }
-  to {
-    opacity: 0.58;
-    transform: translateX(var(--mnv-grid-leave-x, 150px));
   }
 }
 
@@ -12256,14 +12311,10 @@ body.grid-view-active .mnv-app-bar .management-toggle {
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-right .ipad-image-grid-panel,
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-topic-nav,
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-image-grid-panel,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-topic-nav,
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-image-grid-panel,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-topic-nav,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-snapback .ipad-image-grid-panel,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-topic-nav,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-left .ipad-image-grid-panel,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-topic-nav,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-leave-right .ipad-image-grid-panel {
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-grid-panel,
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-committing .ipad-image-grid-panel,
+  body.grid-view-active .ipad-grid-swipe-guide {
     animation: none !important;
     transform: none !important;
     transition: none !important;

@@ -7908,7 +7908,7 @@ function applyPendingIpadGridTransition(grid) {
     if (!grid || !direction || prefersReducedMotion()) return;
 
     const className = direction > 0 ? 'grid-swipe-enter-from-right' : 'grid-swipe-enter-from-left';
-    grid.classList.remove('grid-swipe-enter-from-right', 'grid-swipe-enter-from-left', 'grid-swipe-leave-left', 'grid-swipe-leave-right', 'grid-swipe-dragging', 'grid-swipe-snapback');
+    grid.classList.remove('grid-swipe-enter-from-right', 'grid-swipe-enter-from-left', 'grid-swipe-dragging', 'grid-swipe-canceling', 'grid-swipe-committing', 'grid-swipe-commit-ready');
     grid.style.removeProperty('--mnv-grid-drag-x');
     const enterDistance = Math.min(Math.max(grid.clientWidth * 0.18, 88), 150);
     grid.style.setProperty('--mnv-grid-enter-x', `${direction > 0 ? enterDistance : -enterDistance}px`);
@@ -7923,6 +7923,23 @@ function applyPendingIpadGridTransition(grid) {
     setTimeout(clearTransition, 380);
 }
 
+function clearIpadGridSwipePreview(grid) {
+    if (!grid) return;
+    grid.querySelectorAll('.ipad-grid-swipe-preview').forEach(panel => panel.remove());
+    grid.querySelectorAll('.ipad-grid-swipe-guide').forEach(guide => {
+        guide.textContent = '';
+        guide.classList.remove('commit-ready');
+    });
+    grid.classList.remove('grid-swipe-dragging', 'grid-swipe-canceling', 'grid-swipe-committing', 'grid-swipe-commit-ready');
+    grid.style.removeProperty('--mnv-grid-drag-x');
+    grid.style.removeProperty('--mnv-grid-swipe-progress');
+    grid.style.removeProperty('--mnv-grid-current-opacity');
+    grid.style.removeProperty('--mnv-grid-preview-opacity');
+    grid.style.removeProperty('--mnv-grid-guide-opacity');
+    grid.style.removeProperty('--mnv-grid-guide-scale');
+    grid.style.removeProperty('--mnv-grid-guide-y');
+}
+
 function attachIpadImageGridSwipe(grid, category) {
     if (!grid) return;
     removeIpadImageGridHandlers(grid);
@@ -7932,17 +7949,67 @@ function attachIpadImageGridSwipe(grid, category) {
     let startTime = 0;
     let isDragging = false;
     let horizontalIntent = false;
+    let swipeDirection = 0;
+    let swipeTargetCategory = null;
+    let swipePreviewPanel = null;
 
     const clearDragVisual = () => {
-        grid.classList.remove('grid-swipe-dragging', 'grid-swipe-snapback', 'grid-swipe-leave-left', 'grid-swipe-leave-right');
-        grid.style.removeProperty('--mnv-grid-drag-x');
+        clearIpadGridSwipePreview(grid);
+        swipeDirection = 0;
+        swipeTargetCategory = null;
+        swipePreviewPanel = null;
     };
 
-    const setDragOffset = (deltaX, hasNextCategory) => {
-        const maxDrag = Math.min(Math.max(grid.clientWidth * 0.34, 90), 220);
-        const resistedDelta = hasNextCategory ? deltaX : deltaX * 0.28;
-        const clampedDelta = Math.max(-maxDrag, Math.min(maxDrag, resistedDelta));
+    const currentPanel = () => grid.querySelector('.ipad-image-grid-panel:not(.ipad-grid-swipe-preview)');
+
+    const getSwipeThreshold = () => Math.min(Math.max(grid.clientWidth * 0.28, 92), 210);
+
+    const updateSwipeGuide = (direction, progress) => {
+        const guide = grid.querySelector('.ipad-grid-swipe-guide');
+        if (!guide) return;
+        guide.textContent = direction > 0 ? '›' : '‹';
+        guide.classList.toggle('commit-ready', progress >= 1);
+    };
+
+    const ensureSwipePreview = (direction) => {
+        if (!direction) return false;
+        if (swipeDirection === direction && swipePreviewPanel && swipePreviewPanel.isConnected) return Boolean(swipeTargetCategory);
+
+        if (swipePreviewPanel) swipePreviewPanel.remove();
+        swipePreviewPanel = null;
+        swipeDirection = direction;
+        swipeTargetCategory = getAdjacentVisibleCategory(category, direction);
+        if (!swipeTargetCategory) return false;
+
+        const panel = currentPanel();
+        if (!panel) return false;
+
+        swipePreviewPanel = createIpadImageGridPanel(swipeTargetCategory, { includeAddButton: false, swipePreview: true });
+        swipePreviewPanel.classList.add(direction > 0 ? 'preview-next' : 'preview-previous');
+        swipePreviewPanel.style.top = `${panel.offsetTop}px`;
+        swipePreviewPanel.style.left = `${panel.offsetLeft}px`;
+        swipePreviewPanel.style.width = `${panel.offsetWidth}px`;
+        swipePreviewPanel.style.minHeight = `${Math.max(panel.offsetHeight, grid.clientHeight - panel.offsetTop - 8)}px`;
+        grid.appendChild(swipePreviewPanel);
+        return true;
+    };
+
+    const setDragOffset = (deltaX) => {
+        const width = Math.max(1, grid.clientWidth);
+        const direction = deltaX < 0 ? 1 : -1;
+        const hasNextCategory = ensureSwipePreview(direction);
+        const resistedDelta = hasNextCategory ? deltaX : deltaX * 0.24;
+        const clampedDelta = Math.max(-width, Math.min(width, resistedDelta));
+        const threshold = getSwipeThreshold();
+        const progress = Math.min(1, Math.abs(clampedDelta) / threshold);
         grid.style.setProperty('--mnv-grid-drag-x', `${clampedDelta}px`);
+        grid.style.setProperty('--mnv-grid-swipe-progress', progress.toFixed(3));
+        grid.style.setProperty('--mnv-grid-current-opacity', (1 - (progress * 0.30)).toFixed(3));
+        grid.style.setProperty('--mnv-grid-preview-opacity', (0.38 + (progress * 0.62)).toFixed(3));
+        grid.style.setProperty('--mnv-grid-guide-opacity', (progress * 0.82).toFixed(3));
+        grid.style.setProperty('--mnv-grid-guide-scale', (0.84 + (progress * 0.12)).toFixed(3));
+        grid.classList.toggle('grid-swipe-commit-ready', hasNextCategory && progress >= 1);
+        updateSwipeGuide(direction, progress);
     };
 
     const onTouchStart = (event) => {
@@ -7955,6 +8022,7 @@ function attachIpadImageGridSwipe(grid, category) {
         startTime = performance.now ? performance.now() : Date.now();
         isDragging = false;
         horizontalIntent = false;
+        grid.style.setProperty('--mnv-grid-guide-y', `${grid.scrollTop + (grid.clientHeight / 2)}px`);
     };
 
     const onTouchMove = (event) => {
@@ -7976,16 +8044,20 @@ function attachIpadImageGridSwipe(grid, category) {
 
         if (!isDragging) return;
         event.preventDefault();
-        const direction = deltaX < 0 ? 1 : -1;
-        const nextCategory = getAdjacentVisibleCategory(category, direction);
-        setDragOffset(deltaX, Boolean(nextCategory));
+        setDragOffset(deltaX);
     };
 
     const snapBack = () => {
         grid.classList.remove('grid-swipe-dragging');
-        grid.classList.add('grid-swipe-snapback');
+        grid.classList.add('grid-swipe-canceling');
         grid.style.setProperty('--mnv-grid-drag-x', '0px');
-        setTimeout(clearDragVisual, 220);
+        grid.style.setProperty('--mnv-grid-swipe-progress', '0');
+        grid.style.setProperty('--mnv-grid-current-opacity', '1');
+        grid.style.setProperty('--mnv-grid-preview-opacity', '0');
+        grid.style.setProperty('--mnv-grid-guide-opacity', '0');
+        grid.style.setProperty('--mnv-grid-guide-scale', '0.84');
+        grid.classList.remove('grid-swipe-commit-ready');
+        setTimeout(clearDragVisual, 230);
     };
 
     const onTouchEnd = (event) => {
@@ -7996,27 +8068,32 @@ function attachIpadImageGridSwipe(grid, category) {
         const deltaY = touch.clientY - startY;
         const elapsed = Math.max(1, (performance.now ? performance.now() : Date.now()) - startTime);
         const velocity = Math.abs(deltaX) / elapsed;
-        const threshold = Math.min(Math.max(grid.clientWidth * 0.16, 62), 120);
-        const fastFlick = velocity > 0.62 && Math.abs(deltaX) > 44;
+        const threshold = getSwipeThreshold();
+        const fastFlick = velocity > 0.58 && Math.abs(deltaX) > 44 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
         if (!isDragging && (Math.abs(deltaX) < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4)) return;
         const direction = deltaX < 0 ? 1 : -1;
-        const nextCategory = getAdjacentVisibleCategory(category, direction);
+        const nextCategory = swipeTargetCategory && swipeDirection === direction
+            ? swipeTargetCategory
+            : getAdjacentVisibleCategory(category, direction);
         if (!nextCategory || (Math.abs(deltaX) < threshold && !fastFlick)) {
             if (isDragging) snapBack();
             return;
         }
         event.preventDefault();
+        armNextPhraseClickSuppression(700);
         gridTransitionInProgress = true;
-        const leaveDistance = Math.min(Math.max(grid.clientWidth * 0.22, 108), 180);
-        grid.style.setProperty('--mnv-grid-leave-x', `${direction > 0 ? -leaveDistance : leaveDistance}px`);
         grid.classList.remove('grid-swipe-dragging');
-        grid.classList.add(direction > 0 ? 'grid-swipe-leave-left' : 'grid-swipe-leave-right');
+        grid.classList.add('grid-swipe-committing', 'grid-swipe-commit-ready');
+        grid.style.setProperty('--mnv-grid-drag-x', `${direction > 0 ? -grid.clientWidth : grid.clientWidth}px`);
+        grid.style.setProperty('--mnv-grid-swipe-progress', '1');
+        grid.style.setProperty('--mnv-grid-current-opacity', '0.70');
+        grid.style.setProperty('--mnv-grid-preview-opacity', '1');
+        grid.style.setProperty('--mnv-grid-guide-opacity', '1');
+        grid.style.setProperty('--mnv-grid-guide-scale', '1.06');
         setTimeout(() => {
-            grid.style.removeProperty('--mnv-grid-leave-x');
-            pendingGridTransitionDirection = direction;
             showCategorySubmenu(nextCategory);
-            setTimeout(() => { gridTransitionInProgress = false; }, 260);
-        }, 180);
+            setTimeout(() => { gridTransitionInProgress = false; }, 80);
+        }, 250);
     };
 
     const onTouchCancel = () => {
@@ -8098,6 +8175,38 @@ function createIpadImageGridAddButton(category) {
     return button;
 }
 
+function createIpadImageGridPanel(category, options = {}) {
+    const { includeAddButton = true, swipePreview = false } = options;
+    const panel = document.createElement('div');
+    panel.className = 'ipad-image-grid-panel';
+    if (swipePreview) {
+        panel.classList.add('ipad-grid-swipe-preview');
+        panel.setAttribute('aria-hidden', 'true');
+    }
+
+    const buttons = getDisplayPhrases(category);
+    const rearrangingThisCategory = !swipePreview && gridRearrangeState && gridRearrangeState.category === category;
+    if (rearrangingThisCategory) panel.classList.add('grid-rearrange-panel');
+
+    if (!buttonData[category]) {
+        panel.innerHTML = '<p class="empty-category-message">Category not found.</p>';
+    } else if (!buttons.length) {
+        panel.innerHTML = '<p class="empty-category-message">No visible phrases in this section.</p>';
+        if (includeAddButton && !swipePreview) panel.appendChild(createIpadImageGridAddButton(category));
+    } else {
+        buttons.forEach((buttonInfo, index) => {
+            if (rearrangingThisCategory) {
+                panel.appendChild(createIpadGridRearrangeSlot(buttonInfo, category, index, index === buttons.length - 1));
+            } else {
+                panel.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
+            }
+        });
+        if (includeAddButton && !rearrangingThisCategory && !swipePreview) panel.appendChild(createIpadImageGridAddButton(category));
+    }
+
+    return panel;
+}
+
 function renderIpadImageGrid(category) {
     const grid = document.getElementById('buttonGrid');
     if (!grid) return;
@@ -8143,29 +8252,12 @@ function renderIpadImageGrid(category) {
     nav.appendChild(nextButton);
     grid.appendChild(nav);
 
-    const panel = document.createElement('div');
-    panel.className = 'ipad-image-grid-panel';
-    const buttons = getDisplayPhrases(category);
-    const rearrangingThisCategory = gridRearrangeState && gridRearrangeState.category === category;
-    if (rearrangingThisCategory) panel.classList.add('grid-rearrange-panel');
-
-    if (!buttonData[category]) {
-        panel.innerHTML = '<p class="empty-category-message">Category not found.</p>';
-    } else if (!buttons.length) {
-        panel.innerHTML = '<p class="empty-category-message">No visible phrases in this section.</p>';
-        panel.appendChild(createIpadImageGridAddButton(category));
-    } else {
-        buttons.forEach((buttonInfo, index) => {
-            if (rearrangingThisCategory) {
-                panel.appendChild(createIpadGridRearrangeSlot(buttonInfo, category, index, index === buttons.length - 1));
-            } else {
-                panel.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
-            }
-        });
-        if (!rearrangingThisCategory) panel.appendChild(createIpadImageGridAddButton(category));
-    }
-
+    const panel = createIpadImageGridPanel(category);
     grid.appendChild(panel);
+    const swipeGuide = document.createElement('div');
+    swipeGuide.className = 'ipad-grid-swipe-guide';
+    swipeGuide.setAttribute('aria-hidden', 'true');
+    grid.appendChild(swipeGuide);
     attachIpadImageGridSwipe(grid, category);
     applyPendingIpadGridTransition(grid);
 }
