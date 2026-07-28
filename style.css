@@ -11770,16 +11770,6 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   overflow-wrap: anywhere;
 }
 
-/* v127: optional iPad/tablet submenu image grid. */
-.grid.ipad-image-grid {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  align-content: start;
-  gap: clamp(10px, 1.4vw, 16px);
-  overflow-y: auto;
-  touch-action: pan-y;
-}
-
 .ipad-topic-nav {
   position: sticky;
   top: 0;
@@ -11788,7 +11778,7 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   grid-template-columns: clamp(48px, 7vw, 68px) minmax(0, 1fr) clamp(48px, 7vw, 68px);
   align-items: center;
   gap: clamp(8px, 1.2vw, 14px);
-  width: min(100%, 820px);
+  width: min(100%, 980px);
   margin: 0 auto;
   padding: 0 0 clamp(5px, 0.8vw, 8px);
   background:
@@ -12075,10 +12065,6 @@ body.grid-view-active .tab-container {
   display: none !important;
 }
 
-.ipad-topic-nav {
-  width: min(100%, 980px);
-}
-
 #settingsOverlay .settings-section-introduction {
   display: none !important;
 }
@@ -12127,13 +12113,12 @@ body.grid-view-active .grid.ipad-image-grid {
   display: grid !important;
   grid-template-rows: auto minmax(0, 1fr) !important;
   align-content: start !important;
+  gap: clamp(10px, 1.4vw, 16px) !important;
   height: auto !important;
   min-height: 0 !important;
   padding: clamp(8px, 1.4vw, 16px) !important;
-}
-
-body.grid-view-active .ipad-topic-nav {
-  width: min(100%, 980px);
+  overflow-y: auto !important;
+  touch-action: pan-y;
 }
 
 body.grid-view-active .ipad-image-grid-panel {
