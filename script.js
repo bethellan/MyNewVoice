@@ -7910,9 +7910,15 @@ function applyPendingIpadGridTransition(grid) {
     const className = direction > 0 ? 'grid-swipe-enter-from-right' : 'grid-swipe-enter-from-left';
     grid.classList.remove('grid-swipe-enter-from-right', 'grid-swipe-enter-from-left', 'grid-swipe-leave-left', 'grid-swipe-leave-right', 'grid-swipe-dragging', 'grid-swipe-snapback');
     grid.style.removeProperty('--mnv-grid-drag-x');
+    const enterDistance = Math.min(Math.max(grid.clientWidth * 0.18, 88), 150);
+    grid.style.setProperty('--mnv-grid-enter-x', `${direction > 0 ? enterDistance : -enterDistance}px`);
+    void grid.offsetWidth;
     grid.classList.add(className);
 
-    const clearTransition = () => grid.classList.remove(className);
+    const clearTransition = () => {
+        grid.classList.remove(className);
+        grid.style.removeProperty('--mnv-grid-enter-x');
+    };
     grid.addEventListener('animationend', clearTransition, { once: true });
     setTimeout(clearTransition, 380);
 }
@@ -8001,9 +8007,12 @@ function attachIpadImageGridSwipe(grid, category) {
         }
         event.preventDefault();
         gridTransitionInProgress = true;
+        const leaveDistance = Math.min(Math.max(grid.clientWidth * 0.22, 108), 180);
+        grid.style.setProperty('--mnv-grid-leave-x', `${direction > 0 ? -leaveDistance : leaveDistance}px`);
         grid.classList.remove('grid-swipe-dragging');
         grid.classList.add(direction > 0 ? 'grid-swipe-leave-left' : 'grid-swipe-leave-right');
         setTimeout(() => {
+            grid.style.removeProperty('--mnv-grid-leave-x');
             pendingGridTransitionDirection = direction;
             showCategorySubmenu(nextCategory);
             setTimeout(() => { gridTransitionInProgress = false; }, 260);
