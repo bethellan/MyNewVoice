@@ -2224,18 +2224,15 @@ body[data-theme="dark"] .private-item-button small {
     border-bottom: 0;
 }
 
-.management-topic-row,
-.management-phrase-row {
+.management-topic-row {
     background: linear-gradient(90deg, rgba(231,251,255,.78), rgba(234,242,255,.72), rgba(243,236,255,.72));
 }
 
-.management-topic-row:nth-child(even),
-.management-phrase-row:nth-child(even) {
+.management-topic-row:nth-child(even) {
     background: linear-gradient(90deg, rgba(240,253,250,.9), rgba(239,246,255,.9), rgba(250,245,255,.9));
 }
 
-.management-topic-row.selected-row,
-.management-phrase-row.selected-row {
+.management-topic-row.selected-row {
     outline: 3px solid rgba(37, 99, 235, 0.25);
     outline-offset: -3px;
 }
@@ -2364,8 +2361,7 @@ body[data-theme="dark"] .private-item-button small {
   margin: 0 0 8px;
 }
 
-.management-editor-table.topic-editor-table,
-.management-editor-table.phrase-editor-table {
+.management-editor-table.topic-editor-table {
   min-width: 1120px;
 }
 
@@ -2488,8 +2484,7 @@ body[data-theme="dark"] .private-item-button small {
   .management-overlay.show .management-panel {
     padding: 12px;
   }
-  .management-editor-table.topic-editor-table,
-  .management-editor-table.phrase-editor-table {
+  .management-editor-table.topic-editor-table {
     min-width: 1040px;
   }
 }
@@ -2691,23 +2686,19 @@ body[data-theme="dark"] .private-item-button small {
   border-bottom: 1px solid #e7edf6;
 }
 
-.management-topic-row,
-.management-phrase-row {
+.management-topic-row {
   background: #ffffff;
 }
 
-.management-topic-row:nth-child(even),
-.management-phrase-row:nth-child(even) {
+.management-topic-row:nth-child(even) {
   background: #f8fbff;
 }
 
-.management-topic-row:hover,
-.management-phrase-row:hover {
+.management-topic-row:hover {
   background: #f1f8ff;
 }
 
-.management-topic-row td:first-child,
-.management-phrase-row td:first-child {
+.management-topic-row td:first-child {
   border-left: 6px solid #9bc5a4;
 }
 
@@ -3240,13 +3231,11 @@ button:active,
   background-clip: padding-box;
 }
 
-.management-topic-row:hover,
-.management-phrase-row:hover {
+.management-topic-row:hover {
   background: #f2f8ff;
 }
 
-.management-topic-row:focus-within,
-.management-phrase-row:focus-within {
+.management-topic-row:focus-within {
   outline: 3px solid rgba(33,150,243,0.16);
   outline-offset: -3px;
 }
@@ -4102,7 +4091,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle):focus,
 .private-selected-panel,
 .private-control-group,
 .private-item-button,
-.management-phrase-row,
 .phrase-item,
 .theme-toggle {
   background: linear-gradient(135deg, var(--theme-button-surface), var(--theme-button-surface-2));
@@ -7906,8 +7894,7 @@ body {
   padding-bottom: 0.35rem !important;
 }
 
-#managementOverlay .management-editor-table.topic-editor-table,
-#managementOverlay .management-editor-table.phrase-editor-table {
+#managementOverlay .management-editor-table.topic-editor-table {
   min-width: 860px !important;
 }
 
@@ -8040,8 +8027,7 @@ body {
     display: none !important;
   }
 
-  #managementOverlay .management-editor-table.topic-editor-table,
-  #managementOverlay .management-editor-table.phrase-editor-table {
+  #managementOverlay .management-editor-table.topic-editor-table {
     min-width: 790px !important;
   }
 
@@ -8158,8 +8144,7 @@ body {
   }
 
   .management-editor-table,
-  .management-editor-table.topic-editor-table,
-  .management-editor-table.phrase-editor-table {
+  .management-editor-table.topic-editor-table {
     display: block !important;
     width: 100% !important;
     min-width: 0 !important;
@@ -8178,8 +8163,7 @@ body {
     min-width: 0 !important;
   }
 
-  .management-topic-row,
-  .management-phrase-row {
+  .management-topic-row {
     margin: 0 0 10px !important;
     padding: 8px !important;
     border: 1px solid #d8e1ee !important;
@@ -8189,15 +8173,13 @@ body {
     background: #ffffff !important;
   }
 
-  .management-topic-row td,
-  .management-phrase-row td {
+  .management-topic-row td {
     border: 0 !important;
     border-left: 0 !important;
     padding: 6px 0 !important;
   }
 
-  .management-topic-row td::before,
-  .management-phrase-row td::before {
+  .management-topic-row td::before {
     display: block;
     margin-bottom: 4px;
     font-size: 0.72rem;
@@ -8215,14 +8197,6 @@ body {
   .topic-editor-table .management-topic-row td:nth-child(5)::before { content: 'Move'; }
   .topic-editor-table .management-topic-row td:nth-child(6)::before { content: 'Visibility'; }
   .topic-editor-table .management-topic-row td:nth-child(7)::before { content: 'Delete'; }
-
-  .phrase-editor-table .management-phrase-row td:nth-child(1)::before { content: 'Picture'; }
-  .phrase-editor-table .management-phrase-row td:nth-child(2)::before { content: 'Phrase'; }
-  .phrase-editor-table .management-phrase-row td:nth-child(3)::before { content: 'Icon'; }
-  .phrase-editor-table .management-phrase-row td:nth-child(4)::before { content: 'Voice'; }
-  .phrase-editor-table .management-phrase-row td:nth-child(5)::before { content: 'Move'; }
-  .phrase-editor-table .management-phrase-row td:nth-child(6)::before { content: 'Visibility'; }
-  .phrase-editor-table .management-phrase-row td:nth-child(7)::before { content: 'Delete'; }
 
   .management-media-thumb {
     width: 54px !important;
@@ -8269,8 +8243,7 @@ body {
 
   .table-button-stack .management-btn,
   .voice-buttons .management-btn,
-  .management-topic-row .management-btn,
-  .management-phrase-row .management-btn {
+  .management-topic-row .management-btn {
     min-height: 36px !important;
     padding: 0.38rem 0.5rem !important;
     font-size: 0.86rem !important;
@@ -8339,8 +8312,7 @@ body {
   }
   .table-button-stack .management-btn,
   .voice-buttons .management-btn,
-  .management-topic-row .management-btn,
-  .management-phrase-row .management-btn {
+  .management-topic-row .management-btn {
     font-size: 0.8rem !important;
     padding: 0.34rem 0.42rem !important;
   }
@@ -8961,10 +8933,6 @@ min-height:auto !important;
   min-width: 880px !important;
 }
 
-#managementOverlay .phrase-editor-table.one-row-editor-table {
-  min-width: 1080px !important;
-}
-
 #managementOverlay .one-row-editor-table thead th {
   position: sticky !important;
   top: 0 !important;
@@ -8999,10 +8967,8 @@ min-height:auto !important;
 
 #managementOverlay .one-row-editor-table .picture-cell { width: 92px !important; min-width: 92px !important; max-width: 92px !important; }
 #managementOverlay .one-row-editor-table .title-cell { width: 340px !important; min-width: 340px !important; max-width: 340px !important; }
-#managementOverlay .phrase-editor-table.one-row-editor-table .title-cell { width: 390px !important; min-width: 390px !important; max-width: 390px !important; }
 #managementOverlay .one-row-editor-table .icon-cell { width: 76px !important; min-width: 76px !important; max-width: 76px !important; }
 #managementOverlay .one-row-editor-table .edit-cell { width: 135px !important; min-width: 135px !important; max-width: 135px !important; }
-#managementOverlay .one-row-editor-table .voice-cell { width: 230px !important; min-width: 230px !important; max-width: 230px !important; }
 #managementOverlay .one-row-editor-table .move-cell { width: 92px !important; min-width: 92px !important; max-width: 92px !important; }
 #managementOverlay .one-row-editor-table .hidden-cell { width: 142px !important; min-width: 142px !important; max-width: 142px !important; }
 #managementOverlay .one-row-editor-table .delete-cell { width: 104px !important; min-width: 104px !important; max-width: 104px !important; }
@@ -9081,8 +9047,7 @@ min-height:auto !important;
 }
 
 #managementOverlay .one-row-editor-table .table-button-stack,
-#managementOverlay .one-row-editor-table .move-button-stack,
-#managementOverlay .one-row-editor-table .voice-buttons {
+#managementOverlay .one-row-editor-table .move-button-stack {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -9095,29 +9060,6 @@ min-height:auto !important;
   min-width: 36px !important;
   padding: 5px !important;
   font-size: 1rem !important;
-}
-
-#managementOverlay .one-row-editor-table .voice-cell-inner {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 4px !important;
-  min-width: 0 !important;
-}
-
-#managementOverlay .one-row-editor-table .voice-buttons .management-btn {
-  min-height: 30px !important;
-  padding: 4px 7px !important;
-  font-size: 0.72rem !important;
-}
-
-#managementOverlay .one-row-editor-table .voice-status-badge {
-  display: inline-flex !important;
-  width: fit-content !important;
-  min-width: 0 !important;
-  padding: 3px 7px !important;
-  font-size: 0.68rem !important;
-  line-height: 1.05 !important;
-  border-radius: 999px !important;
 }
 
 #managementOverlay .one-row-editor-table .content-checkbox-row.compact-checkbox {
@@ -9210,20 +9152,10 @@ min-height:auto !important;
     min-width: 820px !important;
   }
 
-  #managementOverlay .phrase-editor-table.one-row-editor-table {
-    min-width: 1040px !important;
-  }
-
   #managementOverlay .one-row-editor-table .title-cell {
     width: 310px !important;
     min-width: 310px !important;
     max-width: 310px !important;
-  }
-
-  #managementOverlay .phrase-editor-table.one-row-editor-table .title-cell {
-    width: 340px !important;
-    min-width: 340px !important;
-    max-width: 340px !important;
   }
 
   #managementOverlay .table-editor-footer {
@@ -10684,8 +10616,7 @@ body[data-theme="high-contrast"] {
 }
 
 #managementOverlay .one-row-editor-table .table-button-stack,
-#managementOverlay .one-row-editor-table .move-button-stack,
-#managementOverlay .one-row-editor-table .voice-buttons {
+#managementOverlay .one-row-editor-table .move-button-stack {
   gap: 6px !important;
 }
 
