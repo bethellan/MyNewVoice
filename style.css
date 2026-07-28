@@ -11954,6 +11954,12 @@ body.grid-view-active .ipad-image-grid-button .button-media img {
   display: block !important;
 }
 
+body.grid-view-active .ipad-image-grid-button .button-media img:not([src]),
+body.grid-view-active .ipad-image-grid-button .button-media img[src=""],
+body.grid-view-active .ipad-image-grid-button .button-media img[data-private-media-state="fallback"] {
+  display: none !important;
+}
+
 body.grid-view-active .ipad-image-grid-button .button-fallback-icon:not([hidden]) {
   display: grid !important;
   position: absolute !important;
