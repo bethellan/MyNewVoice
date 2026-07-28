@@ -11961,20 +11961,10 @@ body[data-te-reo-mode="on"] .mnv-logo {
   font-size: clamp(1.18rem, 2vw, 1.42rem) !important;
   font-weight: 850 !important;
   line-height: 1.05 !important;
+  white-space: nowrap;
   box-shadow: none !important;
   cursor: pointer !important;
   touch-action: manipulation;
-}
-
-.mnv-view-cycle,
-.mnv-label-toggle,
-.mnv-edit-toggle,
-.mnv-switch-toggle {
-  width: 100% !important;
-  inline-size: auto !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  white-space: nowrap;
 }
 
 .mnv-view-cycle,
@@ -12130,14 +12120,6 @@ body.grid-view-active .tab-container {
     font-size: 0.86rem !important;
   }
 
-  .mnv-edit-toggle {
-    grid-template-columns: 1fr !important;
-    gap: 0 !important;
-  }
-
-  .mnv-edit-toggle-label {
-    display: none;
-  }
 }
 
 /* v134: Grid view owns tile sizing in one scoped layer; rows expand to fit image plus label. */
