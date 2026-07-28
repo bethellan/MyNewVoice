@@ -3982,6 +3982,7 @@ function toggleGridLabelsFromAppBar() {
 function setEditModeUnlocked(value) {
     editModeUnlocked = Boolean(value);
     updateAppBarControls();
+    if (shouldUseIpadImageGrid() && currentViewCategory) renderIpadImageGrid(currentViewCategory);
     showToast(editModeUnlocked ? 'Edit mode on' : 'Edit mode off', editModeUnlocked ? 'success' : 'info');
 }
 
@@ -8186,13 +8187,14 @@ function createIpadImageGridPanel(category, options = {}) {
 
     const buttons = getDisplayPhrases(category);
     const rearrangingThisCategory = !swipePreview && gridRearrangeState && gridRearrangeState.category === category;
+    const showAddButton = includeAddButton && editModeUnlocked && !swipePreview;
     if (rearrangingThisCategory) panel.classList.add('grid-rearrange-panel');
 
     if (!buttonData[category]) {
         panel.innerHTML = '<p class="empty-category-message">Category not found.</p>';
     } else if (!buttons.length) {
         panel.innerHTML = '<p class="empty-category-message">No visible phrases in this section.</p>';
-        if (includeAddButton && !swipePreview) panel.appendChild(createIpadImageGridAddButton(category));
+        if (showAddButton) panel.appendChild(createIpadImageGridAddButton(category));
     } else {
         buttons.forEach((buttonInfo, index) => {
             if (rearrangingThisCategory) {
@@ -8201,7 +8203,7 @@ function createIpadImageGridPanel(category, options = {}) {
                 panel.appendChild(createIpadImageGridPhraseButton(buttonInfo, category));
             }
         });
-        if (includeAddButton && !rearrangingThisCategory && !swipePreview) panel.appendChild(createIpadImageGridAddButton(category));
+        if (showAddButton && !rearrangingThisCategory) panel.appendChild(createIpadImageGridAddButton(category));
     }
 
     return panel;
