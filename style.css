@@ -329,39 +329,6 @@ body {
   display: none !important;
 }
 
-/* Management Toggle */
-.management-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid var(--primary-color);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: var(--font-lg);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 1000;
-}
-
-.management-toggle:hover {
-  background: var(--primary-color);
-  color: white;
-  transform: scale(1.1);
-}
-
-.management-toggle:focus {
-  outline: 3px solid var(--secondary-color);
-  outline-offset: 2px;
-}
-
-
-
 /* Main menu category image cards.
    v5_menu_image_submenus - top categories are stacked image buttons; phrase rows are shown after choosing a category. */
 .tab-container {
@@ -1211,12 +1178,6 @@ body {
     min-height: clamp(98px, 21vw, 124px);
   }
   
-  .management-toggle {
-    width: 45px;
-    height: 45px;
-    font-size: var(--font-md);
-  }
-  
   .tab-container {
     border-radius: 20px;
     padding: var(--space-xs);
@@ -1333,9 +1294,6 @@ body {
     transform: none;
   }
   
-  .management-toggle:hover {
-    transform: none;
-  }
 }
 
 /* Theme Toggle Button */
@@ -1933,7 +1891,6 @@ body[data-theme="dark"] .crop-mode-btn {
 /* ============================================================================
    V13 PASSWORD-PROTECTED COMPACT PHOTO/VOICE SETUP
    ============================================================================ */
-body.submenu-open .management-toggle,
 body.submenu-open .theme-toggle,
 body.submenu-open .about-toggle {
   display: none !important;
@@ -4016,7 +3973,6 @@ body[data-theme="midnight"] .settings-action-btn {
   box-shadow: 0 22px 50px rgba(15,23,42,0.24);
 }
 
-.management-toggle,
 .settings-close,
 button:not(.tab):not(.grid-button):not(.management-toggle),
 .buttonlike,
@@ -4031,8 +3987,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle),
   box-shadow: 0 10px 22px rgba(15,23,42,0.12), inset 0 1px 0 rgba(255,255,255,0.42);
 }
 
-.management-toggle:hover,
-.management-toggle:focus,
 .settings-close:hover,
 .settings-close:focus,
 button:not(.tab):not(.grid-button):not(.management-toggle):hover,
@@ -4619,48 +4573,6 @@ select {
 }
 
 
-/* ============================================================================
-   V51 RESTORE SETTINGS COG AFTER V50 TACTILE REDESIGN
-   ============================================================================
-   v50 introduced broad tactile button styling. The Settings cog is a fixed
-   circular utility button and must remain immune to general button/card rules.
-*/
-.management-toggle {
-  position: fixed !important;
-  top: 20px !important;
-  right: 20px !important;
-  width: 50px !important;
-  height: 50px !important;
-  min-width: 50px !important;
-  min-height: 50px !important;
-  padding: 0 !important;
-  border-radius: 999px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 50px !important;
-  font-size: var(--font-lg) !important;
-  line-height: 1 !important;
-  background: rgba(255,255,255,0.96) !important;
-  color: var(--primary-color) !important;
-  border: 2px solid var(--primary-color) !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.22) !important;
-  z-index: 1000 !important;
-  overflow: visible !important;
-}
-
-.management-toggle:hover,
-.management-toggle:focus-visible {
-  background: var(--primary-color) !important;
-  color: var(--text-light) !important;
-  transform: scale(1.08) !important;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.26) !important;
-}
-
-.management-toggle:active {
-  transform: scale(0.98) !important;
-}
-
 /* v55 - simpler Settings summaries, About storage stats and offline readiness */
 .settings-stat-grid {
   display: grid;
@@ -5059,11 +4971,6 @@ body[data-theme="midnight"] .content-media-summary {
   margin: 0 !important;
   border-radius: calc(var(--radius-lg) + 5px) !important;
 }
-
-.management-toggle {
-  flex: 0 0 auto !important;
-}
-
 
 /* ============================================================================
    v72 UI IMPROVEMENTS
@@ -5730,13 +5637,6 @@ body,
   margin-top: max(0px, env(safe-area-inset-top, 0px));
 }
 
-.management-toggle {
-  top: max(20px, calc(12px + env(safe-area-inset-top, 0px)));
-}
-
-
-
-
 /* ============================================================================
    V86 HEADER SPACING CORRECTION
    ----------------------------------------------------------------------------
@@ -5773,11 +5673,6 @@ body {
 
     #messageBar.submenu-titlebar {
       min-height: clamp(60px, 10vw, 74px);
-    }
-
-    .management-toggle {
-      top: calc(20px + var(--mnv-ios-top-control-clearance)) !important;
-      right: 20px !important;
     }
 
     .submenu-header {
@@ -5831,35 +5726,6 @@ body {
   overflow: hidden !important;
   gap: clamp(12px, 2vw, 18px) !important;
   padding: clamp(12px, 2vw, 18px) !important;
-}
-
-.management-toggle {
-  position: fixed !important;
-  top: max(16px, calc(14px + env(safe-area-inset-top, 0px))) !important;
-  right: max(16px, calc(14px + env(safe-area-inset-right, 0px))) !important;
-  width: 58px !important;
-  height: 58px !important;
-  border-radius: 20px !important;
-  border: 1.5px solid rgba(74, 124, 89, 0.34) !important;
-  background: rgba(255,255,255,0.95) !important;
-  color: var(--primary-dark) !important;
-  box-shadow: 0 8px 22px rgba(27, 64, 44, 0.18) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transform: none !important;
-}
-
-.management-toggle:hover,
-.management-toggle:focus-visible {
-  background: #ffffff !important;
-  color: var(--primary-dark) !important;
-  transform: translateY(-1px) !important;
-}
-
-.management-toggle:active,
-.management-toggle.mnv-pressing {
-  transform: scale(0.97) !important;
-  box-shadow: var(--mnv-v90-shadow-pressed) !important;
 }
 
 .tab-container:not([hidden]),
@@ -6061,12 +5927,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
     padding-right: 68px !important;
   }
 
-  .management-toggle {
-    width: 54px !important;
-    height: 54px !important;
-    right: max(14px, calc(10px + env(safe-area-inset-right, 0px))) !important;
-  }
-
   .tab {
     min-height: clamp(162px, 38vw, 220px) !important;
   }
@@ -6095,7 +5955,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
 @media (prefers-reduced-motion: reduce) {
   .tab,
   .grid-button,
-  .management-toggle,
   button {
     transition: none !important;
   }
@@ -6706,7 +6565,6 @@ button[title="Back"] {
   -webkit-tap-highlight-color: transparent;
 }
 
-.management-toggle,
 .settings-cog,
 #settingsToggle,
 #settingsButton {
@@ -6753,7 +6611,6 @@ button[title="Back"] {
   #backButton,
   button[aria-label="Back"],
   button[title="Back"],
-  .management-toggle,
   .settings-cog,
   #settingsToggle,
   #settingsButton {
@@ -6988,7 +6845,6 @@ body {
 #backButton,
 button[aria-label="Back"],
 button[title="Back"],
-.management-toggle,
 .settings-cog,
 #settingsToggle,
 #settingsButton {
@@ -7001,7 +6857,6 @@ button[title="Back"],
 .back-button:active,
 .back-btn:active,
 #backButton:active,
-.management-toggle:active,
 .settings-cog:active,
 #settingsToggle:active,
 #settingsButton:active {
@@ -7457,8 +7312,6 @@ body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .gri
 /* v113: settings-entry-active / settings-dashboard-active body rules removed – classes no longer set by JS. */
 
 /* Pressing the cog must not visually scale, nudge, or reflow the page. */
-#managementToggle,
-.management-toggle,
 .settings-cog,
 #settingsToggle,
 #settingsButton {
@@ -7466,12 +7319,6 @@ body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .gri
   will-change: auto !important;
 }
 
-#managementToggle:hover,
-#managementToggle:active,
-#managementToggle.press-active,
-.management-toggle:hover,
-.management-toggle:active,
-.management-toggle.press-active,
 .settings-cog:hover,
 .settings-cog:active,
 .settings-cog.press-active {
@@ -10244,7 +10091,6 @@ body {
   gap: var(--mnv-ui-gap) !important;
 }
 
-.management-toggle,
 .settings-v115-close {
   border-radius: var(--mnv-ui-radius) !important;
   border: 1px solid var(--mnv-ui-line) !important;
@@ -11527,12 +11373,6 @@ body.submenu-open .grid-button > * {
     bottom: 18px !important;
     width: 5px !important;
   }
-}
-
-body:not(.submenu-open) .management-toggle {
-  top: auto !important;
-  right: clamp(14px, 2vw, 24px) !important;
-  transform: none !important;
 }
 
 /* v124 mobile main-menu scroll clearance:
