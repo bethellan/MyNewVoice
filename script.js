@@ -5657,6 +5657,25 @@ function restoreQueuedContentEditorPosition() {
             const containerRect = scrollContainer.getBoundingClientRect();
             const targetRect = target.getBoundingClientRect();
             scrollContainer.scrollTop += (targetRect.top - containerRect.top) - pending.relativeTop;
+
+            if (pending.type === 'phrase' && target.classList.contains('content-phrase-card')) {
+                const toggle = target.querySelector('[data-content-phrase-card-toggle]');
+                const details = target.querySelector('.content-phrase-card-details');
+                target.classList.add('open');
+                if (toggle) toggle.setAttribute('aria-expanded', 'true');
+                if (details) details.hidden = false;
+            }
+
+            requestAnimationFrame(() => {
+                const updatedContainerRect = scrollContainer.getBoundingClientRect();
+                const updatedTargetRect = target.getBoundingClientRect();
+                const aboveView = updatedTargetRect.top < updatedContainerRect.top;
+                const belowView = updatedTargetRect.bottom > updatedContainerRect.bottom;
+                if (aboveView || belowView) {
+                    target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                }
+            });
+            return;
         }
         target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     });
@@ -6344,6 +6363,7 @@ async function handleContentManagementClick(event) {
 
     const savePhraseButton = target.closest('[data-content-save-phrase]');
     if (savePhraseButton && contentSetupSelected?.type === 'phrase') {
+        queueContentEditorPositionRestoreFromElement(savePhraseButton);
         const phrase = findPhraseById(contentSetupSelected.category, contentSetupSelected.phraseId);
         if (!phrase) return;
         const textInput = document.getElementById('contentPhraseText');
