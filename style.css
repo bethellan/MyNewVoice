@@ -8550,272 +8550,6 @@ min-height:auto !important;
   }
 }
 
-/* v120 true Content Editor phrase-card layout
-   Replaces the old submenu/phrase desktop table renderer. Dad-facing screens,
-   speech, media storage and backup schema are unchanged. */
-.phrase-card-editor-header {
-  padding: 9px 16px !important;
-  min-height: auto !important;
-}
-
-.phrase-card-editor-header h3 {
-  font-size: clamp(1.12rem, 2vw, 1.55rem) !important;
-  line-height: 1.05 !important;
-  margin: 0 !important;
-  max-width: 100% !important;
-  overflow-wrap: anywhere !important;
-}
-
-.phrase-card-editor-header .editor-header-subtitle {
-  margin: 2px 0 0 !important;
-  font-size: clamp(0.78rem, 1.3vw, 0.95rem) !important;
-  line-height: 1.12 !important;
-}
-
-.phrase-card-editor-body {
-  padding: 8px 12px 12px !important;
-  overflow: auto !important;
-}
-
-.phrase-card-editor-body .editor-workflow-note {
-  margin: 6px 0 8px !important;
-  padding: 7px 10px !important;
-  font-size: 0.86rem !important;
-  line-height: 1.25 !important;
-}
-
-.phrase-card-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 10px;
-  width: 100%;
-  max-width: 100%;
-}
-
-.phrase-editor-card {
-  display: grid;
-  grid-template-columns: 82px minmax(0, 1fr) minmax(165px, 0.5fr);
-  gap: 10px;
-  align-items: start;
-  padding: 10px;
-  border: 1px solid rgba(68, 132, 92, 0.25);
-  border-radius: 16px;
-  background: rgba(255,255,255,0.96);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  min-width: 0;
-}
-
-.phrase-editor-card.selected-row {
-  outline: 3px solid rgba(45, 130, 80, 0.3);
-}
-
-.phrase-card-media {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 4px;
-  min-width: 0;
-}
-
-.phrase-card-media .management-media-thumb {
-  width: 64px !important;
-  height: 64px !important;
-  min-width: 64px !important;
-  border-radius: 14px !important;
-}
-
-.phrase-card-media .people-thumb {
-  border-radius: 999px !important;
-}
-
-.phrase-card-media .media-size-line {
-  text-align: center;
-  font-size: 0.76rem !important;
-  line-height: 1.12 !important;
-  overflow-wrap: anywhere;
-}
-
-.phrase-card-main {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-
-.phrase-card-label {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 0.76rem;
-  font-weight: 800;
-  color: #35533f;
-  min-width: 0;
-}
-
-.phrase-card-main .management-input,
-.phrase-card-main select.management-input {
-  width: 100% !important;
-  min-height: 38px !important;
-  padding: 7px 10px !important;
-  font-size: 0.98rem !important;
-  font-weight: 800 !important;
-}
-
-.phrase-card-id {
-  margin: 0 !important;
-  font-size: 0.74rem !important;
-}
-
-.phrase-more-details {
-  border: 1px solid rgba(68, 132, 92, 0.18);
-  border-radius: 12px;
-  padding: 0;
-  background: rgba(245, 250, 247, 0.9);
-  overflow: hidden;
-}
-
-.phrase-more-details summary {
-  cursor: pointer;
-  padding: 8px 10px;
-  font-weight: 900;
-  color: #254d36;
-  line-height: 1.1;
-  list-style-position: inside;
-}
-
-.phrase-secondary-grid {
-  display: grid;
-  grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1fr);
-  gap: 8px;
-  padding: 8px;
-}
-
-.phrase-voice-block {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-}
-
-.phrase-voice-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.phrase-voice-buttons .management-btn {
-  width: 100% !important;
-  min-height: 36px !important;
-  padding: 6px 8px !important;
-  font-size: 0.82rem !important;
-}
-
-.phrase-voice-buttons .management-btn:last-child {
-  grid-column: 1 / -1;
-}
-
-.phrase-card-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  min-width: 0;
-}
-
-.phrase-card-control-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.phrase-card-controls .management-btn,
-.phrase-card-controls .content-checkbox-row {
-  width: 100% !important;
-  min-height: 38px !important;
-  padding: 7px 8px !important;
-  font-size: 0.86rem !important;
-  line-height: 1.1 !important;
-}
-
-.phrase-hidden-toggle {
-  justify-content: center !important;
-  gap: 8px !important;
-}
-
-.phrase-delete-action {
-  min-height: 38px !important;
-}
-
-.phrase-add-card {
-  grid-column: 1 / -1;
-  min-height: 46px !important;
-  margin: 0 !important;
-  border-radius: 14px !important;
-}
-
-.phrase-empty-card {
-  grid-column: 1 / -1;
-  padding: 12px;
-  border: 1px dashed rgba(68, 132, 92, 0.3);
-  border-radius: 14px;
-  background: rgba(255,255,255,0.9);
-}
-
-@media (max-width: 900px) {
-  .phrase-card-list {
-    grid-template-columns: 1fr;
-  }
-
-  .phrase-editor-card {
-    grid-template-columns: 74px minmax(0, 1fr);
-  }
-
-  .phrase-card-controls {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-  }
-}
-
-@media (max-width: 520px) {
-  .phrase-card-editor-body {
-    padding: 7px 8px 10px !important;
-  }
-
-  .phrase-editor-card {
-    grid-template-columns: 58px minmax(0, 1fr);
-    gap: 8px;
-    padding: 8px;
-    border-radius: 14px;
-  }
-
-  .phrase-card-media .management-media-thumb {
-    width: 52px !important;
-    height: 52px !important;
-    min-width: 52px !important;
-  }
-
-  .phrase-secondary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .phrase-card-controls {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .phrase-hidden-toggle,
-  .phrase-delete-action {
-    grid-column: span 1;
-  }
-
-  .phrase-card-main .management-input,
-  .phrase-card-main select.management-input {
-    min-height: 36px !important;
-    font-size: 0.94rem !important;
-  }
-}
-
 /* ============================================================================
    v121 content editor table restoration and fixed footer
    Scope: Content Editor only. Restores one-row table entries with horizontal
@@ -12536,7 +12270,7 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   width: 100% !important;
   display: grid !important;
   grid-template-columns: 1fr !important;
-  gap: 10px !important;
+  gap: 12px !important;
   box-sizing: border-box !important;
 }
 
@@ -12552,6 +12286,10 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   overflow: hidden !important;
 }
 
+#managementOverlay .content-phrase-card.open {
+  border-color: color-mix(in srgb, var(--primary-color, #4caf50) 34%, rgba(15,23,42,0.12)) !important;
+}
+
 #managementOverlay .content-phrase-card.selected-row {
   border-color: color-mix(in srgb, var(--primary-color, #4caf50) 42%, rgba(15,23,42,0.12)) !important;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10), inset 4px 0 0 var(--primary-color, #4caf50) !important;
@@ -12560,9 +12298,9 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
 #managementOverlay .content-phrase-card-main {
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr) auto !important;
-  gap: 10px !important;
+  gap: 12px !important;
   align-items: center !important;
-  padding: 10px !important;
+  padding: 11px !important;
   box-sizing: border-box !important;
 }
 
@@ -12640,23 +12378,32 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
 }
 
 #managementOverlay .content-phrase-card-toggle {
-  width: 46px !important;
-  min-width: 46px !important;
+  width: 50px !important;
+  min-width: 50px !important;
   height: 46px !important;
   min-height: 46px !important;
-  border-radius: 14px !important;
+  border-radius: 999px !important;
   border: 1px solid var(--mnv-ui-line-soft, rgba(15,23,42,0.12)) !important;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,250,252,0.88)) !important;
-  color: var(--mnv-ui-text, #233042) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(244,250,246,0.92)) !important;
+  color: var(--primary-dark, #2f7d4c) !important;
   font: inherit !important;
-  font-size: 1.45rem !important;
+  font-size: 1.28rem !important;
   font-weight: 900 !important;
   line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  letter-spacing: 0 !important;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.08) !important;
   cursor: pointer !important;
   touch-action: manipulation !important;
+}
+
+#managementOverlay .content-phrase-card-toggle:hover,
+#managementOverlay .content-phrase-card-toggle:focus-visible {
+  border-color: color-mix(in srgb, var(--primary-color, #4caf50) 42%, rgba(15,23,42,0.12)) !important;
+  box-shadow: 0 0 0 3px rgba(76,175,80,0.16), 0 6px 14px rgba(15,23,42,0.10) !important;
+  outline: 0 !important;
 }
 
 #managementOverlay .content-phrase-card.open .content-phrase-card-toggle {
@@ -12666,10 +12413,11 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
 
 #managementOverlay .content-phrase-card-details {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)) !important;
-  gap: 10px !important;
-  padding: 0 10px 12px !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)) !important;
+  gap: 11px !important;
+  padding: 0 11px 13px !important;
   box-sizing: border-box !important;
+  align-items: stretch !important;
 }
 
 #managementOverlay .content-phrase-card-details[hidden] {
@@ -12687,12 +12435,16 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   min-width: 0 !important;
   display: grid !important;
   align-content: start !important;
-  gap: 6px !important;
-  padding: 9px !important;
+  gap: 7px !important;
+  padding: 10px !important;
   border-radius: 12px !important;
-  background: rgba(255,255,255,0.58) !important;
-  border: 1px solid rgba(15,23,42,0.06) !important;
+  background: rgba(255,255,255,0.72) !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
   box-sizing: border-box !important;
+}
+
+#managementOverlay .content-phrase-card-spoken {
+  grid-column: span 2 !important;
 }
 
 #managementOverlay .content-phrase-card-section-title,
@@ -12711,15 +12463,20 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   min-width: 0 !important;
 }
 
+#managementOverlay .content-phrase-card .voice-cell-inner {
+  display: grid !important;
+  gap: 7px !important;
+}
+
 #managementOverlay .content-phrase-card .voice-buttons,
 #managementOverlay .content-phrase-card .move-button-stack {
-  display: flex !important;
-  flex-wrap: wrap !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)) !important;
   gap: 6px !important;
 }
 
 #managementOverlay .content-phrase-card .move-button-stack .management-btn {
-  flex: 1 1 118px !important;
+  width: 100% !important;
 }
 
 #managementOverlay .content-phrase-card .management-btn,
@@ -12734,6 +12491,12 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   white-space: normal !important;
 }
 
+#managementOverlay .content-phrase-card .small-management-btn:hover,
+#managementOverlay .content-phrase-card .small-management-btn:focus-visible {
+  outline: 0 !important;
+  box-shadow: 0 0 0 3px rgba(76,175,80,0.14), 0 5px 12px rgba(15,23,42,0.10) !important;
+}
+
 #managementOverlay .content-phrase-card .icon-input {
   width: min(100%, 82px) !important;
   min-width: 0 !important;
@@ -12743,11 +12506,12 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
 }
 
 #managementOverlay .content-phrase-card .content-checkbox-row.compact-checkbox {
-  width: fit-content !important;
+  width: 100% !important;
   min-height: 40px !important;
   margin: 0 !important;
-  padding: 7px 12px !important;
-  border-radius: 999px !important;
+  padding: 8px 12px !important;
+  border-radius: 11px !important;
+  justify-content: center !important;
 }
 
 #managementOverlay .content-phrase-card .content-phrase-delete {
@@ -12786,14 +12550,14 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   }
 
   #managementOverlay .content-phrase-card-main {
-    grid-template-columns: auto minmax(0, 1fr) 42px !important;
+    grid-template-columns: auto minmax(0, 1fr) 44px !important;
     gap: 8px !important;
     padding: 8px !important;
   }
 
   #managementOverlay .content-phrase-card-toggle {
-    width: 42px !important;
-    min-width: 42px !important;
+    width: 44px !important;
+    min-width: 44px !important;
     height: 42px !important;
     min-height: 42px !important;
   }
@@ -12802,5 +12566,9 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
     grid-template-columns: 1fr !important;
     padding: 0 8px 10px !important;
     gap: 8px !important;
+  }
+
+  #managementOverlay .content-phrase-card-spoken {
+    grid-column: 1 / -1 !important;
   }
 }
