@@ -12491,6 +12491,27 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   white-space: normal !important;
 }
 
+#managementOverlay .content-phrase-card [data-record-voice] {
+  border-color: rgba(34, 122, 62, 0.28) !important;
+  background: linear-gradient(180deg, #f4fff6, #ddf3e3) !important;
+  color: #185c2b !important;
+}
+
+#managementOverlay .content-phrase-card [data-play-voice],
+#managementOverlay .content-phrase-card [data-preview-spoken-text],
+#managementOverlay .content-phrase-card [data-preview-reo-spoken-text] {
+  border-color: rgba(59, 102, 155, 0.28) !important;
+  background: linear-gradient(180deg, #f5f9ff, #e1ecf8) !important;
+  color: #1e426a !important;
+}
+
+#managementOverlay .content-phrase-card [data-delete-media],
+#managementOverlay .content-phrase-card .content-phrase-delete {
+  border-color: #e29b9b !important;
+  background: linear-gradient(180deg, #fff4f4, #f8dede) !important;
+  color: #7b1e1e !important;
+}
+
 #managementOverlay .content-phrase-card .small-management-btn:hover,
 #managementOverlay .content-phrase-card .small-management-btn:focus-visible {
   outline: 0 !important;
@@ -12517,9 +12538,6 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
 #managementOverlay .content-phrase-card .content-phrase-delete {
   width: 100% !important;
   justify-content: center !important;
-  background: linear-gradient(180deg, #fff4f4, #f8dede) !important;
-  border-color: #e29b9b !important;
-  color: #7b1e1e !important;
 }
 
 #managementOverlay .content-phrase-card .media-size-line,
@@ -12536,12 +12554,16 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
 #managementOverlay .content-phrase-add-row {
   width: 100% !important;
   display: grid !important;
+  justify-items: center !important;
 }
 
 #managementOverlay .content-phrase-add-row .management-add-line {
-  width: 100% !important;
-  min-height: 46px !important;
+  width: min(100%, 420px) !important;
+  min-height: 44px !important;
   border-radius: 13px !important;
+  border-style: dashed !important;
+  justify-content: center !important;
+  text-align: center !important;
 }
 
 @media (max-width: 520px) {

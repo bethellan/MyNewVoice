@@ -2867,10 +2867,10 @@ function ensureManagementImageOptionsOverlay() {
             </div>
             <p class="settings-note" id="managementImageOptionsText">Choose what to do with this picture box.</p>
             <div class="settings-actions settings-actions-compact">
-                <button type="button" class="settings-action-btn" data-image-options-edit>✂️ Edit / re-crop current picture</button>
-                <button type="button" class="settings-action-btn" data-image-options-load>📷 Load or take new picture</button>
-                <button type="button" class="settings-action-btn" data-image-options-icon>⭐ Choose fallback icon</button>
-                <button type="button" class="settings-action-btn danger-settings-btn" data-image-options-delete>🗑️ Delete picture</button>
+                <button type="button" class="settings-action-btn" data-image-options-edit>Edit or re-crop current picture</button>
+                <button type="button" class="settings-action-btn" data-image-options-load>Load or take new picture</button>
+                <button type="button" class="settings-action-btn" data-image-options-icon>Choose fallback icon</button>
+                <button type="button" class="settings-action-btn danger-settings-btn" data-image-options-delete>Delete picture</button>
                 <button type="button" class="settings-action-btn" data-image-options-cancel>Cancel</button>
             </div>
         </div>
@@ -5866,7 +5866,7 @@ function renderContentCategoryRows(allCategories) {
             <tbody>
                 ${rows}
                 <tr class="management-add-row">
-                    <td colspan="8"><button type="button" class="management-add-line" data-content-add-topic-row>＋ Add new main menu topic</button></td>
+                    <td colspan="8"><button type="button" class="management-add-line" data-content-add-topic-row>Add new main menu topic</button></td>
                 </tr>
             </tbody>
         </table>
@@ -5877,7 +5877,7 @@ function renderVoiceStatusBadge(voiceKey) {
     const hasVoice = Boolean(voiceKey && privateVoiceKeySet.has(voiceKey));
     return `
         <span class="voice-status-badge ${hasVoice ? 'voice-saved' : 'voice-none'}" title="${hasVoice ? 'A recorded voice is saved for this phrase.' : 'No recorded voice is saved; device speech will be used.'}">
-            ${hasVoice ? '🎙️ Voice saved' : 'Voice: none'}
+            ${hasVoice ? 'Voice saved' : 'Voice: none'}
         </span>
     `;
 }
@@ -5984,7 +5984,7 @@ function renderContentPhraseRows(category, phrases) {
         <div class="content-phrase-card-list" data-content-phrase-card-list>
             ${cards}
             <div class="management-add-row content-phrase-add-row">
-                <button type="button" class="management-add-line" data-content-add-phrase-row>+ Add new ${photoMemories ? 'photo' : 'phrase'}</button>
+                <button type="button" class="management-add-line" data-content-add-phrase-row>Add new ${photoMemories ? 'photo' : 'phrase'}</button>
             </div>
         </div>
     `;
