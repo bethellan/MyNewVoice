@@ -1,4 +1,5 @@
-v141_cache_namespace_fix
+v142_photo_memories_editor_polish
 
-Stable service-worker shell cache and saved-offline cache namespaces.
-App version numbers now live in CURRENT_APP_VERSION and app-version.json only.
+Photo Memories popups now stay open until tap/key close and open the cropper in Free crop mode.
+Content Editor keeps position better after image edits, uses clearer arrow move controls, and has cleaner save/export messages.
+Grid swipe keeps tile movement without the extra arrow guide.

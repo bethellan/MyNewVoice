@@ -12546,6 +12546,19 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   white-space: normal !important;
 }
 
+#managementOverlay .content-phrase-card .move-arrow-btn {
+  width: 56px !important;
+  min-width: 56px !important;
+  max-width: 72px !important;
+  min-height: 46px !important;
+  padding: 0 !important;
+  justify-self: center !important;
+  place-items: center !important;
+  font-size: 1.5rem !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
 #managementOverlay .content-phrase-card [data-record-voice] {
   border-color: rgba(34, 122, 62, 0.28) !important;
   background: linear-gradient(180deg, #f4fff6, #ddf3e3) !important;

@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v141: Separates stable shell/offline cache namespaces so app updates do not delete saved offline files. */
+/* v142: Photo Memories and Content Editor polish checkpoint. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -189,7 +189,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v141';
+const CURRENT_APP_VERSION = 'v142';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -6048,8 +6048,8 @@ function renderContentPhraseRows(category, phrases) {
                     <section class="content-phrase-card-section">
                         <div class="content-phrase-card-section-title">Move</div>
                         <div class="table-button-stack move-button-stack">
-                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="up" data-index="${index}" ${index <= 0 ? 'disabled' : ''}>Move up</button>
-                            <button type="button" class="management-btn small-management-btn" data-content-move-phrase-row="down" data-index="${index}" ${index >= phrases.length - 1 ? 'disabled' : ''}>Move down</button>
+                            <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-phrase-row="up" data-index="${index}" title="Move phrase earlier" aria-label="Move phrase earlier" ${index <= 0 ? 'disabled' : ''}>↑</button>
+                            <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-phrase-row="down" data-index="${index}" title="Move phrase later" aria-label="Move phrase later" ${index >= phrases.length - 1 ? 'disabled' : ''}>↓</button>
                         </div>
                     </section>
                     <section class="content-phrase-card-section">
@@ -6123,8 +6123,8 @@ function renderContentSelectedEditor() {
                 Hide this section from Dad's main menu
             </label>
             <div class="content-button-row">
-                <button type="button" class="management-btn" data-content-move-category="up" ${index <= 0 ? 'disabled' : ''}>Move up</button>
-                <button type="button" class="management-btn" data-content-move-category="down" ${index >= allCategories.length - 1 ? 'disabled' : ''}>Move down</button>
+                <button type="button" class="management-btn move-arrow-btn" data-content-move-category="up" title="Move section earlier" aria-label="Move section earlier" ${index <= 0 ? 'disabled' : ''}>↑</button>
+                <button type="button" class="management-btn move-arrow-btn" data-content-move-category="down" title="Move section later" aria-label="Move section later" ${index >= allCategories.length - 1 ? 'disabled' : ''}>↓</button>
                 <button type="button" class="management-btn save-private-setup" data-content-save-category>Save</button>
             </div>
         `;
@@ -6164,8 +6164,8 @@ function renderContentSelectedEditor() {
             Hide this phrase from Dad's submenu
         </label>
         <div class="content-button-row">
-            <button type="button" class="management-btn" data-content-move-phrase="up" ${index <= 0 ? 'disabled' : ''}>Move up</button>
-            <button type="button" class="management-btn" data-content-move-phrase="down" ${index >= phraseList.length - 1 ? 'disabled' : ''}>Move down</button>
+            <button type="button" class="management-btn move-arrow-btn" data-content-move-phrase="up" title="Move phrase earlier" aria-label="Move phrase earlier" ${index <= 0 ? 'disabled' : ''}>↑</button>
+            <button type="button" class="management-btn move-arrow-btn" data-content-move-phrase="down" title="Move phrase later" aria-label="Move phrase later" ${index >= phraseList.length - 1 ? 'disabled' : ''}>↓</button>
             <button type="button" class="management-btn save-private-setup" data-content-save-phrase>Save</button>
             <button type="button" class="management-btn remove-btn" data-content-delete-phrase>Delete ${photoMemories ? 'photo' : 'phrase'}</button>
         </div>
