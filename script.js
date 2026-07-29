@@ -8003,20 +8003,11 @@ function applyPendingIpadGridTransition(grid) {
 function clearIpadGridSwipePreview(grid) {
     if (!grid) return;
     grid.querySelectorAll('.ipad-grid-swipe-preview').forEach(panel => panel.remove());
-    grid.querySelectorAll('.ipad-grid-swipe-guide').forEach(guide => {
-        guide.textContent = '';
-        guide.classList.remove('commit-ready');
-    });
     grid.classList.remove('grid-swipe-dragging', 'grid-swipe-canceling', 'grid-swipe-committing', 'grid-swipe-commit-ready');
     grid.style.removeProperty('--mnv-grid-drag-x');
     grid.style.removeProperty('--mnv-grid-swipe-progress');
     grid.style.removeProperty('--mnv-grid-current-opacity');
     grid.style.removeProperty('--mnv-grid-preview-opacity');
-    grid.style.removeProperty('--mnv-grid-guide-opacity');
-    grid.style.removeProperty('--mnv-grid-guide-scale');
-    grid.style.removeProperty('--mnv-grid-guide-width');
-    grid.style.removeProperty('--mnv-grid-guide-gap');
-    grid.style.removeProperty('--mnv-grid-guide-y');
 }
 
 function attachIpadImageGridSwipe(grid, category) {
@@ -8042,14 +8033,6 @@ function attachIpadImageGridSwipe(grid, category) {
     const currentPanel = () => grid.querySelector('.ipad-image-grid-panel:not(.ipad-grid-swipe-preview)');
 
     const getSwipeThreshold = () => Math.min(Math.max(grid.clientWidth * 0.24, 84), 180);
-
-    const updateSwipeGuide = (direction, progress) => {
-        const guide = grid.querySelector('.ipad-grid-swipe-guide');
-        if (!guide) return;
-        const arrow = direction > 0 ? '&lsaquo;' : '&rsaquo;';
-        guide.innerHTML = `<span>${arrow}</span><span>${arrow}</span><span>${arrow}</span>`;
-        guide.classList.toggle('commit-ready', progress >= 1);
-    };
 
     const ensureSwipePreview = (direction) => {
         if (!direction) return false;
@@ -8087,12 +8070,7 @@ function attachIpadImageGridSwipe(grid, category) {
         grid.style.setProperty('--mnv-grid-swipe-progress', progress.toFixed(3));
         grid.style.setProperty('--mnv-grid-current-opacity', (1 - (progress * 0.42)).toFixed(3));
         grid.style.setProperty('--mnv-grid-preview-opacity', (0.16 + (progress * 0.84)).toFixed(3));
-        grid.style.setProperty('--mnv-grid-guide-opacity', progress > 0.05 ? Math.min(0.96, progress + 0.18).toFixed(3) : '0');
-        grid.style.setProperty('--mnv-grid-guide-scale', (0.94 + (progress * 0.06)).toFixed(3));
-        grid.style.setProperty('--mnv-grid-guide-width', `${Math.round(72 + (progress * 98))}px`);
-        grid.style.setProperty('--mnv-grid-guide-gap', `${Math.round(0 + (progress * 22))}px`);
         grid.classList.toggle('grid-swipe-commit-ready', hasNextCategory && rawProgress >= 1);
-        updateSwipeGuide(direction, rawProgress);
     };
 
     const onTouchStart = (event) => {
@@ -8105,7 +8083,6 @@ function attachIpadImageGridSwipe(grid, category) {
         startTime = performance.now ? performance.now() : Date.now();
         isDragging = false;
         horizontalIntent = false;
-        grid.style.setProperty('--mnv-grid-guide-y', `${grid.scrollTop + (grid.clientHeight / 2)}px`);
     };
 
     const onTouchMove = (event) => {
@@ -8137,10 +8114,6 @@ function attachIpadImageGridSwipe(grid, category) {
         grid.style.setProperty('--mnv-grid-swipe-progress', '0');
         grid.style.setProperty('--mnv-grid-current-opacity', '1');
         grid.style.setProperty('--mnv-grid-preview-opacity', '0');
-        grid.style.setProperty('--mnv-grid-guide-opacity', '0');
-        grid.style.setProperty('--mnv-grid-guide-scale', '0.94');
-        grid.style.setProperty('--mnv-grid-guide-width', '90px');
-        grid.style.setProperty('--mnv-grid-guide-gap', '0px');
         grid.classList.remove('grid-swipe-commit-ready');
         setTimeout(clearDragVisual, 230);
     };
@@ -8173,10 +8146,6 @@ function attachIpadImageGridSwipe(grid, category) {
         grid.style.setProperty('--mnv-grid-swipe-progress', '1');
         grid.style.setProperty('--mnv-grid-current-opacity', '0.70');
         grid.style.setProperty('--mnv-grid-preview-opacity', '1');
-        grid.style.setProperty('--mnv-grid-guide-opacity', '1');
-        grid.style.setProperty('--mnv-grid-guide-scale', '1.06');
-        grid.style.setProperty('--mnv-grid-guide-width', '162px');
-        grid.style.setProperty('--mnv-grid-guide-gap', '18px');
         setTimeout(() => {
             showCategorySubmenu(nextCategory);
             setTimeout(() => { gridTransitionInProgress = false; }, 80);
@@ -8342,10 +8311,6 @@ function renderIpadImageGrid(category) {
 
     const panel = createIpadImageGridPanel(category);
     grid.appendChild(panel);
-    const swipeGuide = document.createElement('div');
-    swipeGuide.className = 'ipad-grid-swipe-guide';
-    swipeGuide.setAttribute('aria-hidden', 'true');
-    grid.appendChild(swipeGuide);
     attachIpadImageGridSwipe(grid, category);
     applyPendingIpadGridTransition(grid);
 }

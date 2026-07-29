@@ -2296,8 +2296,21 @@ body[data-theme="dark"] .private-item-button small {
     min-width: 220px;
 }
 
+.table-button-stack,
+.voice-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+
 .table-button-stack {
     white-space: nowrap;
+}
+
+.voice-buttons .management-btn,
+.table-button-stack .management-btn {
+    margin: 0;
 }
 
 .small-management-btn {
@@ -2389,11 +2402,6 @@ body[data-theme="dark"] .private-item-button small {
   padding: 6px;
   display: inline-block;
   margin-right: 6px;
-}
-
-.voice-buttons .management-btn,
-.table-button-stack .management-btn {
-  margin: 2px;
 }
 
 .editor-bottom-actions {
@@ -2750,19 +2758,6 @@ body[data-theme="dark"] .private-item-button small {
   background: #eef6ff;
   color: #1e3a8a;
   border: 1px solid #bfdbfe;
-}
-
-.table-button-stack,
-.voice-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-
-.table-button-stack .management-btn,
-.voice-buttons .management-btn {
-  margin: 0;
 }
 
 .management-add-row td {
@@ -3467,11 +3462,6 @@ button:active,
   border-radius: 10px;
   font-size: 0.78rem;
   line-height: 1.1;
-}
-
-.table-button-stack,
-.voice-buttons {
-  gap: 5px;
 }
 
 .voice-buttons {
@@ -11862,10 +11852,6 @@ body.grid-view-active .grid.ipad-image-grid {
   --mnv-grid-swipe-progress: 0;
   --mnv-grid-current-opacity: 1;
   --mnv-grid-preview-opacity: 0;
-  --mnv-grid-guide-opacity: 0;
-  --mnv-grid-guide-scale: 0.94;
-  --mnv-grid-guide-width: 90px;
-  --mnv-grid-guide-gap: 0px;
 }
 
 body.grid-view-active .ipad-image-grid-panel {
@@ -11944,62 +11930,6 @@ body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-gri
 body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-grid-panel.ipad-grid-swipe-preview.preview-previous {
   transform: translateX(-100%);
   opacity: 0;
-}
-
-body.grid-view-active .ipad-grid-swipe-guide {
-  position: absolute;
-  left: 50%;
-  top: var(--mnv-grid-guide-y, 50%);
-  z-index: 12;
-  width: var(--mnv-grid-guide-width, 90px);
-  max-width: min(52vw, 184px);
-  height: clamp(42px, 7vw, 58px);
-  border-radius: 999px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  column-gap: var(--mnv-grid-guide-gap, 0px);
-  align-items: center;
-  justify-items: center;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.94);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.68)),
-    color-mix(in srgb, var(--category-soft, #ecf8e8) 64%, #ffffff);
-  color: var(--category-dark, #1f5b31);
-  border: 2px solid color-mix(in srgb, var(--category-color, #3f9f46) 44%, rgba(15,23,42,0.12));
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
-  font-size: clamp(2.15rem, 5.2vw, 3.15rem);
-  font-weight: 900;
-  line-height: 1;
-  transition: opacity 90ms ease, transform 90ms ease, width 90ms ease, column-gap 90ms ease;
-}
-
-body.grid-view-active .ipad-grid-swipe-guide span {
-  display: grid;
-  place-items: center;
-}
-
-body.grid-view-active .ipad-grid-swipe-guide span:nth-child(1) {
-  opacity: 1;
-}
-
-body.grid-view-active .ipad-grid-swipe-guide span:nth-child(2) {
-  opacity: 1;
-}
-
-body.grid-view-active .ipad-grid-swipe-guide span:nth-child(3) {
-  opacity: 1;
-}
-
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-grid-swipe-guide {
-  opacity: var(--mnv-grid-guide-opacity, 0);
-  transform: translate(-50%, -50%) scale(var(--mnv-grid-guide-scale, 0.94));
-}
-
-body.grid-view-active .grid.ipad-image-grid.grid-swipe-commit-ready .ipad-grid-swipe-guide {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1.06);
 }
 
 @keyframes mnvGridEnterFromRight {
@@ -12367,8 +12297,7 @@ body.grid-view-active .mnv-app-bar .management-toggle {
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-enter-from-left .ipad-image-grid-panel,
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-dragging .ipad-image-grid-panel,
   body.grid-view-active .grid.ipad-image-grid.grid-swipe-canceling .ipad-image-grid-panel,
-  body.grid-view-active .grid.ipad-image-grid.grid-swipe-committing .ipad-image-grid-panel,
-  body.grid-view-active .ipad-grid-swipe-guide {
+  body.grid-view-active .grid.ipad-image-grid.grid-swipe-committing .ipad-image-grid-panel {
     animation: none !important;
     transform: none !important;
     transition: none !important;
