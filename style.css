@@ -11883,8 +11883,8 @@ body.grid-view-active .grid.ipad-image-grid {
   align-content: start !important;
   gap: clamp(10px, 1.4vw, 16px) !important;
   height: auto !important;
-  min-height: max(360px, calc(100vh - 220px)) !important;
-  min-height: max(360px, calc(100dvh - 220px)) !important;
+  min-height: max(420px, calc(100vh - 180px)) !important;
+  min-height: max(420px, calc(100dvh - 180px)) !important;
   padding: clamp(8px, 1.4vw, 16px) !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
@@ -11905,8 +11905,8 @@ body.grid-view-active .ipad-image-grid-panel {
   display: grid !important;
   width: min(100%, 1180px) !important;
   margin: 0 auto !important;
-  min-height: max(300px, calc(100vh - 310px)) !important;
-  min-height: max(300px, calc(100dvh - 310px)) !important;
+  min-height: max(340px, calc(100vh - 300px)) !important;
+  min-height: max(340px, calc(100dvh - 300px)) !important;
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   grid-auto-flow: row !important;
   grid-auto-rows: minmax(min-content, auto) !important;
@@ -11985,7 +11985,7 @@ body.grid-view-active .ipad-grid-swipe-guide {
   top: var(--mnv-grid-guide-y, 50%);
   z-index: 12;
   width: var(--mnv-grid-guide-width, 90px);
-  max-width: min(46vw, 172px);
+  max-width: min(52vw, 184px);
   height: clamp(42px, 7vw, 58px);
   border-radius: 999px;
   display: grid;
@@ -12005,7 +12005,7 @@ body.grid-view-active .ipad-grid-swipe-guide {
   font-size: clamp(2.15rem, 5.2vw, 3.15rem);
   font-weight: 900;
   line-height: 1;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition: opacity 90ms ease, transform 90ms ease, width 90ms ease, column-gap 90ms ease;
 }
 
 body.grid-view-active .ipad-grid-swipe-guide span {
