@@ -11544,7 +11544,7 @@ body {
 
 .mnv-app-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) repeat(2, 48px) repeat(3, clamp(42px, 5vw, 54px));
+  grid-template-columns: minmax(0, 1fr) repeat(2, 56px) repeat(3, clamp(42px, 5vw, 54px));
   align-items: center;
   gap: clamp(6px, 1vw, 12px);
   min-height: clamp(58px, 7vw, 74px);
@@ -11559,6 +11559,7 @@ body {
     var(--theme-card-surface, #ffffff);
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255,255,255,0.82);
   box-sizing: border-box;
+  isolation: isolate;
 }
 
 .mnv-brand {
@@ -11657,16 +11658,20 @@ body[data-te-reo-mode="on"] .mnv-logo {
   display: inline-grid !important;
   place-items: center !important;
   grid-template-columns: 1fr !important;
-  min-width: 48px !important;
-  width: 48px !important;
-  min-height: 48px !important;
-  height: 48px !important;
+  min-width: 56px !important;
+  width: 56px !important;
+  min-height: 56px !important;
+  height: 56px !important;
   padding: 0 !important;
   border-radius: 999px !important;
   border: 0 !important;
   background: transparent !important;
   color: #334155 !important;
   box-shadow: none !important;
+  position: relative !important;
+  z-index: 3 !important;
+  pointer-events: auto !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mnv-edit-toggle-track,
@@ -11697,6 +11702,20 @@ body[data-te-reo-mode="on"] .mnv-logo {
 
 .mnv-edit-toggle-label {
   display: none;
+  pointer-events: none;
+}
+
+.move-arrow-btn {
+  width: 48px !important;
+  min-width: 48px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  font-size: 1.55rem !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
 }
 
 .mnv-edit-toggle.active .mnv-edit-toggle-track {
@@ -11818,7 +11837,7 @@ body.grid-view-active .tab-container {
   }
 
   .mnv-app-bar {
-    grid-template-columns: minmax(0, 1fr) repeat(5, 40px);
+    grid-template-columns: minmax(0, 1fr) repeat(2, 52px) repeat(3, 40px);
     gap: 6px;
   }
 
@@ -11848,10 +11867,10 @@ body.grid-view-active .tab-container {
 
   .mnv-edit-toggle,
   .mnv-switch-toggle {
-    min-width: 48px !important;
-    width: 48px !important;
-    min-height: 48px !important;
-    height: 48px !important;
+    min-width: 52px !important;
+    width: 52px !important;
+    min-height: 52px !important;
+    height: 52px !important;
     padding: 0 !important;
   }
 

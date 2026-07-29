@@ -5884,8 +5884,8 @@ function renderContentCategoryRows(allCategories) {
                 </td>
                 <td class="move-cell">
                     <div class="table-button-stack move-button-stack">
-                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" ${index <= 0 ? 'disabled' : ''}>Up</button>
-                        <button type="button" class="management-btn small-management-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" ${index >= allCategories.length - 1 ? 'disabled' : ''}>Down</button>
+                        <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" title="Move section earlier" aria-label="Move section earlier" ${index <= 0 ? 'disabled' : ''}>↑</button>
+                        <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" title="Move section later" aria-label="Move section later" ${index >= allCategories.length - 1 ? 'disabled' : ''}>↓</button>
                     </div>
                 </td>
                 <td class="hidden-cell">
@@ -6186,6 +6186,7 @@ async function handleContentManagementClick(event) {
 
     const deleteMediaButton = target.closest('[data-delete-media]');
     if (deleteMediaButton) {
+        queueContentEditorPositionRestoreFromElement(deleteMediaButton);
         deletePrivateMediaFromSetup(deleteMediaButton.dataset.key);
         return;
     }
@@ -6305,6 +6306,7 @@ async function handleContentManagementClick(event) {
 
     const rowMoveCategoryButton = target.closest('[data-content-move-category-row]');
     if (rowMoveCategoryButton) {
+        queueContentEditorPositionRestoreFromElement(rowMoveCategoryButton);
         const direction = rowMoveCategoryButton.dataset.contentMoveCategoryRow;
         const category = rowMoveCategoryButton.dataset.category;
         const order = categoryConfig.order;
@@ -6346,6 +6348,7 @@ async function handleContentManagementClick(event) {
 
     const categoryButton = target.closest('[data-content-select-category]');
     if (categoryButton) {
+        queueContentEditorPositionRestoreFromElement(categoryButton);
         contentSetupPhraseCategory = categoryButton.dataset.contentSelectCategory;
         setContentSetupSelected({ type: 'category', category: categoryButton.dataset.contentSelectCategory });
         renderContentManagementPanel();
@@ -6354,6 +6357,7 @@ async function handleContentManagementClick(event) {
 
     const phraseButton = target.closest('[data-content-select-phrase]');
     if (phraseButton) {
+        queueContentEditorPositionRestoreFromElement(phraseButton);
         contentSetupPhraseCategory = phraseButton.dataset.category;
         setContentSetupSelected({ type: 'phrase', category: phraseButton.dataset.category, phraseId: phraseButton.dataset.contentSelectPhrase });
         renderContentManagementPanel();
@@ -6362,6 +6366,7 @@ async function handleContentManagementClick(event) {
 
     const moveCategoryButton = target.closest('[data-content-move-category]');
     if (moveCategoryButton && contentSetupSelected?.type === 'category') {
+        queueContentEditorPositionRestoreFromElement(moveCategoryButton);
         const direction = moveCategoryButton.dataset.contentMoveCategory;
         const order = categoryConfig.order;
         const index = order.indexOf(contentSetupSelected.category);
