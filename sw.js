@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v134: Consolidated grid tile CSS ownership.
-const CACHE_NAME = 'mynewvoice-v134-grid-css-consolidation';
+// Do not add a version number here - see BUILD_VERSION.txt for the human-readable release log instead.
+const CACHE_NAME = 'mnv-shell-cache';
 const urlsToCache = [
   './',
   './index.html',
@@ -34,7 +34,7 @@ self.addEventListener('activate', function(event) {
     caches.keys().then(function(cacheNames) {
       return Promise.all(
         cacheNames.map(function(cacheName) {
-          if (cacheName !== CACHE_NAME && cacheName.toLowerCase().includes('mynewvoice')) {
+          if (cacheName !== CACHE_NAME && cacheName.startsWith('mnv-shell-')) {
             return caches.delete(cacheName);
           }
         })

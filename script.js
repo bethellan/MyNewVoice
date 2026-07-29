@@ -10,6 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
+/* v141: Separates stable shell/offline cache namespaces so app updates do not delete saved offline files. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -188,7 +189,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v140';
+const CURRENT_APP_VERSION = 'v141';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -241,7 +242,8 @@ const PRIVATE_CROP_OUTPUTS = {
     photoMemory: { width: 1600, height: 1600, aspect: null, shape: 'natural', label: 'photo memory' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
-const OFFLINE_CACHE_NAME = 'mynewvoice-offline-v134';
+// Do not add a version number here - see BUILD_VERSION.txt for the human-readable release log instead.
+const OFFLINE_CACHE_NAME = 'mnv-offline-cache';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -1468,6 +1470,13 @@ function ensureSettingsOverlay() {
                             <option value="off">Off - visual popup only</option>
                         </select>
                         <p class="settings-help settings-v115-wide">When off, buttons show the large visual message without speaking. The message stays open until the screen is tapped or a key is pressed.</p>
+                        <label for="settingsSpeechVoiceStyle">Voice style</label>
+                        <select id="settingsSpeechVoiceStyle" class="settings-select">
+                            <option value="default">Default</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <p class="settings-help settings-v115-wide">The app will choose the closest matching voice this device offers. Use Voice choice below if you want to pick the exact voice.</p>
                         <label for="settingsSpeechVoice">Voice choice</label>
                         <div class="settings-v115-inline">
                             <select id="settingsSpeechVoice" class="settings-select">
@@ -1711,7 +1720,20 @@ function ensureSettingsOverlay() {
         if (event.target && event.target.id === 'settingsSpeechVoice') {
             setSpeechVoiceFromSelect(event.target.value);
             saveAppSettings({ render: false });
+            updateSettingsControls();
             showToast(appSettings.speechVoiceName ? 'Voice saved' : 'Default voice selected', 'success');
+            return;
+        }
+        if (event.target && event.target.id === 'settingsSpeechVoiceStyle') {
+            const match = applySpeechVoiceStyle(event.target.value);
+            populateSpeechVoiceSelect();
+            updateSpeechVoiceStatus();
+            saveAppSettings({ render: false });
+            if (appSettings.speechVoiceStyle === 'default') {
+                showToast('Default voice selected', 'success');
+            } else {
+                showToast(match ? `${appSettings.speechVoiceStyle === 'male' ? 'Male' : 'Female'} voice selected` : 'No matching voice found on this device yet', match ? 'success' : 'warning');
+            }
             return;
         }
         if (event.target && event.target.id === 'settingsSpeechEnabled') {
@@ -2052,7 +2074,7 @@ function normaliseOfflineUrl(path) {
 async function countCachedOfflineCoreFiles() {
     if (!('caches' in window)) return { cachedFiles: 0, missingFiles: OFFLINE_CORE_FILES.slice(), cacheNames: [] };
     const cacheNames = await caches.keys();
-    const myNewVoiceCaches = cacheNames.filter(key => key.toLowerCase().includes('mynewvoice'));
+    const myNewVoiceCaches = cacheNames.filter(key => key === OFFLINE_CACHE_NAME || key === 'mnv-shell-cache' || key.startsWith('mnv-offline-') || key.startsWith('mnv-shell-'));
     const missingFiles = [];
     let cachedFiles = 0;
     for (const path of OFFLINE_CORE_FILES) {
@@ -3475,6 +3497,7 @@ const DEFAULT_APP_SETTINGS = {
     popupCloseDelaySeconds: 2,
     popupCloseMode: 'timed',
     speechEnabled: true,
+    speechVoiceStyle: 'default',
     speechVoiceName: '',
     speechVoiceLang: '',
     speechRate: 0.9,
@@ -3774,6 +3797,9 @@ function normaliseAppSettings(rawSettings) {
     const speechEnabled = raw.speechEnabled !== false && raw.speechEnabled !== 'off';
     const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
     const popupCloseMode = speechEnabled ? 'timed' : 'manual';
+    const speechVoiceStyle = ['default', 'male', 'female'].includes(String(raw.speechVoiceStyle || '').toLowerCase())
+        ? String(raw.speechVoiceStyle || '').toLowerCase()
+        : DEFAULT_APP_SETTINGS.speechVoiceStyle;
     const speechVoiceName = String(raw.speechVoiceName || '').slice(0, 160);
     const speechVoiceLang = String(raw.speechVoiceLang || '').slice(0, 40);
     const speechRate = clampNumber(Number(raw.speechRate || DEFAULT_APP_SETTINGS.speechRate), 0.7, 1.2);
@@ -3784,7 +3810,7 @@ function normaliseAppSettings(rawSettings) {
         text: String(rawIntro.text || '').slice(0, 500),
         fallbackIcon: String(rawIntro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
     };
-    return { displayMode, theme, pressActivation, quickYesNoEnabled, teReoMode, gridLabelsVisible, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
+    return { displayMode, theme, pressActivation, quickYesNoEnabled, teReoMode, gridLabelsVisible, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceStyle, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
 }
 
 function getDisplayModeToast(displayMode) {
@@ -3863,6 +3889,8 @@ function updateSettingsControls() {
     if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
     const speechEnabledSelect = document.getElementById('settingsSpeechEnabled');
     if (speechEnabledSelect) speechEnabledSelect.value = appSettings.speechEnabled === false ? 'off' : 'on';
+    const speechVoiceStyleSelect = document.getElementById('settingsSpeechVoiceStyle');
+    if (speechVoiceStyleSelect) speechVoiceStyleSelect.value = appSettings.speechVoiceStyle || DEFAULT_APP_SETTINGS.speechVoiceStyle;
     populateSpeechVoiceSelect();
     const voiceSelect = document.getElementById('settingsSpeechVoice');
     if (voiceSelect) voiceSelect.value = getSpeechVoiceSelectValue(appSettings.speechVoiceName, appSettings.speechVoiceLang);
@@ -3877,7 +3905,7 @@ function updateSettingsControls() {
     if (speechPitchValue) speechPitchValue.textContent = formatSpeechPitchLabel(appSettings.speechPitch);
     const speechControlsDisabled = appSettings.speechEnabled === false;
     const previewSpeechButton = document.querySelector('[data-preview-speech-voice]');
-    [voiceSelect, speechRate, speechPitch, previewSpeechButton].forEach(control => {
+    [speechVoiceStyleSelect, voiceSelect, speechRate, speechPitch, previewSpeechButton].forEach(control => {
         if (control) control.disabled = speechControlsDisabled;
     });
     const introEnabled = document.getElementById('settingsIntroductionEnabled');
@@ -5499,7 +5527,7 @@ function createIpadGridDropZone(category, index, placement = 'before') {
             return;
         }
         gridRearrangeState = { category, phraseId: result.phrase.id };
-        showToast('Moved. Tap the same image to finish, or tap another image to move it.', 'success', 5500);
+        showToast('Moved. Tap this image again to finish, or tap another image to move that one.', 'info', 6500);
     });
     return zone;
 }
@@ -5533,7 +5561,7 @@ async function showGridPhraseMoveDialog(pending) {
                 detail: `${(buttonData[category] || []).filter(item => !item.hidden).length} visible items`,
                 className: 'management-btn'
             })),
-            { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn' }
+            { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn content-cancel-action' }
         ]
     });
 
@@ -5587,7 +5615,7 @@ async function showGridPhraseActionMenu() {
             { id: 'rearrange', label: 'Rearrange on this screen', className: 'management-btn' },
             { id: 'move', label: 'Move to another submenu', className: 'management-btn' },
             { id: 'delete', label: 'Delete', className: 'management-btn remove-btn' },
-            { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn' }
+            { id: 'cancel', label: 'Cancel', className: 'management-btn close-btn content-cancel-action' }
         ]
     });
 
@@ -8811,6 +8839,38 @@ function splitSpeechVoiceSelectValue(value) {
   return { name: parts[0] || '', lang: parts[1] || '' };
 }
 
+function inferSpeechVoiceStyle(voice) {
+  const name = String(voice?.name || '').toLowerCase();
+  if (!name) return 'default';
+  const femaleHints = ['female', 'woman', 'samantha', 'susan', 'zira', 'hazel', 'serena', 'karen', 'moira', 'tessa', 'victoria', 'aria', 'jenny', 'natasha', 'ava', 'fiona', 'joanna', 'kathy', 'nicky'];
+  const maleHints = ['male', 'man', 'david', 'mark', 'daniel', 'george', 'alex', 'thomas', 'fred', 'bruce', 'rishi', 'aaron', 'albert', 'ryan', 'james'];
+  if (femaleHints.some(hint => name.includes(hint))) return 'female';
+  if (maleHints.some(hint => name.includes(hint))) return 'male';
+  return 'default';
+}
+
+function getSpeechVoiceLanguageScore(voice) {
+  const lang = String(voice?.lang || '').toLowerCase();
+  if (lang.startsWith('en-nz')) return 50;
+  if (lang.startsWith('en-au')) return 44;
+  if (lang.startsWith('en-gb')) return 40;
+  if (lang.startsWith('en-us')) return 34;
+  if (lang.startsWith('en')) return 24;
+  return 0;
+}
+
+function findSpeechVoiceByStyle(voices, style) {
+  const targetStyle = String(style || 'default').toLowerCase();
+  if (targetStyle !== 'male' && targetStyle !== 'female') return null;
+  return voices
+      .filter(voice => inferSpeechVoiceStyle(voice) === targetStyle)
+      .sort((a, b) => {
+          const langDiff = getSpeechVoiceLanguageScore(b) - getSpeechVoiceLanguageScore(a);
+          if (langDiff) return langDiff;
+          return String(a.name || '').localeCompare(String(b.name || ''));
+      })[0] || null;
+}
+
 function findSpeechVoiceBySetting(voices, name, lang) {
   const safeName = String(name || '');
   const safeLang = String(lang || '');
@@ -8831,6 +8891,9 @@ function getPreferredSpeechVoice() {
 
   const configuredVoice = findSpeechVoiceBySetting(voices, appSettings.speechVoiceName, appSettings.speechVoiceLang);
   if (configuredVoice) return configuredVoice;
+
+  const styledVoice = findSpeechVoiceByStyle(voices, appSettings.speechVoiceStyle);
+  if (styledVoice) return styledVoice;
 
   const preferredLanguagePrefixes = ['en-NZ', 'en-AU', 'en-GB', 'en-US', 'en'];
   for (const prefix of preferredLanguagePrefixes) {
@@ -8861,6 +8924,24 @@ function populateSpeechVoiceSelect() {
   if (select.value !== currentSelection) select.value = currentValue;
 }
 
+function applySpeechVoiceStyle(style) {
+  const targetStyle = String(style || 'default').toLowerCase();
+  appSettings.speechVoiceStyle = (targetStyle === 'male' || targetStyle === 'female') ? targetStyle : 'default';
+  if (appSettings.speechVoiceStyle === 'default') {
+    appSettings.speechVoiceName = '';
+    appSettings.speechVoiceLang = '';
+    return null;
+  }
+  const synth = window.speechSynthesis;
+  const voices = synth && typeof synth.getVoices === 'function' ? (synth.getVoices() || []) : [];
+  const match = findSpeechVoiceByStyle(voices, appSettings.speechVoiceStyle);
+  if (match) {
+    appSettings.speechVoiceName = match.name || '';
+    appSettings.speechVoiceLang = match.lang || '';
+  }
+  return match || null;
+}
+
 function updateSpeechVoiceStatus() {
   const status = document.getElementById('settingsSpeechVoiceStatus');
   if (!status) return;
@@ -8872,14 +8953,17 @@ function updateSpeechVoiceStatus() {
   const voices = synth && typeof synth.getVoices === 'function' ? (synth.getVoices() || []) : [];
   const savedName = String(appSettings.speechVoiceName || '');
   const savedLang = String(appSettings.speechVoiceLang || '');
+  const styleLabel = appSettings.speechVoiceStyle === 'male' ? 'Male' : appSettings.speechVoiceStyle === 'female' ? 'Female' : '';
   if (!savedName) {
-    status.textContent = 'Current generated voice: default device voice.';
+    status.textContent = appSettings.speechVoiceStyle === 'default'
+        ? 'Current generated voice: default device voice.'
+        : `${styleLabel} voice requested. This device has not exposed a matching voice yet; using default device voice.`;
     return;
   }
   const exact = voices.find(voice => voice.name === savedName && String(voice.lang || '') === savedLang);
   const fallback = findSpeechVoiceBySetting(voices, savedName, savedLang);
   if (exact) {
-    status.textContent = `Current generated voice: ${savedName}${savedLang ? ` (${savedLang})` : ''}.`;
+    status.textContent = `Current generated voice: ${savedName}${savedLang ? ` (${savedLang})` : ''}${styleLabel ? ` - ${styleLabel} style` : ''}.`;
   } else if (fallback) {
     status.textContent = `Saved voice not available exactly; using closest match: ${fallback.name}${fallback.lang ? ` (${fallback.lang})` : ''}.`;
   } else if (!voices.length) {
@@ -8893,6 +8977,14 @@ function setSpeechVoiceFromSelect(value) {
   const selected = splitSpeechVoiceSelectValue(value);
   appSettings.speechVoiceName = selected.name;
   appSettings.speechVoiceLang = selected.lang;
+  if (!selected.name) {
+    appSettings.speechVoiceStyle = 'default';
+    return;
+  }
+  const synth = window.speechSynthesis;
+  const voices = synth && typeof synth.getVoices === 'function' ? (synth.getVoices() || []) : [];
+  const selectedVoice = findSpeechVoiceBySetting(voices, selected.name, selected.lang);
+  appSettings.speechVoiceStyle = inferSpeechVoiceStyle(selectedVoice || selected);
 }
 
 function formatSpeechRateLabel(rate) {
@@ -8952,6 +9044,14 @@ if (window.speechSynthesis && 'onvoiceschanged' in window.speechSynthesis) {
   const existingVoicesChangedHandler = window.speechSynthesis.onvoiceschanged;
   window.speechSynthesis.onvoiceschanged = function(event) {
     if (typeof existingVoicesChangedHandler === 'function') existingVoicesChangedHandler.call(window.speechSynthesis, event);
+    if (appSettings.speechVoiceStyle && appSettings.speechVoiceStyle !== 'default') {
+      const beforeName = appSettings.speechVoiceName;
+      const beforeLang = appSettings.speechVoiceLang;
+      applySpeechVoiceStyle(appSettings.speechVoiceStyle);
+      if (beforeName !== appSettings.speechVoiceName || beforeLang !== appSettings.speechVoiceLang) {
+        saveAppSettings({ render: false });
+      }
+    }
     populateSpeechVoiceSelect();
     updateSpeechVoiceStatus();
   };

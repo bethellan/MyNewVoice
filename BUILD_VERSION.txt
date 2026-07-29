@@ -1,1 +1,4 @@
-v134_grid_css_consolidation
+v141_cache_namespace_fix
+
+Stable service-worker shell cache and saved-offline cache namespaces.
+App version numbers now live in CURRENT_APP_VERSION and app-version.json only.
