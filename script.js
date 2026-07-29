@@ -239,7 +239,7 @@ const PRIVATE_CROP_OUTPUTS = {
     menu: { width: 1400, height: 1000, aspect: 1.4, shape: 'rectangle', label: 'main menu button picture', cropRole: 'menu' },
     phrase: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' },
     people: { width: 600, height: 600, aspect: 1, shape: 'circle', label: 'person photo' },
-    photoMemory: { width: 1600, height: 1600, aspect: null, shape: 'natural', label: 'photo memory' },
+    photoMemory: { width: 1600, height: 1600, aspect: null, shape: 'free', label: 'photo memory', cropRole: 'photoMemory' },
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
 // Do not add a version number here - see BUILD_VERSION.txt for the human-readable release log instead.
@@ -859,8 +859,8 @@ function openImageCropper(file, options = {}) {
 
         let objectUrl = URL.createObjectURL(file);
         let selectedShape = options.shape || (options.aspect === 1 ? 'square' : 'rectangle');
-        const photoMemoryCropper = selectedShape === 'natural';
-        let naturalPhotoMode = photoMemoryCropper;
+        const photoMemoryCropper = options.cropRole === 'photoMemory' || selectedShape === 'natural';
+        let naturalPhotoMode = selectedShape === 'natural';
         let aspect = selectedShape === 'circle' ? 1 : selectedShape === 'natural' ? null : (options.aspect || 1);
         let crop = { x: 0, y: 0, width: 100, height: 100 };
         let imageBounds = { left: 0, top: 0, width: 100, height: 100 };
