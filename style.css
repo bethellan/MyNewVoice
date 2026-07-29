@@ -2282,9 +2282,21 @@ body[data-theme="dark"] .private-item-button small {
 
 .editor-section-title {
     font-weight: 900;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     margin-bottom: 0.75rem;
-    color: #22304a;
+    color: #14213d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.editor-section-title::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--primary-color, #4CAF50);
 }
 
 .editor-nav-row {
@@ -2634,23 +2646,6 @@ body[data-theme="dark"] .private-item-button small {
   box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
   padding: 14px;
   margin-bottom: 14px;
-}
-
-.editor-section-title {
-  font-size: 1.25rem;
-  color: #14213d;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.editor-section-title::before {
-  content: '';
-  display: inline-block;
-  width: 10px;
-  height: 28px;
-  border-radius: 999px;
-  background: var(--primary-color, #4CAF50);
 }
 
 .editor-table-scroll-hint {
