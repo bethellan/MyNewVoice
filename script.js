@@ -2857,7 +2857,7 @@ async function choosePrivateImage(key, label = '', text = '', category = '') {
             });
             const blob = croppedBlob;
             await putPrivateMediaRecord(key, 'image', blob, { label, text, mime: blob.type || 'image/jpeg' });
-            showToast('📷 Cropped photo saved locally on this device', 'success');
+            showToast('Photo saved locally on this device', 'success');
             refreshAfterPrivateMediaChange();
         } catch (error) {
             if (error && /cancelled/i.test(error.message || '')) {
@@ -3094,7 +3094,7 @@ async function requestPersistentPrivateStorage() {
 
     try {
         const granted = await navigator.storage.persist();
-        showToast(granted ? '🛡️ Local storage protection enabled' : 'Storage protection was not granted. Use backup export.', granted ? 'success' : 'warning');
+        showToast(granted ? 'Local storage protection enabled' : 'Storage protection was not granted. Use backup export.', granted ? 'success' : 'warning');
         refreshPrivateMediaStatuses();
     } catch (error) {
         console.warn(error);
@@ -3139,7 +3139,7 @@ async function toggleVoiceRecording(key, text, button) {
             const blob = new Blob(activeRecorderChunks, { type: finalMime });
             try {
                 await putPrivateMediaRecord(key, 'voice', blob, { text, label: text, mime: finalMime });
-                showToast('🎙️ Voice recording saved locally', 'success');
+                showToast('Voice recording saved locally', 'success');
             } catch (error) {
                 console.error(error);
                 showToast('Could not save recording', 'error');
@@ -5721,7 +5721,7 @@ function restoreQueuedContentEditorPosition() {
     if (!pending || !pending.id) return;
     contentEditorRestorePosition = null;
 
-    requestAnimationFrame(() => {
+    const restoreOnce = () => {
         const panel = document.getElementById('managementPanel');
         if (!panel) return;
         const attributeName = pending.type === 'topic' ? 'data-topic-row' : 'data-phrase-row';
@@ -5755,6 +5755,12 @@ function restoreQueuedContentEditorPosition() {
             return;
         }
         target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+
+    requestAnimationFrame(() => {
+        restoreOnce();
+        setTimeout(restoreOnce, 120);
+        setTimeout(restoreOnce, 360);
     });
 }
 
@@ -6221,6 +6227,7 @@ async function handleContentManagementClick(event) {
 
     const pickImageButton = target.closest('[data-pick-image]');
     if (pickImageButton) {
+        queueContentEditorPositionRestoreFromElement(pickImageButton);
         choosePrivateImage(pickImageButton.dataset.key, pickImageButton.dataset.label, pickImageButton.dataset.text || '', pickImageButton.dataset.category || contentSetupPhraseCategory);
         return;
     }
@@ -9568,7 +9575,7 @@ function addNewPhrase() {
     }
     
     alert(`Added "${text}" to ${category}`);
-    showToast('💾 Remember to export a backup after changes', 'warning');
+    showToast('Remember to export a backup after changes', 'warning');
 
 }
 
@@ -9706,10 +9713,10 @@ function exportButtonData() {
     link.click();
 
     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-    showToast('📤 Content backup exported successfully', 'success');
+    showToast('Content backup exported successfully', 'success');
   } catch (err) {
     console.error('Export failed:', err);
-    showToast('❌ Export failed', 'error');
+    showToast('Export failed', 'error');
   }
 }
 
