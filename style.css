@@ -2242,19 +2242,21 @@ body[data-theme="dark"] .private-item-button small {
 }
 
 .management-media-thumb {
-    width: 72px;
-    height: 72px;
+    width: 64px;
+    height: 64px;
     border-radius: 16px;
     border: 2px dashed #a9c9f7;
-    background: linear-gradient(135deg, #f8fbff, #e8f7ff);
+    background: linear-gradient(135deg, #ffffff, #edf8ff);
     color: #64748b;
-    font-size: 0.75rem;
+    font-size: 1.35rem;
     font-weight: 800;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 6px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 
 .management-media-thumb.people-thumb {
@@ -2341,10 +2343,6 @@ body[data-theme="dark"] .private-item-button small {
 @media (max-width: 760px) {
     .management-editor-table {
         min-width: 700px;
-    }
-    .management-media-thumb {
-        width: 64px;
-        height: 64px;
     }
 }
 
@@ -2697,16 +2695,6 @@ body[data-theme="dark"] .private-item-button small {
 
 .management-topic-row td:first-child {
   border-left: 6px solid #9bc5a4;
-}
-
-.management-media-thumb {
-  width: 78px;
-  height: 78px;
-  border-radius: 18px;
-  border: 2px dashed #a9c9f7;
-  background: linear-gradient(135deg, #ffffff, #e8f7ff);
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.09);
-  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 
 .management-media-thumb:hover,
@@ -3204,11 +3192,6 @@ button:active,
   outline-offset: -3px;
 }
 
-.management-media-thumb {
-  cursor: pointer;
-  background: linear-gradient(135deg, #ffffff, #edf8ff);
-}
-
 .management-media-thumb:active {
   transform: translateY(2px) scale(0.98);
   box-shadow: var(--shadow-press);
@@ -3413,18 +3396,6 @@ button:active,
 .management-editor-table .help-text {
   font-size: 0.78rem;
   color: #64748b;
-}
-
-.management-media-thumb {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  font-size: 1.35rem;
-}
-
-.management-media-thumb.people-thumb,
-.management-media-thumb.people-thumb img {
-  border-radius: 999px;
 }
 
 .management-thumb-fallback {

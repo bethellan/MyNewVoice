@@ -3831,8 +3831,8 @@ function getPopupCloseDelayMs() {
     return DEFAULT_APP_SETTINGS.popupCloseDelaySeconds * 1000;
 }
 
-function shouldUseManualPopupClose() {
-    return false;
+function shouldUseManualPopupClose(overlay = document.getElementById('phrasePopupOverlay')) {
+    return Boolean(overlay && overlay.classList.contains('manual-close'));
 }
 
 function getIntroductionSettings() {
@@ -8685,23 +8685,24 @@ function showPhrasePopup(buttonInfoOrText) {
         image.alt = '';
     }
 
-    overlay.classList.toggle('manual-close', shouldUseManualPopupClose());
     overlay.classList.toggle('introduction-popup', Boolean(buttonInfo && buttonInfo.isIntroduction));
     overlay.classList.toggle('quick-yes-popup', Boolean(buttonInfo && buttonInfo.id === 'quick_yes_no_yes'));
     overlay.classList.toggle('quick-no-popup', Boolean(buttonInfo && buttonInfo.id === 'quick_yes_no_no'));
     const popupCategory = buttonInfo && !buttonInfo.isIntroduction
         ? String(buttonInfo.category || findCategoryForPhraseId(buttonInfo.id) || '')
         : '';
+    const isPhotoMemoryPopup = isPhotoMemoriesCategory(popupCategory);
     overlay.dataset.popupCategory = popupCategory;
     overlay.classList.toggle('my-people-popup', popupCategory === 'MyPeople');
-    overlay.classList.toggle('photo-memory-popup', isPhotoMemoriesCategory(popupCategory));
+    overlay.classList.toggle('photo-memory-popup', isPhotoMemoryPopup);
+    overlay.classList.toggle('manual-close', isPhotoMemoryPopup);
     overlay.classList.add('show');
     overlay.setAttribute('aria-hidden', 'false');
 
     if (buttonInfo) applyPhrasePopupZoomImage(buttonInfo, token);
 
     // Safety close if a browser fails to fire audio/speech completion events.
-    if (!shouldUseManualPopupClose()) {
+    if (!shouldUseManualPopupClose(overlay)) {
         phrasePopupTimer = setTimeout(() => hidePhrasePopup(token), 15000);
     }
     return token;
