@@ -11721,6 +11721,51 @@ body[data-te-reo-mode="on"] .mnv-logo {
   left: 21px;
 }
 
+body.edit-mode-guidance-active .mnv-edit-toggle {
+  position: relative !important;
+  z-index: 100721 !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.94) !important;
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.88), 0 0 0 12px color-mix(in srgb, var(--primary-color, #3f9f46) 28%, transparent), 0 18px 42px rgba(15, 23, 42, 0.28) !important;
+}
+
+.edit-mode-guidance-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100700 !important;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(96px, 15vh, 150px) max(14px, env(safe-area-inset-right, 0px)) max(18px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+  background: rgba(15, 23, 42, 0.50);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.edit-mode-guidance-overlay.show {
+  display: flex !important;
+}
+
+.edit-mode-guidance-card {
+  width: min(520px, calc(100vw - 34px));
+  padding: clamp(16px, 3vw, 22px) clamp(18px, 4vw, 28px);
+  border-radius: 18px;
+  border: 2px solid color-mix(in srgb, var(--primary-color, #3f9f46) 44%, #ffffff);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.86)),
+    color-mix(in srgb, var(--category-soft, #eef8ec) 72%, #ffffff);
+  color: var(--category-dark, #1f5b31);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.32);
+  text-align: center;
+}
+
+.edit-mode-guidance-card strong {
+  display: block;
+  font-size: clamp(1.2rem, 4.4vw, 1.75rem);
+  line-height: 1.12;
+  font-weight: 900;
+}
+
 .mnv-app-bar .management-toggle {
   justify-self: end;
   display: inline-flex !important;

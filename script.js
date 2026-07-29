@@ -3981,6 +3981,7 @@ function toggleGridLabelsFromAppBar() {
 
 function setEditModeUnlocked(value) {
     editModeUnlocked = Boolean(value);
+    hideEditModeGuidance();
     updateAppBarControls();
     if (shouldUseIpadImageGrid() && currentViewCategory) renderIpadImageGrid(currentViewCategory);
     showToast(editModeUnlocked ? 'Edit mode on' : 'Edit mode off', editModeUnlocked ? 'success' : 'info');
@@ -4530,7 +4531,7 @@ function attachGridEditorLongPress(element, action) {
             timer = setTimeout(() => {
                 timer = null;
                 armNextPhraseClickSuppression(5000);
-                showToast('Turn Edit on to change buttons.', 'info');
+                showEditModeGuidance();
             }, 850);
             return;
         }
@@ -4561,6 +4562,48 @@ function attachGridEditorLongPress(element, action) {
     ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture'].forEach(eventName => {
         element.addEventListener(eventName, clearTimer);
     });
+}
+
+function ensureEditModeGuidanceOverlay() {
+    let overlay = document.getElementById('editModeGuidanceOverlay');
+    if (overlay) return overlay;
+
+    overlay = document.createElement('div');
+    overlay.id = 'editModeGuidanceOverlay';
+    overlay.className = 'edit-mode-guidance-overlay';
+    overlay.setAttribute('role', 'status');
+    overlay.setAttribute('aria-live', 'polite');
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML = `
+        <div class="edit-mode-guidance-card">
+            <strong>Turn edit on to change buttons.</strong>
+        </div>
+    `;
+    overlay.addEventListener('click', hideEditModeGuidance);
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+function showEditModeGuidance() {
+    if (editModeUnlocked) return;
+    const overlay = ensureEditModeGuidanceOverlay();
+    if (overlay._hideTimer) clearTimeout(overlay._hideTimer);
+    document.body.classList.add('edit-mode-guidance-active');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
+    overlay._hideTimer = setTimeout(hideEditModeGuidance, 3600);
+}
+
+function hideEditModeGuidance() {
+    const overlay = document.getElementById('editModeGuidanceOverlay');
+    document.body.classList.remove('edit-mode-guidance-active');
+    if (!overlay) return;
+    if (overlay._hideTimer) {
+        clearTimeout(overlay._hideTimer);
+        overlay._hideTimer = null;
+    }
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden', 'true');
 }
 
 const CATEGORY_META = {
