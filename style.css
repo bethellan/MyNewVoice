@@ -237,25 +237,6 @@ body {
 
 
 /* Auto-Save Indicator */
-.autosave-indicator {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: var(--primary-color);
-  color: var(--text-light);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  font-size: var(--font-sm);
-  font-weight: 600;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: 9999;
-}
-
-.autosave-indicator.show {
-  opacity: 1;
-}
 /* Toast Notifications */
 .toast {
   position: fixed;
@@ -12909,5 +12890,172 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   .ipad-image-grid-media img {
     max-width: 100% !important;
     box-sizing: border-box !important;
+  }
+}
+
+/* v148: clean owner for Main menu topics in Content Editor.
+   The active renderer now emits cards, so the old one-row table rules no
+   longer participate in iPhone layout. */
+#managementOverlay .topic-card-editor-wrap {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 8px !important;
+}
+
+#managementOverlay .topic-card-list {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)) !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+}
+
+#managementOverlay .topic-editor-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 76px minmax(0, 1fr) minmax(170px, 0.56fr) !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+  border: 1px solid rgba(68, 132, 92, 0.25) !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,0.96) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+  overflow: hidden !important;
+}
+
+#managementOverlay .topic-editor-card.selected-row {
+  outline: 3px solid rgba(45, 130, 80, 0.28) !important;
+  outline-offset: -3px !important;
+}
+
+#managementOverlay .topic-card-media,
+#managementOverlay .topic-card-main,
+#managementOverlay .topic-card-controls {
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#managementOverlay .topic-card-media {
+  display: grid !important;
+  align-content: start !important;
+  justify-items: center !important;
+  gap: 4px !important;
+}
+
+#managementOverlay .topic-card-media .management-media-thumb {
+  width: 64px !important;
+  height: 64px !important;
+  min-width: 64px !important;
+  min-height: 64px !important;
+  border-radius: 14px !important;
+}
+
+#managementOverlay .topic-card-main,
+#managementOverlay .topic-card-controls {
+  display: grid !important;
+  align-content: start !important;
+  gap: 8px !important;
+}
+
+#managementOverlay .topic-card-label {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 4px !important;
+  color: #35533f !important;
+  font-size: 0.82rem !important;
+  font-weight: 850 !important;
+}
+
+#managementOverlay .topic-card-main .management-input,
+#managementOverlay .topic-card-controls .management-input {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 42px !important;
+  font-size: max(16px, 1rem) !important;
+  box-sizing: border-box !important;
+}
+
+#managementOverlay .topic-card-id {
+  margin: 0 !important;
+  font-size: 0.82rem !important;
+  overflow-wrap: anywhere !important;
+}
+
+#managementOverlay .topic-card-control-row {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+  min-width: 0 !important;
+}
+
+#managementOverlay .topic-card-controls .management-btn,
+#managementOverlay .topic-card-controls .content-checkbox-row,
+#managementOverlay .topic-add-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: 42px !important;
+  margin: 0 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+#managementOverlay .topic-card-controls .icon-input {
+  justify-self: stretch !important;
+  text-align: center !important;
+}
+
+#managementOverlay .topic-add-card {
+  grid-column: 1 / -1 !important;
+  min-height: 48px !important;
+}
+
+@media (max-width: 900px) {
+  #managementOverlay .topic-card-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  #managementOverlay .topic-editor-card {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+  }
+
+  #managementOverlay .topic-card-controls {
+    grid-column: 1 / -1 !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  #managementOverlay .topic-card-editor-wrap {
+    padding: 6px !important;
+  }
+
+  #managementOverlay .topic-editor-card {
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    padding: 8px !important;
+    border-radius: 14px !important;
+  }
+
+  #managementOverlay .topic-card-media .management-media-thumb {
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+  }
+
+  #managementOverlay .topic-card-controls {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  #managementOverlay .topic-primary-action,
+  #managementOverlay .topic-delete-action {
+    grid-column: 1 / -1 !important;
   }
 }

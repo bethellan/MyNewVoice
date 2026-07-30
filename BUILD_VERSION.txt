@@ -1,5 +1,6 @@
-v147_iphone_scale_and_switch_hit_fix
+v148_topic_editor_cards
 
-The app viewport is locked to device scale on iPhone so text editing cannot leave the whole app zoomed.
-Edit and Te Reo switches now have one clean centred tappable hit area, with the visual pill inside it.
-Includes v146 editor viewport guards, v145 direct Content Editor return/save flow and v144 Photo Memories zoom/reset controls.
+Main menu topic editing now uses responsive stacked cards instead of the old wide table.
+The existing topic edit/move/hide/delete/text/image data hooks are preserved, but the iPhone-hostile table layout is no longer rendered.
+The old green autosave indicator element/styles were removed so view changes no longer show the stray Saved popup.
+Includes v147 iPhone scale/switch fixes and v146 editor viewport guards.

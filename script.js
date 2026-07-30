@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v147: Locks iPhone app-scale viewport and gives top-bar switches one clean hit area owner. */
+/* v148: Replaces main-topic editor table with one clean responsive card renderer. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v147';
+const CURRENT_APP_VERSION = 'v148';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -5838,7 +5838,7 @@ function renderContentTopicsScreen(panel, allCategories) {
         <div class="private-section-details editor-details open-editor-section table-editor-body">
             <div class="editor-section-title">Main menu topics</div>
             <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> keep one row per section. If the row is wider than the screen, scroll left or right inside the table.</div>
-            <div class="editor-table-wrap one-row-table-wrap" role="region" aria-label="Main menu topics table" tabindex="0">
+            <div class="editor-table-wrap topic-card-editor-wrap" role="region" aria-label="Main menu topics" tabindex="0">
                 ${renderContentCategoryRows(allCategories)}
             </div>
         </div>
@@ -5894,7 +5894,7 @@ function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = 
     `;
 }
 
-function renderContentCategoryRows(allCategories) {
+function renderContentCategoryRowsLegacyTable(allCategories) {
     const rows = allCategories.map((category, index) => {
         const meta = getCategoryMeta(category);
         const hidden = meta.hidden ? 'checked' : '';
@@ -5956,6 +5956,52 @@ function renderContentCategoryRows(allCategories) {
                 </tr>
             </tbody>
         </table>
+    `;
+}
+
+function renderContentCategoryRows(allCategories) {
+    const cards = allCategories.map((category, index) => {
+        const meta = getCategoryMeta(category);
+        const hidden = meta.hidden ? 'checked' : '';
+        const selected = contentSetupSelected?.type === 'category' && contentSetupSelected.category === category;
+        return `
+            <article class="topic-editor-card ${selected ? 'selected-row' : ''}" data-topic-row="${escapeHtml(category)}">
+                <div class="topic-card-media">
+                    ${renderMediaThumbForManagement('menu', category, false, meta.icon || 'folder')}
+                    ${renderMediaSizeLine(getPrivateMediaKey('menu', category), 'Image')}
+                </div>
+                <div class="topic-card-main">
+                    <label class="topic-card-label">
+                        <span>Title</span>
+                        <input type="text" class="management-input table-title-input" data-content-inline-category-label="${escapeHtml(category)}" value="${escapeHtml(meta.label)}" aria-label="Section title">
+                    </label>
+                    <label class="topic-card-label">
+                        <span>Te Reo title</span>
+                        <input type="text" class="management-input table-title-input" data-content-inline-category-reo-label="${escapeHtml(category)}" value="${escapeHtml(meta.reoLabel || '')}" placeholder="${escapeHtml(meta.label)}" aria-label="Te Reo section title">
+                    </label>
+                    <div class="help-text topic-card-id">ID: <code>${escapeHtml(category)}</code></div>
+                </div>
+                <div class="topic-card-controls">
+                    <button type="button" class="management-btn primary-table-btn topic-primary-action" data-content-open-topic="${escapeHtml(category)}">Edit content</button>
+                    <div class="topic-card-control-row">
+                        <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" title="Move section earlier" aria-label="Move section earlier" ${index <= 0 ? 'disabled' : ''}>↑</button>
+                        <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" title="Move section later" aria-label="Move section later" ${index >= allCategories.length - 1 ? 'disabled' : ''}>↓</button>
+                    </div>
+                    <div class="topic-card-control-row">
+                        <label class="content-checkbox-row compact-checkbox topic-hidden-toggle"><input type="checkbox" data-content-inline-category-hidden="${escapeHtml(category)}" ${hidden}> Hidden</label>
+                        <input type="text" class="management-input icon-input" data-content-inline-category-icon="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(meta.icon || '')}" placeholder="${escapeHtml(meta.icon || 'folder')}" aria-label="Fallback icon">
+                    </div>
+                    <button type="button" class="management-btn remove-btn small-management-btn topic-delete-action" data-content-delete-topic-row="${escapeHtml(category)}">Delete topic</button>
+                </div>
+            </article>
+        `;
+    }).join('') || '<div class="empty-table-cell">No topics found.</div>';
+
+    return `
+        <div class="topic-card-list">
+            ${cards}
+            <button type="button" class="management-add-line topic-add-card" data-content-add-topic-row>Add new main menu topic</button>
+        </div>
     `;
 }
 
