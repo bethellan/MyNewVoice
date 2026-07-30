@@ -1,4 +1,4 @@
-v150_about_portrait_embed
+v151_about_text_polish
 
-Embeds the 8-bit portrait image directly in the Information/About screen so it cannot show as a missing-image text box.
-Includes v149 About portrait placement, v148 topic-editor card cleanup and autosave popup removal.
+Polishes the Information/About wording to better describe communication and connection.
+Includes v150 embedded About portrait image and cleanup of the inactive legacy topic-table renderer.

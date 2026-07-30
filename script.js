@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v150: Embeds the Information/About portrait image so it cannot be missed by cache/upload. */
+/* v151: Polishes the Information/About wording. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v150';
+const CURRENT_APP_VERSION = 'v151';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -5891,71 +5891,6 @@ function renderMediaThumbForManagement(kind, id, people = false, fallbackIcon = 
             <img alt="" data-private-media-key="${escapeHtml(key)}" style="display:none;">
             <span class="management-thumb-fallback" data-management-thumb-key="${escapeHtml(key)}">${escapeHtml(iconText)}</span>
         </button>
-    `;
-}
-
-function renderContentCategoryRowsLegacyTable(allCategories) {
-    const rows = allCategories.map((category, index) => {
-        const meta = getCategoryMeta(category);
-        const hidden = meta.hidden ? 'checked' : '';
-        const selected = contentSetupSelected?.type === 'category' && contentSetupSelected.category === category;
-        return `
-            <tr class="management-table-row ${selected ? 'selected-row' : ''}" data-topic-row="${escapeHtml(category)}">
-                <td class="picture-cell">
-                    ${renderMediaThumbForManagement('menu', category, false, meta.icon || '🗂️')}
-                    ${renderMediaSizeLine(getPrivateMediaKey('menu', category), 'Image')}
-                </td>
-                <td class="title-cell">
-                    <input type="text" class="management-input table-title-input" data-content-inline-category-label="${escapeHtml(category)}" value="${escapeHtml(meta.label)}" aria-label="Section title">
-                    <div class="help-text table-id-line">ID: <code>${escapeHtml(category)}</code></div>
-                </td>
-                <td class="title-cell te-reo-title-cell">
-                    <input type="text" class="management-input table-title-input" data-content-inline-category-reo-label="${escapeHtml(category)}" value="${escapeHtml(meta.reoLabel || '')}" placeholder="${escapeHtml(meta.label)}" aria-label="Te Reo section title">
-                    <div class="help-text">Shown when Te Reo mode is on.</div>
-                </td>
-                <td class="icon-cell">
-                    <input type="text" class="management-input icon-input" data-content-inline-category-icon="${escapeHtml(category)}" maxlength="4" value="${escapeHtml(meta.icon || '')}" placeholder="${escapeHtml(meta.icon || '🗂️')}" aria-label="Fallback icon">
-                </td>
-                <td class="edit-cell">
-                    <button type="button" class="management-btn primary-table-btn" data-content-open-topic="${escapeHtml(category)}">Edit content</button>
-                </td>
-                <td class="move-cell">
-                    <div class="table-button-stack move-button-stack">
-                        <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-category-row="up" data-category="${escapeHtml(category)}" title="Move section earlier" aria-label="Move section earlier" ${index <= 0 ? 'disabled' : ''}>↑</button>
-                        <button type="button" class="management-btn small-management-btn move-arrow-btn" data-content-move-category-row="down" data-category="${escapeHtml(category)}" title="Move section later" aria-label="Move section later" ${index >= allCategories.length - 1 ? 'disabled' : ''}>↓</button>
-                    </div>
-                </td>
-                <td class="hidden-cell">
-                    <label class="content-checkbox-row compact-checkbox"><input type="checkbox" data-content-inline-category-hidden="${escapeHtml(category)}" ${hidden}> Hidden</label>
-                </td>
-                <td class="delete-cell">
-                    <button type="button" class="management-btn remove-btn small-management-btn" data-content-delete-topic-row="${escapeHtml(category)}">Delete</button>
-                </td>
-            </tr>
-        `;
-    }).join('') || '<tr><td colspan="8" class="empty-table-cell">No topics found.</td></tr>';
-
-    return `
-        <table class="management-editor-table topic-editor-table one-row-editor-table">
-            <thead>
-                <tr>
-                    <th>Picture</th>
-                    <th>Title</th>
-                    <th>Te Reo title</th>
-                    <th>Icon</th>
-                    <th>Edit</th>
-                    <th>Move</th>
-                    <th>Show / Hide</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${rows}
-                <tr class="management-add-row">
-                    <td colspan="8"><button type="button" class="management-add-line" data-content-add-topic-row>Add new main menu topic</button></td>
-                </tr>
-            </tbody>
-        </table>
     `;
 }
 

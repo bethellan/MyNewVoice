@@ -13060,7 +13060,7 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   }
 }
 
-/* v149: Information/About credit image. */
+/* v150: Information/About credit image. */
 #aboutModal .about-credit-image {
   display: block;
   width: min(150px, 42vw);
