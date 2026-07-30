@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v145: Adds a direct Content Editor return/save path from phrase screens. */
+/* v146: Prevents iPhone editor focus zoom and keeps editor controls inside the viewport. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v145';
+const CURRENT_APP_VERSION = 'v146';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;

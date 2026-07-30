@@ -1,5 +1,5 @@
-v145_content_editor_direct_return
+v146_iphone_editor_viewport_guard
 
-Content Editor phrase/photo screens now offer a direct Return to App path when clean, or Save & Return to App when changed.
-The section-list save button still only appears when there are unsaved changes.
-Includes v144 Photo Memories zoom/reset controls, iPhone switch hit-area polish, crop/editor fixes and redundant numbered-file cleanup.
+Content Editor inputs, textareas and selects now stay at iPhone-safe 16px text size so tapping to type does not zoom the page.
+Content Editor and Settings overlays are constrained to the device viewport so footer buttons remain reachable.
+Includes v145 direct Content Editor return/save flow and v144 Photo Memories zoom/reset controls.
