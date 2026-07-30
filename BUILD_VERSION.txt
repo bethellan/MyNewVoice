@@ -1,5 +1,5 @@
-v146_iphone_editor_viewport_guard
+v147_iphone_scale_and_switch_hit_fix
 
-Content Editor inputs, textareas and selects now stay at iPhone-safe 16px text size so tapping to type does not zoom the page.
-Content Editor and Settings overlays are constrained to the device viewport so footer buttons remain reachable.
-Includes v145 direct Content Editor return/save flow and v144 Photo Memories zoom/reset controls.
+The app viewport is locked to device scale on iPhone so text editing cannot leave the whole app zoomed.
+Edit and Te Reo switches now have one clean centred tappable hit area, with the visual pill inside it.
+Includes v146 editor viewport guards, v145 direct Content Editor return/save flow and v144 Photo Memories zoom/reset controls.
