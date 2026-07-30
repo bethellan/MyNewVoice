@@ -1,0 +1,161 @@
+CODE AUDIT - MyNewVoice v113
+============================
+Audit of settings screen jump/freeze bug and repair.
+
+=======================================================================
+ROOT CAUSE OF SCREEN JUMP / FREEZING
+=======================================================================
+
+1. BODY CLASS MUTATIONS ON SETTINGS OPEN/CLOSE
+   showSettingsEntryOverlay() called:
+     document.body.classList.add('settings-entry-active')
+   hideSettingsEntryOverlay() / mnvRestoreViewportAfterSettings() called:
+     document.body.classList.remove('settings-entry-active', 'settings-dashboard-active')
+   These triggered CSS rules that cleared or set width/margin/padding on body.
+   On iPhone, any change to body.style or body.className while an input has
+   focus causes Safari to recalculate the visual viewport and can shift the
+   underlying page.
+
+2. HARD BODY/HTML STYLE CLEARING ON SETTINGS CLOSE (mnvHardRestoreAfterSettingsDashboard)
+   This function cleared inline styles on:
+     document.documentElement, document.body, and a querySelectorAll of app elements.
+   On close this caused a reflow that visually shifted the menu.
+   The double setTimeout (60ms, 240ms) meant the restore ran twice, sometimes
+   mid-animation, causing a second visible jump after the first.
+
+3. SCROLLBEHAVIOR MUTATION (mnvRestoreViewportAfterSettings)
+   document.body.style.scrollBehavior = 'auto' then '' was set inside
+   showSettingsEntryOverlay and requestAnimationFrame callbacks.
+   On iPhone Safari, any inline style change to body triggers viewport
+   recalculation, which can shift the visual viewport.
+
+4. MUTATIONOBSERVER FEEDBACK LOOP (setupSettingsDashboardObserverV110)
+   An observer watched document.body with { subtree:true, attributes:true,
+   attributeFilter:['class','style'] }. Its callback added 'settings-dashboard-active'
+   to body when the settings overlay was visible, and called
+   mnvHardRestoreAfterSettingsDashboard() when it wasn't. Because
+   mnvHardRestoreAfterSettingsDashboard itself mutated body class/style,
+   the observer fired again on that mutation, creating a feedback loop.
+   This loop could freeze the app when Settings was open and any other DOM
+   change (e.g. a toast notification, image loading) triggered the observer.
+
+5. BROAD DELEGATED CLICK LISTENERS
+   Two document.addEventListener('click', ..., true) capture listeners fired
+   on every click in the app and called setTimeout restore functions when
+   text matching 'cancel', 'close', 'back to app', 'settings' etc. was found.
+   These matched legitimate button clicks inside the main app (e.g. phrase
+   cancel flows), triggering layout restore unnecessarily and sometimes mid
+   menu-render.
+
+6. body.modal-open OVERFLOW-Y HIDDEN
+   CSS rule: body.modal-open { overflow-y: hidden !important }
+   When a vertical scrollbar appeared/disappeared as a result of this rule,
+   the body clientWidth changed by ~15px (scrollbar gutter). The fixed
+   .settings-overlay overlay at 100vw included the scrollbar, so toggling
+   this caused a visible horizontal nudge on desktop and clip on iOS.
+
+7. 100VW SIZING ON MANAGEMENT OVERLAY
+   .management-overlay.show .management-panel { width: 100vw !important }
+   100vw includes the scrollbar gutter on browsers that show overlay scrollbars.
+   This caused the panel to overflow horizontally by 15–17px on desktop.
+   Replaced with 100% which is correct for position:fixed panels.
+
+=======================================================================
+WHAT WAS REMOVED
+=======================================================================
+
+JS functions removed:
+  - restoreMainMenuLayoutAfterModal()
+  - mnvHardRestoreAfterSettingsDashboard()
+  - mnvCaptureViewportBeforeSettings()
+  - mnvRestoreViewportAfterSettings()
+
+JS variables removed:
+  - let mnvSettingsSavedViewport
+
+JS listeners/IIFEs removed:
+  - setupSettingsDashboardObserverV110 (MutationObserver on document.body)
+  - document.addEventListener('click') layout restore – "run after close" listener
+  - document.addEventListener('click') layout restore – "dashboard restore" listener
+  - window.addEventListener('pageshow', restoreMainMenuLayoutAfterModal)
+  - window.addEventListener('orientationchange') layout restore
+
+JS call sites removed:
+  - body.classList.add/remove('settings-entry-active') everywhere
+  - body/html.classList.add/remove('settings-dashboard-active') everywhere
+  - body.style.scrollBehavior = 'auto' / '' everywhere
+  - firstButton.focus() in showManagementPanel
+
+CSS rules removed:
+  - body.modal-open / .settings-open / .dialog-open / .crop-open { overflow-y: hidden }
+  - body.settings-entry-active, body.settings-dashboard-active layout rules
+  - body.settings-dashboard-active / .management-mode / .settings-mode layout rules
+  - body:not(.settings-dashboard-active):not(.settings-entry-active) conditional rules
+  - width: 100vw on .management-overlay.show .management-panel
+  - min-width: 100vw on .management-overlay.show .management-panel
+
+=======================================================================
+WHAT WAS CHANGED
+=======================================================================
+
+- showSettingsEntryOverlay(): body class mutation and viewport capture removed.
+  Overlay show/hide is pure display:flex/none + .show class only.
+- hideSettingsEntryOverlay(): viewport restore call removed.
+- hideSettingsOverlay(): mnvRestoreViewportAfterSettings and
+  mnvHardRestoreAfterSettingsDashboard calls removed.
+- showManagementPanel(): removed setTimeout firstButton.focus().
+- CURRENT_APP_VERSION: 'v112' -> 'v113'
+- OFFLINE_CACHE_NAME: 'mynewvoice-offline-v112' -> 'mynewvoice-offline-v113'
+- sw.js CACHE_NAME: 'mynewvoice-v112-emergency-restore' ->
+  'mynewvoice-v113-settings-screen-refactor'
+- app-version.json, index.html About version, BUILD_VERSION.txt: updated to v113.
+
+=======================================================================
+WHAT WAS PRESERVED
+=======================================================================
+
+- All phrase IDs, category IDs, media IDs, storage keys unchanged.
+- Backup schema top-level fields: type, version, exportedAt, appVersion,
+  buttonData, categoryConfig, mediaRecords – unchanged.
+- import tolerates missing mediaRecords (text-only backups).
+- IndexedDB media storage unchanged; no media deleted or reset.
+- Speech (TTS fallback chain, recorded voice, click sound) unchanged.
+- Dad-facing main menu cards, submenu rows, phrase popup unchanged.
+- All Settings dashboard sections and controls unchanged.
+- Image cropper unchanged.
+- Safe-area env() CSS unchanged.
+- v109/v110 Settings overlay containment CSS kept:
+    position:fixed; inset:0; contain:layout paint
+  These are the correct approach and needed no change.
+- Password modal behaviour unchanged.
+- About/Information modal behaviour unchanged.
+- Content editor unchanged.
+- Export/import pathways unchanged.
+
+=======================================================================
+REMAINING RISKS / NOTES
+=======================================================================
+
+1. The password modal (#passwordModal) and About modal (#aboutModal) are
+   still position:fixed overlays rendered inside <body> via static HTML.
+   These do not mutate body class or style in v113. If a future change
+   adds body.modal-open back for these, the overflow-y:hidden rule must
+   NOT be re-added without replacing scrollbar gutter compensation.
+
+2. The image crop overlay (imageCropOverlay) is appended to body.
+   It is position:fixed with contain:layout paint (from v109 CSS).
+   No body class mutation is applied when it opens. This is correct.
+
+3. The management overlay (managementOverlay) uses position:fixed.
+   The width: 100% change (was 100vw) fixes the horizontal overflow on
+   desktop. On iPhone with no persistent scrollbar this is equivalent.
+
+4. autofocus was removed from password input (done in v112) and from
+   management panel first-button focus (done in v113). If the caret
+   must be in the password field, the call should use:
+     input.focus({ preventScroll: true })
+   only after a user gesture, not in requestAnimationFrame.
+
+5. No lz-string or CDN dependencies were changed. The app still loads
+   lz-string from cdn.jsdelivr.net. If offline-first is required without
+   any CDN, lz-string should be bundled locally.

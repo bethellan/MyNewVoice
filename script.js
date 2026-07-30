@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v142: Photo Memories and Content Editor polish checkpoint. */
+/* v143: Photo Memories pan/zoom viewer and larger app-bar switch hit areas. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -172,6 +172,7 @@ let zoomImageTimer = null;
 let phrasePopupTimer = null;
 let phrasePopupToken = 0;
 let phrasePopupMinimumCloseTime = 0;
+let photoMemoryViewerState = null;
 let currentViewCategory = null;
 
 
@@ -189,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v142';
+const CURRENT_APP_VERSION = 'v143';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -8603,6 +8604,165 @@ function findCategoryForPhraseId(phraseId) {
     return '';
 }
 
+function resetPhotoMemoryViewerState(overlay = document.getElementById('phrasePopupOverlay')) {
+    if (photoMemoryViewerState && photoMemoryViewerState.pointers) {
+        photoMemoryViewerState.pointers.clear();
+    }
+    photoMemoryViewerState = null;
+    const image = overlay ? overlay.querySelector('.phrase-popup-image') : null;
+    if (image) {
+        image.style.removeProperty('transform');
+        image.classList.remove('photo-memory-image-dragging');
+    }
+}
+
+function applyPhotoMemoryViewerTransform() {
+    if (!photoMemoryViewerState) return;
+    const { image, scale, x, y } = photoMemoryViewerState;
+    if (!image) return;
+    image.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+}
+
+function clampPhotoMemoryViewerPan() {
+    if (!photoMemoryViewerState) return;
+    const { shell, image, scale } = photoMemoryViewerState;
+    if (!shell || !image) return;
+    if (scale <= 1.001) {
+        photoMemoryViewerState.x = 0;
+        photoMemoryViewerState.y = 0;
+        photoMemoryViewerState.scale = 1;
+        return;
+    }
+    const shellRect = shell.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    const maxX = Math.max(0, ((imageRect.width / scale) * (scale - 1)) / 2);
+    const maxY = Math.max(0, ((imageRect.height / scale) * (scale - 1)) / 2);
+    const softLimitX = Math.max(maxX, shellRect.width * 0.08);
+    const softLimitY = Math.max(maxY, shellRect.height * 0.08);
+    photoMemoryViewerState.x = clampNumber(photoMemoryViewerState.x, -softLimitX, softLimitX);
+    photoMemoryViewerState.y = clampNumber(photoMemoryViewerState.y, -softLimitY, softLimitY);
+}
+
+function setPhotoMemoryViewerScale(nextScale, centerX, centerY) {
+    if (!photoMemoryViewerState) return;
+    const state = photoMemoryViewerState;
+    const previousScale = state.scale || 1;
+    const scale = clampNumber(nextScale, 1, 5);
+    const rect = state.shell.getBoundingClientRect();
+    const localX = centerX - rect.left - rect.width / 2;
+    const localY = centerY - rect.top - rect.height / 2;
+    const ratio = scale / previousScale;
+    state.x = localX - (localX - state.x) * ratio;
+    state.y = localY - (localY - state.y) * ratio;
+    state.scale = scale;
+    clampPhotoMemoryViewerPan();
+    applyPhotoMemoryViewerTransform();
+}
+
+function setupPhotoMemoryViewer(overlay) {
+    const shell = overlay ? overlay.querySelector('.phrase-popup-image-shell') : null;
+    const image = overlay ? overlay.querySelector('.phrase-popup-image') : null;
+    if (!overlay || !shell || !image || !overlay.classList.contains('photo-memory-popup')) return;
+
+    resetPhotoMemoryViewerState(overlay);
+    photoMemoryViewerState = {
+        shell,
+        image,
+        scale: 1,
+        x: 0,
+        y: 0,
+        pointers: new Map(),
+        mode: '',
+        startX: 0,
+        startY: 0,
+        startPanX: 0,
+        startPanY: 0,
+        startDistance: 0,
+        startScale: 1
+    };
+    applyPhotoMemoryViewerTransform();
+}
+
+function getPhotoViewerPointerDistance() {
+    if (!photoMemoryViewerState || photoMemoryViewerState.pointers.size < 2) return 0;
+    const points = Array.from(photoMemoryViewerState.pointers.values());
+    return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+}
+
+function getPhotoViewerPointerCenter() {
+    if (!photoMemoryViewerState || !photoMemoryViewerState.pointers.size) return { x: 0, y: 0 };
+    const points = Array.from(photoMemoryViewerState.pointers.values());
+    const total = points.reduce((sum, point) => ({ x: sum.x + point.x, y: sum.y + point.y }), { x: 0, y: 0 });
+    return { x: total.x / points.length, y: total.y / points.length };
+}
+
+function handlePhotoMemoryViewerPointerDown(event) {
+    const overlay = document.getElementById('phrasePopupOverlay');
+    if (!overlay || !overlay.classList.contains('photo-memory-popup') || !photoMemoryViewerState) return;
+    const shell = event.target.closest?.('.phrase-popup-image-shell');
+    if (!shell) return;
+    event.preventDefault();
+    shell.setPointerCapture?.(event.pointerId);
+    photoMemoryViewerState.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (photoMemoryViewerState.pointers.size >= 2) {
+        photoMemoryViewerState.mode = 'pinch';
+        photoMemoryViewerState.startDistance = getPhotoViewerPointerDistance() || 1;
+        photoMemoryViewerState.startScale = photoMemoryViewerState.scale;
+    } else {
+        photoMemoryViewerState.mode = 'pan';
+        photoMemoryViewerState.startX = event.clientX;
+        photoMemoryViewerState.startY = event.clientY;
+        photoMemoryViewerState.startPanX = photoMemoryViewerState.x;
+        photoMemoryViewerState.startPanY = photoMemoryViewerState.y;
+    }
+    photoMemoryViewerState.image.classList.add('photo-memory-image-dragging');
+}
+
+function handlePhotoMemoryViewerPointerMove(event) {
+    if (!photoMemoryViewerState || !photoMemoryViewerState.pointers.has(event.pointerId)) return;
+    event.preventDefault();
+    photoMemoryViewerState.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (photoMemoryViewerState.mode === 'pinch' && photoMemoryViewerState.pointers.size >= 2) {
+        const distance = getPhotoViewerPointerDistance() || photoMemoryViewerState.startDistance || 1;
+        const center = getPhotoViewerPointerCenter();
+        setPhotoMemoryViewerScale(photoMemoryViewerState.startScale * (distance / photoMemoryViewerState.startDistance), center.x, center.y);
+        return;
+    }
+
+    if (photoMemoryViewerState.mode === 'pan') {
+        photoMemoryViewerState.x = photoMemoryViewerState.startPanX + (event.clientX - photoMemoryViewerState.startX);
+        photoMemoryViewerState.y = photoMemoryViewerState.startPanY + (event.clientY - photoMemoryViewerState.startY);
+        clampPhotoMemoryViewerPan();
+        applyPhotoMemoryViewerTransform();
+    }
+}
+
+function handlePhotoMemoryViewerPointerUp(event) {
+    if (!photoMemoryViewerState) return;
+    photoMemoryViewerState.pointers.delete(event.pointerId);
+    if (photoMemoryViewerState.pointers.size < 2 && photoMemoryViewerState.mode === 'pinch') {
+        const center = getPhotoViewerPointerCenter();
+        photoMemoryViewerState.mode = photoMemoryViewerState.pointers.size ? 'pan' : '';
+        photoMemoryViewerState.startX = center.x;
+        photoMemoryViewerState.startY = center.y;
+        photoMemoryViewerState.startPanX = photoMemoryViewerState.x;
+        photoMemoryViewerState.startPanY = photoMemoryViewerState.y;
+    } else if (!photoMemoryViewerState.pointers.size) {
+        photoMemoryViewerState.mode = '';
+        photoMemoryViewerState.image.classList.remove('photo-memory-image-dragging');
+    }
+}
+
+function handlePhotoMemoryViewerWheel(event) {
+    const overlay = document.getElementById('phrasePopupOverlay');
+    if (!overlay || !overlay.classList.contains('photo-memory-popup') || !photoMemoryViewerState) return;
+    if (!event.target.closest?.('.phrase-popup-image-shell')) return;
+    event.preventDefault();
+    const factor = event.deltaY < 0 ? 1.12 : 0.88;
+    setPhotoMemoryViewerScale(photoMemoryViewerState.scale * factor, event.clientX, event.clientY);
+}
+
 function getPhrasePopupOverlay() {
     let overlay = document.getElementById('phrasePopupOverlay');
     if (overlay) return overlay;
@@ -8615,6 +8775,7 @@ function getPhrasePopupOverlay() {
     overlay.setAttribute('aria-label', 'Selected phrase');
     overlay.innerHTML = `
         <div class="phrase-popup-card">
+            <button type="button" class="phrase-popup-close" data-phrase-popup-close aria-label="Close photo">×</button>
             <div class="phrase-popup-image-shell" hidden>
                 <img class="phrase-popup-image" alt="" decoding="async">
             </div>
@@ -8622,9 +8783,19 @@ function getPhrasePopupOverlay() {
         </div>
     `;
 
-    overlay.addEventListener('click', () => {
+    overlay.addEventListener('click', (event) => {
+        if (event.target.closest('[data-phrase-popup-close]')) {
+            hidePhrasePopup();
+            return;
+        }
+        if (overlay.classList.contains('photo-memory-popup')) return;
         if (shouldUseManualPopupClose()) hidePhrasePopup();
     });
+    overlay.addEventListener('pointerdown', handlePhotoMemoryViewerPointerDown);
+    overlay.addEventListener('pointermove', handlePhotoMemoryViewerPointerMove);
+    overlay.addEventListener('pointerup', handlePhotoMemoryViewerPointerUp);
+    overlay.addEventListener('pointercancel', handlePhotoMemoryViewerPointerUp);
+    overlay.addEventListener('wheel', handlePhotoMemoryViewerWheel, { passive: false });
     document.addEventListener('keydown', (event) => {
         if (!overlay.classList.contains('show') || !shouldUseManualPopupClose()) return;
         event.preventDefault();
@@ -8645,6 +8816,7 @@ function hidePhrasePopup(token = null) {
     const overlay = document.getElementById('phrasePopupOverlay');
     if (!overlay) return;
 
+    resetPhotoMemoryViewerState(overlay);
     const image = overlay.querySelector('.phrase-popup-image');
     const imageShell = overlay.querySelector('.phrase-popup-image-shell');
     if (image) {
@@ -8678,6 +8850,7 @@ function showPhrasePopup(buttonInfoOrText) {
     const image = overlay.querySelector('.phrase-popup-image');
     const imageShell = overlay.querySelector('.phrase-popup-image-shell');
 
+    resetPhotoMemoryViewerState(overlay);
     phrasePopupToken += 1;
     const token = phrasePopupToken;
     phrasePopupMinimumCloseTime = Date.now();
@@ -8705,6 +8878,7 @@ function showPhrasePopup(buttonInfoOrText) {
     overlay.classList.toggle('manual-close', isPhotoMemoryPopup);
     overlay.classList.add('show');
     overlay.setAttribute('aria-hidden', 'false');
+    if (isPhotoMemoryPopup) setupPhotoMemoryViewer(overlay);
 
     if (buttonInfo) applyPhrasePopupZoomImage(buttonInfo, token);
 

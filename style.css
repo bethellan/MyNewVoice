@@ -11091,6 +11091,10 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   justify-content: center !important;
   padding: clamp(6px, 1vw, 10px) !important;
   border-radius: var(--mnv-ui-radius, 18px) !important;
+  overflow: hidden !important;
+  touch-action: none !important;
+  cursor: grab !important;
+  user-select: none !important;
 }
 
 .phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-image {
@@ -11100,6 +11104,45 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   max-height: 52vh !important;
   object-fit: contain !important;
   border-radius: calc(var(--mnv-ui-radius, 18px) - 4px) !important;
+  transform-origin: center center !important;
+  transition: transform 0.12s ease-out !important;
+  will-change: transform !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-image.photo-memory-image-dragging {
+  transition: none !important;
+}
+
+.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-image-shell:active {
+  cursor: grabbing !important;
+}
+
+.phrase-popup-close {
+  display: none;
+}
+
+.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-close {
+  position: absolute !important;
+  top: clamp(10px, 2vw, 18px) !important;
+  right: clamp(10px, 2vw, 18px) !important;
+  z-index: 4 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: clamp(44px, 7vw, 58px) !important;
+  height: clamp(44px, 7vw, 58px) !important;
+  border-radius: 999px !important;
+  border: 1px solid color-mix(in srgb, var(--primary-color, #3f9f46) 34%, rgba(15,23,42,0.18)) !important;
+  background: rgba(255,255,255,0.94) !important;
+  color: var(--mnv-ui-text, #233042) !important;
+  font-size: clamp(1.55rem, 3vw, 2rem) !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14) !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
 }
 
 @media (max-width: 640px) {
@@ -11570,10 +11613,10 @@ body[data-te-reo-mode="on"] .mnv-logo {
   display: inline-grid !important;
   place-items: center !important;
   grid-template-columns: 1fr !important;
-  min-width: 56px !important;
-  width: 56px !important;
-  min-height: 56px !important;
-  height: 56px !important;
+  min-width: 68px !important;
+  width: 68px !important;
+  min-height: 62px !important;
+  height: 62px !important;
   padding: 0 !important;
   border-radius: 999px !important;
   border: 0 !important;
@@ -11596,6 +11639,7 @@ body[data-te-reo-mode="on"] .mnv-logo {
   background: linear-gradient(180deg, #f8fafc, #cbd5e1);
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.20), 0 1px 0 rgba(255,255,255,0.80);
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  pointer-events: none;
 }
 
 .mnv-edit-toggle-thumb,
@@ -11610,6 +11654,7 @@ body[data-te-reo-mode="on"] .mnv-logo {
   transform: translateY(-50%);
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.28), inset 0 1px 0 rgba(255,255,255,0.95);
   transition: left 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  pointer-events: none;
 }
 
 .mnv-edit-toggle-label {
@@ -11760,7 +11805,7 @@ body.grid-view-active .tab-container {
   }
 
   .mnv-app-bar {
-    grid-template-columns: minmax(0, 1fr) repeat(2, 52px) repeat(3, 40px);
+    grid-template-columns: minmax(0, 1fr) repeat(2, 64px) repeat(3, 40px);
     gap: 6px;
   }
 
@@ -11790,10 +11835,10 @@ body.grid-view-active .tab-container {
 
   .mnv-edit-toggle,
   .mnv-switch-toggle {
-    min-width: 52px !important;
-    width: 52px !important;
-    min-height: 52px !important;
-    height: 52px !important;
+    min-width: 58px !important;
+    width: 58px !important;
+    min-height: 56px !important;
+    height: 56px !important;
     padding: 0 !important;
   }
 

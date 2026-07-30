@@ -1,5 +1,5 @@
-v142_photo_memories_editor_polish
+v143_photo_memory_viewer_switch_hit_areas
 
-Photo Memories popups now stay open until tap/key close and open the cropper in Free crop mode.
-Content Editor keeps position better after image edits, uses clearer arrow move controls, and has cleaner save/export messages.
-Grid swipe keeps tile movement without the extra arrow guide.
+Photo Memories popups now support pinch zoom, wheel zoom, and drag/pan with a clear close button.
+Edit and Te Reo app-bar switches keep compact visuals but have larger tappable hit areas, including on iPhone.
+Includes the v142 Photo Memories crop/editor polish and redundant numbered-file cleanup.
