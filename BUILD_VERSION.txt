@@ -1,4 +1,4 @@
-v149_about_portrait_image
+v150_about_portrait_embed
 
-Adds the 8-bit portrait image to the Information/About screen above the copyright notice.
-Includes v148 topic-editor card cleanup and autosave popup removal.
+Embeds the 8-bit portrait image directly in the Information/About screen so it cannot show as a missing-image text box.
+Includes v149 About portrait placement, v148 topic-editor card cleanup and autosave popup removal.
