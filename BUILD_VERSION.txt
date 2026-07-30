@@ -1,6 +1,4 @@
-v148_topic_editor_cards
+v149_about_portrait_image
 
-Main menu topic editing now uses responsive stacked cards instead of the old wide table.
-The existing topic edit/move/hide/delete/text/image data hooks are preserved, but the iPhone-hostile table layout is no longer rendered.
-The old green autosave indicator element/styles were removed so view changes no longer show the stray Saved popup.
-Includes v147 iPhone scale/switch fixes and v146 editor viewport guards.
+Adds the 8-bit portrait image to the Information/About screen above the copyright notice.
+Includes v148 topic-editor card cleanup and autosave popup removal.

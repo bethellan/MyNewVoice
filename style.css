@@ -13059,3 +13059,16 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
     grid-column: 1 / -1 !important;
   }
 }
+
+/* v149: Information/About credit image. */
+#aboutModal .about-credit-image {
+  display: block;
+  width: min(150px, 42vw);
+  height: auto;
+  max-height: 220px;
+  margin: 14px auto 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(47, 97, 70, 0.22);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  background: #f8fbf7;
+}
