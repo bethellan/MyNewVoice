@@ -11120,14 +11120,15 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   cursor: grabbing !important;
 }
 
-.phrase-popup-close {
+.phrase-popup-close,
+.phrase-popup-reset {
   display: none;
 }
 
-.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-close {
+.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-close,
+.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-reset {
   position: absolute !important;
   top: clamp(10px, 2vw, 18px) !important;
-  right: clamp(10px, 2vw, 18px) !important;
   z-index: 4 !important;
   display: grid !important;
   place-items: center !important;
@@ -11143,6 +11144,15 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14) !important;
   cursor: pointer !important;
   touch-action: manipulation !important;
+}
+
+.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-close {
+  right: clamp(10px, 2vw, 18px) !important;
+}
+
+.phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-reset {
+  right: calc(clamp(10px, 2vw, 18px) + clamp(44px, 7vw, 58px) + 8px) !important;
+  font-size: clamp(1.15rem, 2.5vw, 1.55rem) !important;
 }
 
 @media (max-width: 640px) {

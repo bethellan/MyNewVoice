@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v143: Photo Memories pan/zoom viewer and larger app-bar switch hit areas. */
+/* v145: Adds a direct Content Editor return/save path from phrase screens. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v143';
+const CURRENT_APP_VERSION = 'v145';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -4785,8 +4785,10 @@ function updateContentEditorSaveState() {
     if (!panel) return;
     const dirty = contentEditorHasUnsavedChanges();
     panel.querySelectorAll('[data-content-save-close]').forEach(button => {
-        button.hidden = !dirty;
-        button.setAttribute('aria-hidden', dirty ? 'false' : 'true');
+        const directReturnScreen = contentEditorScreen === 'phrases';
+        button.hidden = !dirty && !directReturnScreen;
+        button.setAttribute('aria-hidden', button.hidden ? 'true' : 'false');
+        button.textContent = dirty ? 'Save & Return to App' : 'Return to App';
     });
     const settingsBackButton = panel.querySelector('[data-content-back-settings]');
     if (settingsBackButton) settingsBackButton.textContent = dirty ? 'Cancel' : 'Return to App';
@@ -6191,9 +6193,10 @@ async function handleContentManagementClick(event) {
 
     if (target.closest('[data-content-save-close]')) {
         commitActiveContentEditorField();
+        const hadChanges = contentEditorHasUnsavedChanges();
         markContentEditorClean();
         finishContentEditorNavigation('origin');
-        showToast('Content changes saved', 'success');
+        if (hadChanges) showToast('Content changes saved', 'success');
         return;
     }
 
@@ -8683,6 +8686,14 @@ function setupPhotoMemoryViewer(overlay) {
     applyPhotoMemoryViewerTransform();
 }
 
+function resetPhotoMemoryViewerZoom() {
+    if (!photoMemoryViewerState) return;
+    photoMemoryViewerState.scale = 1;
+    photoMemoryViewerState.x = 0;
+    photoMemoryViewerState.y = 0;
+    applyPhotoMemoryViewerTransform();
+}
+
 function getPhotoViewerPointerDistance() {
     if (!photoMemoryViewerState || photoMemoryViewerState.pointers.size < 2) return 0;
     const points = Array.from(photoMemoryViewerState.pointers.values());
@@ -8775,6 +8786,7 @@ function getPhrasePopupOverlay() {
     overlay.setAttribute('aria-label', 'Selected phrase');
     overlay.innerHTML = `
         <div class="phrase-popup-card">
+            <button type="button" class="phrase-popup-reset" data-photo-popup-reset aria-label="Reset photo zoom">⤢</button>
             <button type="button" class="phrase-popup-close" data-phrase-popup-close aria-label="Close photo">×</button>
             <div class="phrase-popup-image-shell" hidden>
                 <img class="phrase-popup-image" alt="" decoding="async">
@@ -8784,6 +8796,10 @@ function getPhrasePopupOverlay() {
     `;
 
     overlay.addEventListener('click', (event) => {
+        if (event.target.closest('[data-photo-popup-reset]')) {
+            resetPhotoMemoryViewerZoom();
+            return;
+        }
         if (event.target.closest('[data-phrase-popup-close]')) {
             hidePhrasePopup();
             return;

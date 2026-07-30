@@ -1,5 +1,5 @@
-v143_photo_memory_viewer_switch_hit_areas
+v145_content_editor_direct_return
 
-Photo Memories popups now support pinch zoom, wheel zoom, and drag/pan with a clear close button.
-Edit and Te Reo app-bar switches keep compact visuals but have larger tappable hit areas, including on iPhone.
-Includes the v142 Photo Memories crop/editor polish and redundant numbered-file cleanup.
+Content Editor phrase/photo screens now offer a direct Return to App path when clean, or Save & Return to App when changed.
+The section-list save button still only appears when there are unsaved changes.
+Includes v144 Photo Memories zoom/reset controls, iPhone switch hit-area polish, crop/editor fixes and redundant numbered-file cleanup.
