@@ -1,4 +1,4 @@
-v151_about_text_polish
+v153_about_scrollbar_polish
 
-Polishes the Information/About wording to better describe communication and connection.
-Includes v150 embedded About portrait image and cleanup of the inactive legacy topic-table renderer.
+Refines the Information/About popup scrollbar so it sits inside the rounded panel without cutting into the corner.
+Includes v152 iPhone title bar fit, v151 About wording polish and v150 embedded About portrait cleanup.
