@@ -1,4 +1,4 @@
-v159_settings_escape_and_tab_cleanup
+v163_list_view_render_ownership
 
-Hardens Settings saving so localStorage failures cannot leave the app hidden behind Settings, adds an Escape-key recovery path, and consolidates main menu topic-card tab styling into one authoritative CSS block.
-Includes v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
+Repairs List View render ownership so stale main menu cards cannot remain visible under the list icon, while keeping the app-bar view control icon-only.
+Includes v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.

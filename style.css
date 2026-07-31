@@ -320,6 +320,17 @@ body {
   display: none !important;
 }
 
+body[data-display-mode="simple-list"]:not(.submenu-open) .tab-container,
+body[data-display-mode="menu"]:not(.submenu-open) #buttonGrid,
+body[data-display-mode="grid"] .tab-container {
+  display: none !important;
+}
+
+body[data-display-mode="simple-list"]:not(.submenu-open) #buttonGrid:not([hidden]) {
+  display: flex !important;
+  flex-direction: column;
+}
+
 
 
 .menu-card-title {

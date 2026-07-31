@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v159: Hardens Settings close path and consolidates main menu tab styling. */
+/* v163: Repairs List View render ownership so menu cards cannot remain visible under the list icon. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v159';
+const CURRENT_APP_VERSION = 'v163';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1340,9 +1340,7 @@ function ensureSettingsEntryOverlay() {
             return;
         }
         if (event.target.closest('[data-settings-entry-settings]')) {
-            returnToSettingsEntryAfterPasswordCancel = true;
-            hideSettingsEntryOverlay();
-            showPasswordModal('settings');
+            openSettingsFromEntryOverlay();
             return;
         }
     });
@@ -1364,6 +1362,18 @@ function hideSettingsEntryOverlay() {
     overlay.classList.remove('show');
     overlay.style.display = 'none';
     document.body.classList.remove('settings-real-screen-active');
+}
+
+function openSettingsFromEntryOverlay() {
+    if (editModeUnlocked) {
+        returnToSettingsEntryAfterPasswordCancel = false;
+        hideSettingsEntryOverlay();
+        showSettingsOverlay();
+        return;
+    }
+    returnToSettingsEntryAfterPasswordCancel = true;
+    hideSettingsEntryOverlay();
+    showPasswordModal('settings');
 }
 
 function showAboutFromSettingsEntry() {
@@ -3492,7 +3502,27 @@ const DEFAULT_APP_SETTINGS = {
         fallbackIcon: '👋'
     }
 };
-const DISPLAY_MODES = new Set(['menu', 'simple-list', 'grid']);
+const DISPLAY_MODE_ORDER = ['simple-list', 'menu', 'grid'];
+const DISPLAY_MODES = new Set(DISPLAY_MODE_ORDER);
+const DISPLAY_MODE_ALIASES = {
+    list: 'simple-list',
+    simple: 'simple-list',
+    simpleList: 'simple-list',
+    'simple-list': 'simple-list',
+    'simple-vocabulary': 'simple-list',
+    vocabulary: 'simple-list',
+    cards: 'menu',
+    topics: 'menu',
+    menu: 'menu',
+    grid: 'grid',
+    ipad: 'grid',
+    'ipad-grid': 'grid'
+};
+
+function normaliseDisplayModeName(value) {
+    const raw = String(value || '').trim();
+    return DISPLAY_MODE_ALIASES[raw] || DEFAULT_APP_SETTINGS.displayMode;
+}
 const THEMES = new Set(['default', 'twilight-plum', 'forest-night', 'slate-studio', 'sci-fi-v2', 'high-contrast']);
 const LEGACY_THEME_ALIASES = {
     'gentle-morning': 'default',
@@ -3774,7 +3804,7 @@ function normaliseAppSettings(rawSettings) {
     const legacyGridEnabled = raw.ipadImageGridEnabled === true || raw.ipadImageGridEnabled === 'on';
     const displayMode = legacyGridEnabled
         ? 'grid'
-        : (DISPLAY_MODES.has(raw.displayMode) ? raw.displayMode : DEFAULT_APP_SETTINGS.displayMode);
+        : normaliseDisplayModeName(raw.displayMode);
     const theme = normaliseThemeName(raw.theme);
     const pressActivation = Object.prototype.hasOwnProperty.call(PRESS_ACTIVATION_DELAYS, raw.pressActivation)
         ? raw.pressActivation
@@ -3912,6 +3942,7 @@ function updateSettingsControls() {
 function updateAppBarControls() {
     appSettings = normaliseAppSettings(appSettings);
     const gridActive = appSettings.displayMode === 'grid';
+    document.body.dataset.displayMode = appSettings.displayMode;
     document.body.classList.toggle('grid-view-active', gridActive);
     document.body.classList.toggle('grid-labels-hidden', gridActive && appSettings.gridLabelsVisible === false);
 
@@ -3957,24 +3988,28 @@ function updateAppBarControls() {
 }
 
 function getDisplayModeIcon(displayMode) {
+    displayMode = normaliseDisplayModeName(displayMode);
     if (displayMode === 'grid') return '\u25A6';
-    if (displayMode === 'menu') return '\u25A4';
+    if (displayMode === 'menu') return '\u25A3';
     return '\u2630';
 }
 
 function getDisplayModeLabel(displayMode) {
+    displayMode = normaliseDisplayModeName(displayMode);
     if (displayMode === 'grid') return 'Grid View';
     if (displayMode === 'menu') return 'Menu View';
     return 'List View';
 }
 
 function getNextDisplayMode(displayMode) {
-    const modes = ['simple-list', 'menu', 'grid'];
+    const modes = DISPLAY_MODE_ORDER;
+    displayMode = normaliseDisplayModeName(displayMode);
     const index = modes.indexOf(displayMode);
     return modes[(index + 1 + modes.length) % modes.length];
 }
 
 function setDisplayModeFromAppBar(displayMode) {
+    displayMode = normaliseDisplayModeName(displayMode);
     if (!DISPLAY_MODES.has(displayMode)) return;
     appSettings.displayMode = displayMode;
     saveAppSettings({ render: true, persistContent: false, showSaveIndicator: false });
@@ -7790,6 +7825,7 @@ function renderCategoryMenuCards() {
 }
 
 function showMainMenu() {
+    appSettings = normaliseAppSettings(appSettings);
     const menu = document.querySelector('.tab-container');
     const header = document.getElementById('submenuHeader');
     const grid = document.getElementById('buttonGrid');
@@ -7798,6 +7834,7 @@ function showMainMenu() {
 
     gridRearrangeState = null;
     currentViewCategory = null;
+    document.body.dataset.displayMode = appSettings.displayMode;
     document.body.classList.remove('submenu-open');
     document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
     setMessageBarText(MAIN_MENU_PROMPT);
@@ -7805,6 +7842,19 @@ function showMainMenu() {
     if (messageBar) messageBar.classList.remove('submenu-titlebar');
     if (backToMenu) backToMenu.hidden = true;
     if (header) header.hidden = true;
+    if (menu) {
+        menu.hidden = true;
+        menu.setAttribute('aria-hidden', 'true');
+    }
+    if (grid) {
+        removeIpadImageGridHandlers(grid);
+        grid.hidden = true;
+        grid.innerHTML = '';
+        grid.className = 'grid';
+        grid.removeAttribute('data-view');
+        grid.removeAttribute('data-category');
+        grid.removeAttribute('style');
+    }
 
     if (appSettings.displayMode === 'grid') {
         const firstCategory = getCategoryOrder({ includeHidden: false })[0];
@@ -7812,26 +7862,20 @@ function showMainMenu() {
             showCategorySubmenu(firstCategory);
             return;
         }
-        if (menu) menu.hidden = true;
         if (grid) {
             grid.hidden = false;
             grid.innerHTML = '<p class="empty-category-message">No visible communication sections. Open Content Management to show at least one section.</p>';
         }
     } else if (appSettings.displayMode === 'simple-list') {
-        if (menu) menu.hidden = true;
         if (grid) {
             grid.hidden = false;
             renderSimpleVocabularyView(grid);
         }
     } else {
         renderCategoryMenuCards();
-        if (menu) menu.hidden = false;
-        if (grid) {
-            grid.hidden = true;
-            grid.innerHTML = '';
-            grid.classList.remove('simple-vocabulary-list');
-            grid.removeAttribute('data-view');
-            grid.removeAttribute('data-category');
+        if (menu) {
+            menu.hidden = false;
+            menu.removeAttribute('aria-hidden');
         }
     }
 
@@ -7846,6 +7890,7 @@ function showMainMenu() {
 }
 
 function showCategorySubmenu(category) {
+    appSettings = normaliseAppSettings(appSettings);
     const menu = document.querySelector('.tab-container');
     const header = document.getElementById('submenuHeader');
     const grid = document.getElementById('buttonGrid');
@@ -7856,6 +7901,7 @@ function showCategorySubmenu(category) {
 
     if (gridRearrangeState && gridRearrangeState.category !== category) gridRearrangeState = null;
     currentViewCategory = category;
+    document.body.dataset.displayMode = appSettings.displayMode;
     document.body.classList.add('submenu-open');
     document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
     setMessageBarText(displayLabel);
