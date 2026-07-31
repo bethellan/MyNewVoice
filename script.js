@@ -10,7 +10,8 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v164: Stabilises mobile app-bar slots and switch touch targets. */
+/* v166: Removes the Introduction Message controls from Settings. */
+/* v167: Stabilises quick Yes / No colours during iPhone swipe and touch states. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +191,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v164';
+const CURRENT_APP_VERSION = 'v167';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1492,36 +1493,6 @@ function ensureSettingsOverlay() {
                     </div>
                 </details>
 
-                <details class="settings-v115-card settings-v115-foldout settings-section-introduction">
-                    <summary><span>Introduction Message</span><small>Optional opening message for Dad.</small></summary>
-                    <div class="settings-v115-form-grid">
-                        <label for="settingsIntroductionEnabled">Introduction</label>
-                        <select id="settingsIntroductionEnabled" class="settings-select">
-                            <option value="off">Off</option>
-                            <option value="on">On</option>
-                        </select>
-                    </div>
-                    <div id="introductionSettingsPanel" class="introduction-settings-panel settings-v115-intro-panel" hidden>
-                        <label for="settingsIntroductionText">Text</label>
-                        <textarea id="settingsIntroductionText" class="settings-textarea" maxlength="500" placeholder="Hello, my name is... Please give me time."></textarea>
-                        <label for="settingsIntroductionIcon">Icon</label>
-                        <div class="settings-v115-inline">
-                            <input id="settingsIntroductionIcon" class="settings-icon-input" maxlength="4" value="👋">
-                            <button type="button" class="management-btn small-management-btn" data-intro-icon-menu>Choose</button>
-                        </div>
-                        <div class="settings-v115-button-row">
-                            <button type="button" class="management-btn small-management-btn" data-intro-image-options>Picture</button>
-                            <button type="button" class="management-btn small-management-btn" data-intro-record>Record</button>
-                            <button type="button" class="management-btn small-management-btn" data-intro-play>Play</button>
-                            <button type="button" class="management-btn remove-btn small-management-btn" data-intro-delete-audio>Delete audio</button>
-                        </div>
-                        <div class="settings-standard-actionbar compact-save-actions settings-v115-save-row">
-                            <button type="button" class="management-btn close-btn" data-intro-cancel>Cancel</button>
-                            <button type="button" class="management-btn save-private-setup" data-intro-save>Save</button>
-                        </div>
-                    </div>
-                </details>
-
                 <section class="settings-v115-card settings-section-backup">
                     <div class="settings-v115-card-head">
                         <span class="settings-v115-card-icon" aria-hidden="true">⇅</span>
@@ -1652,38 +1623,6 @@ function ensureSettingsOverlay() {
             previewSelectedSpeechVoice();
             return;
         }
-        if (event.target.closest('[data-intro-image-options]')) {
-            showIntroductionImageOptions();
-            return;
-        }
-        if (event.target.closest('[data-intro-record]')) {
-            const textField = document.getElementById('settingsIntroductionText');
-            toggleVoiceRecording(INTRODUCTION_VOICE_KEY, textField ? textField.value : getIntroductionSettings().text, event.target.closest('[data-intro-record]'));
-            return;
-        }
-        if (event.target.closest('[data-intro-play]')) {
-            playIntroductionFromSettings();
-            return;
-        }
-        if (event.target.closest('[data-intro-delete-audio]')) {
-            deletePrivateMediaFromSetup(INTRODUCTION_VOICE_KEY);
-            return;
-        }
-        if (event.target.closest('[data-intro-icon-menu]')) {
-            showFallbackIconMenu('introduction', INTRODUCTION_ITEM_ID, '');
-            return;
-        }
-        if (event.target.closest('[data-intro-save]')) {
-            saveIntroductionSettingsFromPanel({ closeToPriorLevel: true });
-            return;
-        }
-        if (event.target.closest('[data-intro-cancel]')) {
-            updateSettingsControls();
-            updateIntroductionSaveRowState();
-            closeIntroductionSettingsPanelToPriorLevel();
-            showToast('Introduction changes cancelled', 'warning');
-            return;
-        }
     });
 
     overlay.addEventListener('change', (event) => {
@@ -1731,16 +1670,6 @@ function ensureSettingsOverlay() {
             showToast(appSettings.speechEnabled ? 'Spoken voice on' : 'Spoken voice off', 'success');
             return;
         }
-        if (event.target && event.target.id === 'settingsIntroductionEnabled') {
-            appSettings.introduction = {
-                ...getIntroductionSettings(),
-                enabled: event.target.value === 'on'
-            };
-            updateIntroductionSettingsPanelVisibility();
-            saveAppSettings({ render: true });
-            showToast(appSettings.introduction.enabled ? 'Introduction on' : 'Introduction off', 'success');
-            return;
-        }
         if (event.target && event.target.id === 'settingsAutoUpdateCheck') {
             appSettings.autoUpdateCheck = event.target.value === 'on';
             saveAppSettings({ render: false });
@@ -1759,10 +1688,6 @@ function ensureSettingsOverlay() {
     });
 
     overlay.addEventListener('input', (event) => {
-        if (event.target && (event.target.id === 'settingsIntroductionText' || event.target.id === 'settingsIntroductionIcon')) {
-            updateIntroductionSaveRowState();
-            return;
-        }
         if (event.target && event.target.id === 'settingsSpeechRate') {
             appSettings.speechRate = clampNumber(Number(event.target.value), 0.7, 1.2);
             saveAppSettings({ render: false });
@@ -2430,7 +2355,7 @@ async function performSafeAppCodeRefresh(message = 'Refreshing app files… loca
         if ('caches' in window) {
             const cacheNames = await caches.keys();
             await Promise.all(cacheNames
-                .filter(name => name.toLowerCase().includes('mynewvoice'))
+                .filter(isMyNewVoiceAppCacheName)
                 .map(name => caches.delete(name))
             );
         }
@@ -2453,6 +2378,15 @@ async function performSafeAppCodeRefresh(message = 'Refreshing app files… loca
     }
 
     setTimeout(reloadWithCacheBust, 900);
+}
+
+function isMyNewVoiceAppCacheName(name) {
+    const key = String(name || '').toLowerCase();
+    return key === 'mnv-shell-cache' ||
+        key === 'mnv-offline-cache' ||
+        key.startsWith('mnv-shell-') ||
+        key.startsWith('mnv-offline-') ||
+        key.includes('mynewvoice');
 }
 
 async function fetchWebsiteAppVersion() {

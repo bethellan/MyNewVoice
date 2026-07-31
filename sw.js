@@ -4,6 +4,7 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
+// v165: app shell requests bypass stale HTTP cache before falling back offline.
 // Do not add a version number here - see BUILD_VERSION.txt for the human-readable release log instead.
 const CACHE_NAME = 'mnv-shell-cache';
 const urlsToCache = [
@@ -60,7 +61,7 @@ self.addEventListener('fetch', function(event) {
 
   if (isAppShell) {
     event.respondWith(
-      fetch(request).then(function(networkResponse) {
+      fetch(request, { cache: 'reload' }).then(function(networkResponse) {
         const copy = networkResponse.clone();
         caches.open(CACHE_NAME).then(function(cache) {
           cache.put(request, copy);

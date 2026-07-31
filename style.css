@@ -3636,7 +3636,7 @@ body[data-theme="midnight"] .settings-action-btn {
 }
 
 .settings-close,
-button:not(.tab):not(.grid-button):not(.management-toggle),
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button),
 .buttonlike,
 .management-btn,
 .small-management-btn,
@@ -3651,8 +3651,8 @@ button:not(.tab):not(.grid-button):not(.management-toggle),
 
 .settings-close:hover,
 .settings-close:focus,
-button:not(.tab):not(.grid-button):not(.management-toggle):hover,
-button:not(.tab):not(.grid-button):not(.management-toggle):focus,
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):hover,
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):focus,
 .buttonlike:hover,
 .buttonlike:focus,
 .management-btn:hover,
@@ -4111,7 +4111,7 @@ body[data-theme="midnight"] .management-btn {
 .management-add-line,
 .private-item-button,
 .theme-toggle,
-button:not(.tab):not(.grid-button):not(.management-toggle) {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button) {
   position: relative;
   overflow: hidden;
   border-radius: calc(var(--radius-md) + 8px) !important;
@@ -4136,8 +4136,8 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
 .private-item-button:focus-visible,
 .theme-toggle:hover,
 .theme-toggle:focus-visible,
-button:not(.tab):not(.grid-button):not(.management-toggle):hover,
-button:not(.tab):not(.grid-button):not(.management-toggle):focus-visible {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):hover,
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):focus-visible {
   transform: translateY(-2px);
   background:
     var(--v50-sheen),
@@ -4152,7 +4152,7 @@ button:not(.tab):not(.grid-button):not(.management-toggle):focus-visible {
 .management-btn:active,
 .private-item-button:active,
 .theme-toggle:active,
-button:not(.tab):not(.grid-button):not(.management-toggle):active {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):active {
   transform: translateY(1px) scale(0.99);
   box-shadow:
     0 5px 12px rgba(15,23,42,0.20),
@@ -4205,7 +4205,7 @@ select {
   .settings-panel,
   .settings-action-btn,
   .management-btn,
-  button:not(.tab):not(.grid-button):not(.management-toggle) {
+  button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button) {
     background-image: linear-gradient(145deg, var(--theme-button-surface, #ffffff), var(--theme-button-surface-2, #eef4f8)) !important;
   }
 }
@@ -5461,7 +5461,7 @@ body {
 
 .management-btn,
 .settings-action-btn,
-button:not(.tab):not(.grid-button):not(.management-toggle) {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button) {
   border-radius: 18px !important;
   min-height: 52px;
   font-weight: 850 !important;
@@ -10802,18 +10802,6 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   touch-action: manipulation;
 }
 
-.quick-strip-button.yes {
-  border: 2px solid #7fcca0 !important;
-  background: linear-gradient(180deg, #f5fff7, #dff4e4) !important;
-  color: #185c2b !important;
-}
-
-.quick-strip-button.no {
-  border: 2px solid #df9b9b !important;
-  background: linear-gradient(180deg, #fff8f8, #f7dfdf) !important;
-  color: #7b1e1e !important;
-}
-
 .quick-strip-button:focus-visible {
   outline: 4px solid #2196f3;
   outline-offset: 2px;
@@ -11226,10 +11214,6 @@ body:not(.grid-view-active) .mnv-label-toggle {
 }
 
 body.grid-view-active
-
-#settingsOverlay .settings-section-introduction {
-  display: none !important;
-}
 
 @media (max-width: 720px) {
   .container {
@@ -11785,17 +11769,33 @@ body.grid-view-active .mnv-app-bar .management-toggle {
   }
 }
 
-/* v135: final scoped owner for the optional Yes / No quick buttons. */
-body .quick-communication-strip .quick-strip-button.yes {
+/* v167: final scoped owner for optional Yes / No quick-button colours and touch states. */
+body .quick-communication-strip .quick-strip-button.yes,
+body .quick-communication-strip .quick-strip-button.yes:hover,
+body .quick-communication-strip .quick-strip-button.yes:focus,
+body .quick-communication-strip .quick-strip-button.yes:focus-visible,
+body .quick-communication-strip .quick-strip-button.yes:active,
+body .quick-communication-strip .quick-strip-button.yes.mnv-pressing {
   border: 2px solid #7fcca0 !important;
   background: linear-gradient(180deg, #f5fff7, #dff4e4) !important;
   color: #185c2b !important;
 }
 
-body .quick-communication-strip .quick-strip-button.no {
+body .quick-communication-strip .quick-strip-button.no,
+body .quick-communication-strip .quick-strip-button.no:hover,
+body .quick-communication-strip .quick-strip-button.no:focus,
+body .quick-communication-strip .quick-strip-button.no:focus-visible,
+body .quick-communication-strip .quick-strip-button.no:active,
+body .quick-communication-strip .quick-strip-button.no.mnv-pressing {
   border: 2px solid #df9b9b !important;
   background: linear-gradient(180deg, #fff8f8, #f7dfdf) !important;
   color: #7b1e1e !important;
+}
+
+body .quick-communication-strip .quick-strip-button.yes:focus-visible,
+body .quick-communication-strip .quick-strip-button.no:focus-visible {
+  outline: 4px solid #2196f3 !important;
+  outline-offset: 2px !important;
 }
 
 /* v137: Yes / No quick popups mirror the quick-button colours. */

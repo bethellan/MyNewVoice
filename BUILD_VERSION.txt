@@ -1,4 +1,4 @@
-v164_mobile_app_bar_tap_targets
+v167_quick_yes_no_touch_colour_fix
 
-Stabilises the mobile title bar so the logo, edit switch, Te Reo switch, view icon, grid-label icon and settings cog keep fixed slots, with larger reliable switch tap targets on iPhone.
-Includes v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
+Keeps the optional Yes / No quick buttons in their own colour system so iPhone swipe/touch states cannot make the No button borrow the active theme colour.
+Includes v166 removed Introduction Message controls, v165 iOS app refresh cache fix, v164 mobile app-bar tap targets, v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
