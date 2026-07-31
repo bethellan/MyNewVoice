@@ -1,4 +1,4 @@
-v153_about_scrollbar_polish
+v155_app_bar_icon_encoding
 
-Refines the Information/About popup scrollbar so it sits inside the rounded panel without cutting into the corner.
-Includes v152 iPhone title bar fit, v151 About wording polish and v150 embedded About portrait cleanup.
+Uses encoding-safe app-bar icon labels so the view and image/text buttons do not show garbled characters.
+Includes v154 app-bar switch cleanup, v153 About scrollbar polish and v152 iPhone title bar fit.

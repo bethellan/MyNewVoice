@@ -11599,28 +11599,42 @@ body[data-te-reo-mode="on"] .mnv-logo {
 
 .mnv-edit-toggle,
 .mnv-switch-toggle {
-  display: inline-grid !important;
+  display: grid !important;
   place-items: center !important;
   grid-template-columns: 1fr !important;
-  min-width: 56px !important;
+  inline-size: 56px !important;
+  block-size: 54px !important;
+  min-inline-size: 56px !important;
+  min-block-size: 54px !important;
+  max-inline-size: 56px !important;
+  max-block-size: 54px !important;
   width: 56px !important;
-  min-height: 54px !important;
   height: 54px !important;
+  min-width: 56px !important;
+  min-height: 54px !important;
+  max-width: 56px !important;
+  max-height: 54px !important;
+  margin: 0 !important;
   padding: 0 !important;
-  border-radius: 999px !important;
+  border-radius: 14px !important;
   border: 0 !important;
-  background: transparent !important;
+  background: rgba(255, 255, 255, 0.28) !important;
   color: #334155 !important;
   box-shadow: none !important;
   position: relative !important;
-  z-index: 3 !important;
+  z-index: 12 !important;
+  transform: none !important;
+  cursor: pointer !important;
   pointer-events: auto !important;
-  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 .mnv-edit-toggle-track,
 .mnv-switch-track {
   position: relative;
+  inline-size: 40px !important;
+  block-size: 22px !important;
   width: 40px;
   height: 22px;
   border-radius: 999px;
@@ -11628,7 +11642,7 @@ body[data-te-reo-mode="on"] .mnv-logo {
   background: linear-gradient(180deg, #f8fafc, #cbd5e1);
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.20), 0 1px 0 rgba(255,255,255,0.80);
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 .mnv-edit-toggle-thumb,
@@ -11636,6 +11650,8 @@ body[data-te-reo-mode="on"] .mnv-logo {
   position: absolute;
   top: 50%;
   left: 3px;
+  inline-size: 14px !important;
+  block-size: 14px !important;
   width: 14px;
   height: 14px;
   border-radius: 999px;
@@ -11643,12 +11659,12 @@ body[data-te-reo-mode="on"] .mnv-logo {
   transform: translateY(-50%);
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.28), inset 0 1px 0 rgba(255,255,255,0.95);
   transition: left 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 .mnv-edit-toggle-label {
   display: none;
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 .move-arrow-btn {
@@ -11841,10 +11857,18 @@ body.grid-view-active .tab-container {
 
   .mnv-edit-toggle,
   .mnv-switch-toggle {
+    inline-size: 50px !important;
+    block-size: 48px !important;
+    min-inline-size: 50px !important;
+    min-block-size: 48px !important;
+    max-inline-size: 50px !important;
+    max-block-size: 48px !important;
     min-width: 50px !important;
     width: 50px !important;
     min-height: 48px !important;
     height: 48px !important;
+    max-width: 50px !important;
+    max-height: 48px !important;
     padding: 0 !important;
   }
 
@@ -12815,70 +12839,6 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
     max-width: 100% !important;
     white-space: normal !important;
     overflow-wrap: anywhere !important;
-  }
-}
-
-/* v147: final app-bar switch ownership.
-   The switch button owns the tap area; the track/thumb are visual only. */
-.mnv-app-bar .mnv-edit-toggle,
-.mnv-app-bar .mnv-switch-toggle {
-  position: relative !important;
-  z-index: 12 !important;
-  display: grid !important;
-  place-items: center !important;
-  inline-size: 56px !important;
-  block-size: 54px !important;
-  min-inline-size: 56px !important;
-  min-block-size: 54px !important;
-  max-inline-size: 56px !important;
-  max-block-size: 54px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 14px !important;
-  background: rgba(255, 255, 255, 0.28) !important;
-  box-shadow: none !important;
-  transform: none !important;
-  cursor: pointer !important;
-  touch-action: manipulation !important;
-  pointer-events: auto !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
-
-.mnv-app-bar .mnv-edit-toggle-track,
-.mnv-app-bar .mnv-switch-track {
-  inline-size: 40px !important;
-  block-size: 22px !important;
-  border-radius: 999px !important;
-  pointer-events: none !important;
-}
-
-.mnv-app-bar .mnv-edit-toggle-thumb,
-.mnv-app-bar .mnv-switch-thumb,
-.mnv-app-bar .mnv-edit-toggle-label {
-  pointer-events: none !important;
-}
-
-.mnv-app-bar .mnv-edit-toggle-thumb,
-.mnv-app-bar .mnv-switch-thumb {
-  inline-size: 14px !important;
-  block-size: 14px !important;
-}
-
-.mnv-app-bar .mnv-edit-toggle.active .mnv-edit-toggle-thumb,
-.mnv-app-bar .mnv-te-reo-toggle.active .mnv-switch-thumb {
-  left: 19px !important;
-}
-
-@media (max-width: 420px) {
-  .mnv-app-bar .mnv-edit-toggle,
-  .mnv-app-bar .mnv-switch-toggle {
-    inline-size: 50px !important;
-    block-size: 48px !important;
-    min-inline-size: 50px !important;
-    min-block-size: 48px !important;
-    max-inline-size: 50px !important;
-    max-block-size: 48px !important;
   }
 }
 

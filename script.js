@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v153: Refines the About popup scrollbar inside the rounded panel. */
+/* v155: Uses encoding-safe app-bar icon labels. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v153';
+const CURRENT_APP_VERSION = 'v155';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3961,7 +3961,7 @@ function updateAppBarControls() {
     if (labelToggle) {
         labelToggle.disabled = !gridActive;
         labelToggle.setAttribute('aria-disabled', gridActive ? 'false' : 'true');
-        labelToggle.textContent = appSettings.gridLabelsVisible === false ? '▣' : '▣≡';
+        labelToggle.textContent = appSettings.gridLabelsVisible === false ? '\u25A3' : '\u25A3\u2261';
         labelToggle.title = appSettings.gridLabelsVisible === false ? 'Grid images only' : 'Grid images and text';
         labelToggle.setAttribute('aria-label', appSettings.gridLabelsVisible === false ? 'Grid images only' : 'Grid images and text');
         labelToggle.setAttribute('aria-pressed', appSettings.gridLabelsVisible === false ? 'true' : 'false');
@@ -3969,9 +3969,9 @@ function updateAppBarControls() {
 }
 
 function getDisplayModeIcon(displayMode) {
-    if (displayMode === 'grid') return '▦';
-    if (displayMode === 'menu') return '▤';
-    return '☰';
+    if (displayMode === 'grid') return '\u25A6';
+    if (displayMode === 'menu') return '\u25A4';
+    return '\u2630';
 }
 
 function getDisplayModeLabel(displayMode) {
