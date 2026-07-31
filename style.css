@@ -2182,46 +2182,6 @@ body[data-theme="dark"] .private-item-button small {
     padding-bottom: 10px;
 }
 
-.management-editor-table {
-    width: 100%;
-    min-width: 760px;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-.management-editor-table th,
-.management-editor-table td {
-    padding: 10px;
-    border-bottom: 1px solid #e6edf7;
-    text-align: left;
-    vertical-align: middle;
-}
-
-.management-editor-table th {
-    background: #f8fbff;
-    color: #334155;
-    font-size: 0.82rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.management-editor-table tr:last-child td {
-    border-bottom: 0;
-}
-
-.management-topic-row {
-    background: linear-gradient(90deg, rgba(231,251,255,.78), rgba(234,242,255,.72), rgba(243,236,255,.72));
-}
-
-.management-topic-row:nth-child(even) {
-    background: linear-gradient(90deg, rgba(240,253,250,.9), rgba(239,246,255,.9), rgba(250,245,255,.9));
-}
-
-.management-topic-row.selected-row {
-    outline: 3px solid rgba(37, 99, 235, 0.25);
-    outline-offset: -3px;
-}
-
 .management-media-thumb {
     width: 64px;
     height: 64px;
@@ -2321,12 +2281,6 @@ body[data-theme="dark"] .private-item-button small {
     margin: 0.75rem 0;
 }
 
-@media (max-width: 760px) {
-    .management-editor-table {
-        min-width: 700px;
-    }
-}
-
 /* v21 settings/editor cleanup */
 .management-overlay.show {
   align-items: stretch;
@@ -2359,16 +2313,6 @@ body[data-theme="dark"] .private-item-button small {
   color: #617086;
   font-size: 0.9rem;
   margin: 0 0 8px;
-}
-
-.management-editor-table.topic-editor-table {
-  min-width: 1120px;
-}
-
-.management-add-row td {
-  background: #f8fbff;
-  text-align: center;
-  padding: 14px;
 }
 
 .management-add-line {
@@ -2483,9 +2427,6 @@ body[data-theme="dark"] .private-item-button small {
 @media (max-width: 760px) {
   .management-overlay.show .management-panel {
     padding: 12px;
-  }
-  .management-editor-table.topic-editor-table {
-    min-width: 1040px;
   }
 }
 
@@ -2644,40 +2585,6 @@ body[data-theme="dark"] .private-item-button small {
   font-weight: 900;
 }
 
-.management-editor-table {
-  background: #ffffff;
-}
-
-.management-editor-table th {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  background: #f1f7ff;
-  color: #24364f;
-  border-bottom: 2px solid #d8e1ee;
-  font-size: 0.78rem;
-}
-
-.management-editor-table td {
-  border-bottom: 1px solid #e7edf6;
-}
-
-.management-topic-row {
-  background: #ffffff;
-}
-
-.management-topic-row:nth-child(even) {
-  background: #f8fbff;
-}
-
-.management-topic-row:hover {
-  background: #f1f8ff;
-}
-
-.management-topic-row td:first-child {
-  border-left: 6px solid #9bc5a4;
-}
-
 .management-media-thumb:hover,
 .management-media-thumb:focus {
   transform: translateY(-1px);
@@ -2685,20 +2592,14 @@ body[data-theme="dark"] .private-item-button small {
   box-shadow: 0 0 0 4px rgba(37,99,235,.16), 0 10px 22px rgba(37,99,235,.12);
 }
 
-.table-title-input,
-.management-editor-table input[type="text"],
-.management-editor-table textarea,
-.management-editor-table select {
+.table-title-input{
   border: 1px solid #cbd5e1;
   border-radius: 12px;
   background: #ffffff;
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-.table-title-input:focus,
-.management-editor-table input[type="text"]:focus,
-.management-editor-table textarea:focus,
-.management-editor-table select:focus {
+.table-title-input:focus{
   border-color: #4CAF50;
   box-shadow: 0 0 0 4px rgba(76,175,80,.13);
 }
@@ -2722,11 +2623,6 @@ body[data-theme="dark"] .private-item-button small {
   background: #eef6ff;
   color: #1e3a8a;
   border: 1px solid #bfdbfe;
-}
-
-.management-add-row td {
-  background: linear-gradient(135deg, #f0fdf4, #eff6ff);
-  border-top: 2px solid #d8e1ee;
 }
 
 .editor-bottom-actions .management-btn {
@@ -3155,24 +3051,6 @@ button:active,
   border-left-color: #dc2626 !important;
 }
 
-.management-editor-table th {
-  background: linear-gradient(180deg, #f8fbff, #eef5ff);
-  color: #23344f;
-}
-
-.management-editor-table td {
-  background-clip: padding-box;
-}
-
-.management-topic-row:hover {
-  background: #f2f8ff;
-}
-
-.management-topic-row:focus-within {
-  outline: 3px solid rgba(33,150,243,0.16);
-  outline-offset: -3px;
-}
-
 .management-media-thumb:active {
   transform: translateY(2px) scale(0.98);
   box-shadow: var(--shadow-press);
@@ -3358,25 +3236,6 @@ button:active,
 .editor-section-title {
   font-size: 1.12rem;
   margin-bottom: 10px;
-}
-
-.management-editor-table th,
-.management-editor-table td {
-  padding: 9px 10px;
-}
-
-.management-editor-table th {
-  white-space: nowrap;
-  font-size: 0.72rem;
-}
-
-.management-editor-table td {
-  vertical-align: middle;
-}
-
-.management-editor-table .help-text {
-  font-size: 0.78rem;
-  color: #64748b;
 }
 
 .management-thumb-fallback {
@@ -7778,23 +7637,6 @@ body {
   padding-bottom: 0.35rem !important;
 }
 
-#managementOverlay .management-editor-table.topic-editor-table {
-  min-width: 860px !important;
-}
-
-#managementOverlay .management-editor-table th,
-#managementOverlay .management-editor-table td {
-  padding: 0.36rem 0.42rem !important;
-  font-size: clamp(0.76rem, 2.8vw, 0.86rem) !important;
-  line-height: 1.18 !important;
-  vertical-align: middle !important;
-}
-
-#managementOverlay .management-editor-table th {
-  font-size: clamp(0.66rem, 2.5vw, 0.74rem) !important;
-  letter-spacing: 0.025em !important;
-}
-
 #managementOverlay .management-media-thumb {
   width: 3.1rem !important;
   height: 3.1rem !important;
@@ -7817,9 +7659,7 @@ body {
   margin-top: 0.16rem !important;
 }
 
-#managementOverlay .table-title-input,
-#managementOverlay .management-editor-table input[type="text"],
-#managementOverlay .management-editor-table select {
+#managementOverlay .table-title-input{
   min-height: 2.25rem !important;
   padding: 0.36rem 0.48rem !important;
   font-size: clamp(0.82rem, 3.2vw, 0.95rem) !important;
@@ -7880,10 +7720,6 @@ body {
   height: 1.05rem !important;
 }
 
-#managementOverlay .management-add-row td {
-  padding: 0.46rem !important;
-}
-
 #managementOverlay .editor-bottom-actions {
   position: sticky !important;
   bottom: 0 !important;
@@ -7909,10 +7745,6 @@ body {
 @media (max-width: 520px) {
   #managementOverlay .editor-header-subtitle {
     display: none !important;
-  }
-
-  #managementOverlay .management-editor-table.topic-editor-table {
-    min-width: 790px !important;
   }
 
   #managementOverlay .management-media-thumb {
@@ -8027,61 +7859,6 @@ body {
     padding-bottom: 0 !important;
   }
 
-  .management-editor-table,
-  .management-editor-table.topic-editor-table {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    border-collapse: separate !important;
-  }
-
-  .management-editor-table thead {
-    display: none !important;
-  }
-
-  .management-editor-table tbody,
-  .management-editor-table tr,
-  .management-editor-table td {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  .management-topic-row {
-    margin: 0 0 10px !important;
-    padding: 8px !important;
-    border: 1px solid #d8e1ee !important;
-    border-left: 6px solid #9bc5a4 !important;
-    border-radius: 14px !important;
-    box-shadow: 0 6px 16px rgba(15,23,42,.06) !important;
-    background: #ffffff !important;
-  }
-
-  .management-topic-row td {
-    border: 0 !important;
-    border-left: 0 !important;
-    padding: 6px 0 !important;
-  }
-
-  .management-topic-row td::before {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 0.72rem;
-    line-height: 1;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    color: #64748b;
-    font-weight: 900;
-  }
-
-  .topic-editor-table .management-topic-row td:nth-child(1)::before { content: 'Picture'; }
-  .topic-editor-table .management-topic-row td:nth-child(2)::before { content: 'Title'; }
-  .topic-editor-table .management-topic-row td:nth-child(3)::before { content: 'Icon'; }
-  .topic-editor-table .management-topic-row td:nth-child(4)::before { content: 'Open'; }
-  .topic-editor-table .management-topic-row td:nth-child(5)::before { content: 'Move'; }
-  .topic-editor-table .management-topic-row td:nth-child(6)::before { content: 'Visibility'; }
-  .topic-editor-table .management-topic-row td:nth-child(7)::before { content: 'Delete'; }
-
   .management-media-thumb {
     width: 54px !important;
     height: 54px !important;
@@ -8097,10 +7874,7 @@ body {
     border-radius: 999px !important;
   }
 
-  .table-title-input,
-  .management-editor-table input[type="text"],
-  .management-editor-table textarea,
-  .management-editor-table select {
+  .table-title-input{
     width: 100% !important;
     min-width: 0 !important;
     font-size: 16px !important;
@@ -8126,8 +7900,7 @@ body {
   }
 
   .table-button-stack .management-btn,
-  .voice-buttons .management-btn,
-  .management-topic-row .management-btn {
+  .voice-buttons .management-btn{
     min-height: 36px !important;
     padding: 0.38rem 0.5rem !important;
     font-size: 0.86rem !important;
@@ -8154,8 +7927,7 @@ body {
     line-height: 1.15 !important;
   }
 
-  .management-add-row,
-  .management-add-row td {
+  .management-add-row{
     display: block !important;
     width: 100% !important;
     padding: 0 !important;
@@ -8195,8 +7967,7 @@ body {
     font-size: 0.78rem !important;
   }
   .table-button-stack .management-btn,
-  .voice-buttons .management-btn,
-  .management-topic-row .management-btn {
+  .voice-buttons .management-btn{
     font-size: 0.8rem !important;
     padding: 0.34rem 0.42rem !important;
   }
@@ -8206,26 +7977,6 @@ body {
 /* v118 mobile content editor card layout */
 @media (max-width: 1200px){
 .management-panel .editor-table-scroll-hint{display:none;}
-.management-panel .management-editor-table,
-.management-panel .management-editor-table thead,
-.management-panel .management-editor-table tbody,
-.management-panel .management-editor-table tr,
-.management-panel .management-editor-table td{
-display:block;
-width:100%;
-}
-.management-panel .management-editor-table thead{display:none;}
-.management-panel .management-editor-table tr{
-border:1px solid #d6e5d8;
-border-radius:16px;
-margin:10px 0;
-padding:10px;
-background:#fff;
-}
-.management-panel .management-editor-table td{
-border:none;
-padding:6px 4px;
-}
 .management-panel .editor-header{
 padding:10px 14px !important;
 min-height:auto !important;
@@ -8528,186 +8279,6 @@ min-height:auto !important;
   scrollbar-gutter: stable both-edges;
 }
 
-/* undo earlier mobile-card/table overrides for this editor */
-#managementOverlay .one-row-editor-table,
-#managementOverlay .one-row-editor-table thead,
-#managementOverlay .one-row-editor-table tbody,
-#managementOverlay .one-row-editor-table tr,
-#managementOverlay .one-row-editor-table th,
-#managementOverlay .one-row-editor-table td {
-  display: revert !important;
-}
-
-#managementOverlay .one-row-editor-table {
-  width: max-content !important;
-  min-width: 100% !important;
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-  table-layout: fixed !important;
-  background: #ffffff !important;
-}
-
-#managementOverlay .topic-editor-table.one-row-editor-table {
-  min-width: 880px !important;
-}
-
-#managementOverlay .one-row-editor-table thead th {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 1 !important;
-  padding: 7px 8px !important;
-  background: #edf3f8 !important;
-  color: #233348 !important;
-  font-size: 0.72rem !important;
-  line-height: 1.05 !important;
-  text-align: left !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.035em !important;
-  border-bottom: 2px solid rgba(78, 120, 95, 0.22) !important;
-  white-space: nowrap !important;
-}
-
-#managementOverlay .one-row-editor-table td {
-  padding: 6px 8px !important;
-  vertical-align: middle !important;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
-  background: rgba(255,255,255,0.98) !important;
-  white-space: nowrap !important;
-}
-
-#managementOverlay .one-row-editor-table tbody tr:nth-child(even) td {
-  background: #f7fafc !important;
-}
-
-#managementOverlay .one-row-editor-table .selected-row td {
-  background: #eef8f1 !important;
-}
-
-#managementOverlay .one-row-editor-table .picture-cell { width: 92px !important; min-width: 92px !important; max-width: 92px !important; }
-#managementOverlay .one-row-editor-table .title-cell { width: 340px !important; min-width: 340px !important; max-width: 340px !important; }
-#managementOverlay .one-row-editor-table .icon-cell { width: 76px !important; min-width: 76px !important; max-width: 76px !important; }
-#managementOverlay .one-row-editor-table .edit-cell { width: 135px !important; min-width: 135px !important; max-width: 135px !important; }
-#managementOverlay .one-row-editor-table .move-cell { width: 92px !important; min-width: 92px !important; max-width: 92px !important; }
-#managementOverlay .one-row-editor-table .hidden-cell { width: 142px !important; min-width: 142px !important; max-width: 142px !important; }
-#managementOverlay .one-row-editor-table .delete-cell { width: 104px !important; min-width: 104px !important; max-width: 104px !important; }
-
-#managementOverlay .one-row-editor-table .management-media-thumb {
-  width: 52px !important;
-  height: 52px !important;
-  min-width: 52px !important;
-  min-height: 52px !important;
-  border-radius: 11px !important;
-  padding: 3px !important;
-  display: inline-flex !important;
-  vertical-align: middle !important;
-}
-
-#managementOverlay .one-row-editor-table .management-media-thumb.people-thumb,
-#managementOverlay .one-row-editor-table .management-media-thumb.people-thumb img {
-  border-radius: 999px !important;
-}
-
-#managementOverlay .one-row-editor-table .media-size-line,
-#managementOverlay .one-row-editor-table .help-text,
-#managementOverlay .one-row-editor-table .table-id-line {
-  display: block !important;
-  max-width: 100% !important;
-  margin: 3px 0 0 !important;
-  font-size: 0.68rem !important;
-  line-height: 1.1 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-#managementOverlay .one-row-editor-table .table-title-input {
-  width: 100% !important;
-  min-width: 0 !important;
-  min-height: 36px !important;
-  margin: 0 !important;
-  padding: 6px 9px !important;
-  font-size: 0.95rem !important;
-  font-weight: 800 !important;
-  border-radius: 9px !important;
-  white-space: normal !important;
-}
-
-#managementOverlay .one-row-editor-table .icon-input {
-  width: 52px !important;
-  min-width: 52px !important;
-  height: 36px !important;
-  min-height: 36px !important;
-  margin: 0 !important;
-  padding: 4px !important;
-  text-align: center !important;
-  font-size: 1rem !important;
-  border-radius: 9px !important;
-}
-
-#managementOverlay .one-row-editor-table .management-btn,
-#managementOverlay .one-row-editor-table .small-management-btn,
-#managementOverlay .one-row-editor-table .management-add-line {
-  min-height: 36px !important;
-  margin: 0 !important;
-  padding: 6px 10px !important;
-  border-radius: 9px !important;
-  font-size: 0.82rem !important;
-  font-weight: 850 !important;
-  line-height: 1.05 !important;
-  white-space: nowrap !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-#managementOverlay .one-row-editor-table .primary-table-btn {
-  width: 118px !important;
-}
-
-#managementOverlay .one-row-editor-table .table-button-stack,
-#managementOverlay .one-row-editor-table .move-button-stack {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 5px !important;
-  min-width: 0 !important;
-}
-
-#managementOverlay .one-row-editor-table .move-button-stack .management-btn {
-  width: 36px !important;
-  min-width: 36px !important;
-  padding: 5px !important;
-  font-size: 1rem !important;
-}
-
-#managementOverlay .one-row-editor-table .content-checkbox-row.compact-checkbox {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 7px !important;
-  min-height: 34px !important;
-  margin: 0 !important;
-  padding: 5px 10px !important;
-  font-size: 0.82rem !important;
-  border-radius: 999px !important;
-  white-space: nowrap !important;
-}
-
-#managementOverlay .one-row-editor-table .content-checkbox-row.compact-checkbox input {
-  width: 1rem !important;
-  height: 1rem !important;
-  min-width: 1rem !important;
-}
-
-#managementOverlay .one-row-editor-table .management-add-row td {
-  padding: 8px !important;
-  background: #ffffff !important;
-}
-
-#managementOverlay .one-row-editor-table .management-add-line {
-  width: 100% !important;
-  min-height: 40px !important;
-}
-
 #managementOverlay .table-editor-footer {
   flex: 0 0 auto !important;
   position: relative !important;
@@ -8764,16 +8335,6 @@ min-height:auto !important;
 
   #managementOverlay .table-editor-body .editor-workflow-note {
     display: none !important;
-  }
-
-  #managementOverlay .topic-editor-table.one-row-editor-table {
-    min-width: 820px !important;
-  }
-
-  #managementOverlay .one-row-editor-table .title-cell {
-    width: 310px !important;
-    min-width: 310px !important;
-    max-width: 310px !important;
   }
 
   #managementOverlay .table-editor-footer {
@@ -8936,21 +8497,6 @@ min-height:auto !important;
   line-height: 1.05 !important;
   font-size: clamp(0.82rem, 1.5vw, 1rem) !important;
   border-radius: 11px !important;
-}
-
-#managementOverlay .one-row-editor-table {
-  width: max-content !important;
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-}
-
-#managementOverlay .one-row-editor-table tr {
-  height: auto !important;
-}
-
-#managementOverlay .one-row-editor-table th,
-#managementOverlay .one-row-editor-table td {
-  vertical-align: middle !important;
 }
 
 @media (max-width: 760px) {
@@ -9153,50 +8699,6 @@ body.content-editor-open #managementOverlay.management-overlay.show .management-
   border-radius: 8px !important;
   background: #ffffff !important;
   touch-action: pan-x pan-y !important;
-}
-
-#managementOverlay .one-row-editor-table,
-#managementOverlay .management-editor-table {
-  display: table !important;
-  width: max-content !important;
-  min-width: 100% !important;
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-  table-layout: fixed !important;
-}
-
-#managementOverlay .one-row-editor-table thead,
-#managementOverlay .one-row-editor-table tbody,
-#managementOverlay .one-row-editor-table tr,
-#managementOverlay .one-row-editor-table th,
-#managementOverlay .one-row-editor-table td,
-#managementOverlay .management-editor-table thead,
-#managementOverlay .management-editor-table tbody,
-#managementOverlay .management-editor-table tr,
-#managementOverlay .management-editor-table th,
-#managementOverlay .management-editor-table td {
-  display: revert !important;
-}
-
-#managementOverlay .one-row-editor-table thead th {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 2 !important;
-  background: #edf4f7 !important;
-}
-
-#managementOverlay .one-row-editor-table tr,
-#managementOverlay .management-editor-table tr {
-  height: auto !important;
-  max-height: none !important;
-}
-
-#managementOverlay .one-row-editor-table th,
-#managementOverlay .one-row-editor-table td,
-#managementOverlay .management-editor-table th,
-#managementOverlay .management-editor-table td {
-  vertical-align: middle !important;
-  white-space: normal !important;
 }
 
 #managementOverlay .table-editor-footer,
@@ -9840,9 +9342,7 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay {
 .management-btn,
 .small-management-btn,
 .management-add-line,
-.image-options-panel .settings-action-btn,
-#managementOverlay .one-row-editor-table .management-btn,
-#managementOverlay .one-row-editor-table .small-management-btn {
+.image-options-panel .settings-action-btn{
   min-height: var(--mnv-ui-control-height) !important;
   border-radius: var(--mnv-ui-radius) !important;
   border: 1px solid var(--mnv-ui-line) !important;
@@ -9888,9 +9388,7 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay {
 .settings-textarea,
 .settings-icon-input,
 .management-input,
-#managementOverlay .table-title-input,
-#managementOverlay .management-editor-table input[type="text"],
-#managementOverlay .management-editor-table select {
+#managementOverlay .table-title-input{
   border-radius: var(--mnv-ui-radius) !important;
   border: 1px solid var(--mnv-ui-line-soft) !important;
   background: var(--mnv-ui-panel-strong) !important;
@@ -9901,31 +9399,9 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay {
 .settings-select:focus,
 .settings-textarea:focus,
 .settings-icon-input:focus,
-.management-input:focus,
-#managementOverlay .management-editor-table input[type="text"]:focus,
-#managementOverlay .management-editor-table select:focus {
+.management-input:focus{
   outline: 3px solid color-mix(in srgb, var(--primary-color, #4caf50) 24%, transparent) !important;
   border-color: color-mix(in srgb, var(--primary-color, #4caf50) 52%, rgba(15,23,42,0.20)) !important;
-}
-
-#managementOverlay .one-row-editor-table thead th {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.72)),
-    color-mix(in srgb, var(--theme-card-surface-2, #eef4f8) 72%, #ffffff) !important;
-  color: var(--mnv-ui-muted) !important;
-  border-bottom: 1px solid var(--mnv-ui-line-soft) !important;
-  font-weight: 850 !important;
-}
-
-#managementOverlay .one-row-editor-table td,
-#managementOverlay .management-editor-table td {
-  background: rgba(255,255,255,0.82) !important;
-  border-bottom: 1px solid rgba(15,23,42,0.08) !important;
-}
-
-#managementOverlay .one-row-editor-table .selected-row td,
-#managementOverlay .management-editor-table .selected-row td {
-  background: color-mix(in srgb, var(--primary-color, #4caf50) 10%, #ffffff) !important;
 }
 
 #managementOverlay .table-editor-footer {
@@ -10197,45 +9673,6 @@ body[data-theme="high-contrast"] {
 #managementOverlay .editor-table-wrap {
   border-radius: var(--mnv-ui-radius) !important;
   padding-bottom: 8px !important;
-}
-
-#managementOverlay .one-row-editor-table {
-  border-spacing: 0 !important;
-}
-
-#managementOverlay .one-row-editor-table thead th {
-  padding: 10px 9px !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  font-size: 0.78rem !important;
-}
-
-#managementOverlay .one-row-editor-table td {
-  padding: 9px !important;
-}
-
-#managementOverlay .one-row-editor-table tbody tr:hover td {
-  background: color-mix(in srgb, var(--primary-color, #4caf50) 7%, #ffffff) !important;
-}
-
-#managementOverlay .one-row-editor-table .management-media-thumb {
-  width: 70px !important;
-  height: 70px !important;
-  min-width: 70px !important;
-  min-height: 70px !important;
-}
-
-#managementOverlay .one-row-editor-table .management-btn,
-#managementOverlay .one-row-editor-table .small-management-btn {
-  min-height: 38px !important;
-  padding: 7px 9px !important;
-  font-size: 0.8rem !important;
-  line-height: 1.1 !important;
-}
-
-#managementOverlay .one-row-editor-table .table-button-stack,
-#managementOverlay .one-row-editor-table .move-button-stack {
-  gap: 6px !important;
 }
 
 #managementOverlay .table-editor-footer {
@@ -11149,21 +10586,6 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   .phrase-popup-overlay.photo-memory-popup:not(.introduction-popup) .phrase-popup-image {
     max-height: 42vh !important;
   }
-}
-
-/* v124 hotfix: compact add-row buttons in the Content Editor tables. */
-#managementOverlay .one-row-editor-table .management-add-row td {
-  text-align: center !important;
-}
-
-#managementOverlay .one-row-editor-table .management-add-row .management-add-line {
-  width: auto !important;
-  min-width: min(18rem, 100%) !important;
-  max-width: min(28rem, 100%) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding-inline: clamp(18px, 4vw, 34px) !important;
 }
 
 #managementOverlay [data-content-save-close][hidden] {
@@ -13080,5 +12502,61 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
 @media (max-width: 520px) {
   #aboutModal .about-content {
     padding-right: calc(var(--space-lg) + 12px) !important;
+  }
+}
+
+/* v156: Keep the mobile Content Editor inside the visible phone width. */
+@media (max-width: 760px) {
+  body.content-editor-open {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  body.content-editor-open #managementOverlay.management-overlay,
+  body.content-editor-open #managementOverlay.management-overlay.show,
+  body.content-editor-open #managementOverlay.management-overlay.show .management-panel {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  body.content-editor-open #managementOverlay .table-editor-body,
+  body.content-editor-open #managementOverlay .editor-table-wrap,
+  body.content-editor-open #managementOverlay .topic-card-editor-wrap,
+  body.content-editor-open #managementOverlay .topic-card-list,
+  body.content-editor-open #managementOverlay .content-phrase-card-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  body.content-editor-open #managementOverlay .topic-editor-card,
+  body.content-editor-open #managementOverlay .content-phrase-card {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  body.content-editor-open #managementOverlay input,
+  body.content-editor-open #managementOverlay textarea,
+  body.content-editor-open #managementOverlay select,
+  body.content-editor-open #managementOverlay button {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  body.content-editor-open #managementOverlay input,
+  body.content-editor-open #managementOverlay textarea,
+  body.content-editor-open #managementOverlay select {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
   }
 }

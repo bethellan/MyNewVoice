@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v155: Uses encoding-safe app-bar icon labels. */
+/* v157: Removes obsolete table-era Content Editor CSS. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v155';
+const CURRENT_APP_VERSION = 'v157';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -5767,6 +5767,19 @@ function restoreQueuedContentEditorPosition() {
     });
 }
 
+function containContentEditorHorizontalViewport() {
+    const panel = document.getElementById('managementPanel');
+    if (!panel) return;
+    const overlay = document.getElementById('managementOverlay');
+    [overlay, panel, ...panel.querySelectorAll('.table-editor-body, .editor-table-wrap, .topic-card-editor-wrap, .content-phrase-card-list, .topic-card-list')]
+        .filter(Boolean)
+        .forEach((element) => {
+            if (typeof element.scrollLeft === 'number' && element.scrollLeft !== 0) {
+                element.scrollLeft = 0;
+            }
+        });
+}
+
 function renderContentManagementPanel() {
     const panel = document.getElementById('managementPanel');
     if (!panel) return;
@@ -5789,6 +5802,7 @@ function renderContentManagementPanel() {
     panel.oninput = handleContentManagementInput;
     panel.onchange = handleContentManagementChange;
     panel.onfocusin = handleContentManagementFocusIn;
+    panel.onfocusout = () => requestAnimationFrame(containContentEditorHorizontalViewport);
     applyPrivateImagesIn(panel);
     updateContentEditorSaveState();
     restoreQueuedContentEditorPosition();
@@ -5837,7 +5851,7 @@ function renderContentTopicsScreen(panel, allCategories) {
 
         <div class="private-section-details editor-details open-editor-section table-editor-body">
             <div class="editor-section-title">Main menu topics</div>
-            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> keep one row per section. If the row is wider than the screen, scroll left or right inside the table.</div>
+            <div class="carer-workflow-note editor-workflow-note"><strong>Tip:</strong> choose a section, then edit its phrases, picture and visibility.</div>
             <div class="editor-table-wrap topic-card-editor-wrap" role="region" aria-label="Main menu topics" tabindex="0">
                 ${renderContentCategoryRows(allCategories)}
             </div>
@@ -6518,9 +6532,11 @@ async function handleContentManagementClick(event) {
 
 function handleContentManagementFocusIn(event) {
     const target = event.target;
+    containContentEditorHorizontalViewport();
     if (!target || !target.matches?.('.table-title-input')) return;
     if (!target.hasAttribute('data-content-inline-category-label') && !target.hasAttribute('data-content-inline-category-reo-label') && !target.hasAttribute('data-content-inline-phrase-text')) return;
     selectDefaultContentEditorText(target);
+    requestAnimationFrame(containContentEditorHorizontalViewport);
 }
 
 function handleContentManagementInput(event) {

@@ -1,4 +1,4 @@
-v155_app_bar_icon_encoding
+v157_content_editor_css_cleanup
 
-Uses encoding-safe app-bar icon labels so the view and image/text buttons do not show garbled characters.
-Includes v154 app-bar switch cleanup, v153 About scrollbar polish and v152 iPhone title bar fit.
+Removes obsolete table-era Content Editor CSS now that main topics and phrases render as cards, reducing cascade conflicts around the editor.
+Includes v156 mobile Content Editor containment, v155 app-bar icon encoding and v154 app-bar switch cleanup.
