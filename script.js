@@ -12,6 +12,8 @@
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
 /* v166: Removes the Introduction Message controls from Settings. */
 /* v167: Stabilises quick Yes / No colours during iPhone swipe and touch states. */
+/* v168: Settings cog opens Settings directly and Information lives inside Settings. */
+/* v169: Makes Information a body-level overlay so it opens above Settings immediately. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -95,7 +97,7 @@ function mnvReadStableViewportHeight() {
 }
 
 function mnvAnyViewportOverlayOpen() {
-    const ids = ['settingsEntryOverlay', 'settingsOverlay', 'passwordModal', 'aboutModal', 'managementOverlay'];
+    const ids = ['settingsOverlay', 'passwordModal', 'aboutModal', 'managementOverlay'];
     return ids.some(id => {
         const el = document.getElementById(id);
         if (!el) return false;
@@ -191,7 +193,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v167';
+const CURRENT_APP_VERSION = 'v169';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -290,7 +292,6 @@ function renderMyPeopleRelationshipSelect(phrase, category) {
 }
 let pendingPasswordAction = 'management';
 let pendingGridEditorAction = null;
-let returnToSettingsEntryAfterPasswordCancel = false;
 let privateSetupSelectedItem = null;
 let privateMediaDbPromise = null;
 let privateMediaObjectUrls = new Map();
@@ -1367,12 +1368,10 @@ function hideSettingsEntryOverlay() {
 
 function openSettingsFromEntryOverlay() {
     if (editModeUnlocked) {
-        returnToSettingsEntryAfterPasswordCancel = false;
         hideSettingsEntryOverlay();
         showSettingsOverlay();
         return;
     }
-    returnToSettingsEntryAfterPasswordCancel = true;
     hideSettingsEntryOverlay();
     showPasswordModal('settings');
 }
@@ -1546,6 +1545,19 @@ function ensureSettingsOverlay() {
                         <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-audio><span class="settings-card-text"><strong>Remove All Audio</strong><small>Delete voices from this device.</small></span></button>
                     </div>
                 </details>
+
+                <section class="settings-v115-card settings-section-information">
+                    <div class="settings-v115-card-head">
+                        <span class="settings-v115-card-icon" aria-hidden="true">i</span>
+                        <div>
+                            <h4>Information</h4>
+                            <p>About, version, storage and offline status.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="settings-action-btn" data-open-information>
+                        <span class="settings-card-text"><strong>Open Information</strong><small>Review app details and device status.</small></span>
+                    </button>
+                </section>
             </div>
         </div>    `;
 
@@ -1560,6 +1572,10 @@ function ensureSettingsOverlay() {
             hideSettingsOverlay();
             contentEditorScreen = 'topics';
             showManagementPanel();
+            return;
+        }
+        if (event.target.closest('[data-open-information]')) {
+            showAboutFromSettings();
             return;
         }
         if (event.target.closest('[data-export-full-backup]')) {
@@ -2239,6 +2255,7 @@ function showAboutFromSettings() {
     const settingsOverlay = document.getElementById('settingsOverlay');
     const aboutModal = document.getElementById('aboutModal');
     if (!aboutModal) return;
+    if (aboutModal.parentElement !== document.body) document.body.appendChild(aboutModal);
     aboutModal.dataset.returnTo = 'settings';
     aboutModal.style.display = 'flex';
     aboutModal.classList.add('about-from-settings');
@@ -2251,10 +2268,6 @@ function showAboutFromSettings() {
 function closeAboutToSettings() {
     const aboutModal = document.getElementById('aboutModal');
     if (!aboutModal) return;
-    if (aboutModal.dataset.returnTo === 'settings-entry') {
-        closeAboutToSettingsEntry();
-        return;
-    }
     const settingsOverlay = document.getElementById('settingsOverlay');
     aboutModal.style.display = 'none';
     aboutModal.classList.remove('about-from-settings');
@@ -5339,10 +5352,6 @@ function hidePasswordModal() {
     document.getElementById('passwordInput').value = '';
     pendingPasswordAction = 'management';
     if (action === 'teReoMode') pendingTeReoModeTarget = null;
-    if (action === 'settings' && returnToSettingsEntryAfterPasswordCancel) {
-        returnToSettingsEntryAfterPasswordCancel = false;
-        showSettingsEntryOverlay();
-    }
 }
 
 function checkPassword() {
@@ -5353,8 +5362,6 @@ function checkPassword() {
         const teReoTarget = pendingTeReoModeTarget;
         hidePasswordModal();
         if (action === 'settings') {
-            returnToSettingsEntryAfterPasswordCancel = false;
-            hideSettingsEntryOverlay();
             showSettingsOverlay();
         } else if (action === 'privateSetup') {
             // v26: legacy Photo / Voice Setup route now opens the current editor-style content manager.
@@ -9930,7 +9937,11 @@ installSingleButtonPressVisualGuard();
                 event.preventDefault();
                 event.stopPropagation();
             }
-            showSettingsEntryOverlay();
+            if (editModeUnlocked) {
+                showSettingsOverlay();
+            } else {
+                showPasswordModal('settings');
+            }
         }, { passive: false });
     }
 
@@ -10017,7 +10028,6 @@ installSingleButtonPressVisualGuard();
 
     document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape' || !document.body.classList.contains('settings-real-screen-active')) return;
-        hideSettingsEntryOverlay();
         hideSettingsOverlay();
     });
 
