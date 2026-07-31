@@ -1,4 +1,4 @@
-v169_information_overlay_sequence_fix
+v170_iphone_app_bar_tap_targets
 
-Information now opens immediately above Settings instead of appearing late after Return to App.
-Includes v168 direct Settings/Information card, v167 quick Yes / No touch colour fix, v166 removed Introduction Message controls, v165 iOS app refresh cache fix, v164 mobile app-bar tap targets, v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
+iPhone app-bar controls now stay in fixed right-side slots with larger tap targets and the brand text is hidden earlier on narrow screens to prevent crowding.
+Includes v169 Information overlay sequence fix, v168 direct Settings/Information card, v167 quick Yes / No touch colour fix, v166 removed Introduction Message controls, v165 iOS app refresh cache fix, v164 mobile app-bar tap targets, v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.

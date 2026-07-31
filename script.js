@@ -14,6 +14,7 @@
 /* v167: Stabilises quick Yes / No colours during iPhone swipe and touch states. */
 /* v168: Settings cog opens Settings directly and Information lives inside Settings. */
 /* v169: Makes Information a body-level overlay so it opens above Settings immediately. */
+/* v170: Keeps iPhone app-bar controls in fixed right-side slots with larger tap targets. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -193,7 +194,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v169';
+const CURRENT_APP_VERSION = 'v170';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
