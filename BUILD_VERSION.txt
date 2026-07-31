@@ -1,4 +1,4 @@
-v157_content_editor_css_cleanup
+v159_settings_escape_and_tab_cleanup
 
-Removes obsolete table-era Content Editor CSS now that main topics and phrases render as cards, reducing cascade conflicts around the editor.
-Includes v156 mobile Content Editor containment, v155 app-bar icon encoding and v154 app-bar switch cleanup.
+Hardens Settings saving so localStorage failures cannot leave the app hidden behind Settings, adds an Escape-key recovery path, and consolidates main menu topic-card tab styling into one authoritative CSS block.
+Includes v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.

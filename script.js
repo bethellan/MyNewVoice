@@ -10,7 +10,7 @@
 /* v131: Restores grid cell flow and tightens the app bar controls. */
 /* v132: Isolates grid tile layout from older submenu row CSS. */
 /* v134: Consolidates grid tile CSS ownership so grid rows cannot overlap. */
-/* v157: Removes obsolete table-era Content Editor CSS. */
+/* v159: Hardens Settings close path and consolidates main menu tab styling. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -190,7 +190,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v157';
+const CURRENT_APP_VERSION = 'v159';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1434,30 +1434,19 @@ function ensureSettingsOverlay() {
                 <details class="settings-v115-card settings-v115-foldout settings-section-display" open>
                     <summary><span>Display &amp; Touch</span><small>Main screen appearance and tap behaviour.</small></summary>
                     <div class="settings-v115-form-grid">
-                        <label for="settingsDisplayMode">View</label>
-                        <select id="settingsDisplayMode" class="settings-select">
-                            <option value="simple-list">List view</option>
-                            <option value="menu">Menu view</option>
-                            <option value="grid">Grid view</option>
-                        </select>
                         <label for="settingsTheme">Theme</label>
                         <select id="settingsTheme" class="settings-select">
                             <option value="default">Classic</option>
-                            <option value="sunny-day">Sunny Day</option>
-                            <option value="ocean-calm">Ocean Calm</option>
-                            <option value="soft-garden">Soft Garden</option>
-                            <option value="sci-fi">Sci-Fi Console</option>
+                            <option value="twilight-plum">Twilight Plum</option>
+                            <option value="forest-night">Forest Night</option>
+                            <option value="slate-studio">Slate Studio</option>
+                            <option value="sci-fi-v2">Sci-Fi Console</option>
                             <option value="high-contrast">High Contrast</option>
                         </select>
                         <label for="settingsQuickYesNoEnabled">Yes / No quick buttons</label>
                         <select id="settingsQuickYesNoEnabled" class="settings-select">
                             <option value="off">Off</option>
                             <option value="on">On</option>
-                        </select>
-                        <label for="settingsGridLabelsVisible">Grid labels</label>
-                        <select id="settingsGridLabelsVisible" class="settings-select">
-                            <option value="on">Images + text</option>
-                            <option value="off">Images only</option>
                         </select>
                     </div>
                 </details>
@@ -1688,12 +1677,6 @@ function ensureSettingsOverlay() {
     });
 
     overlay.addEventListener('change', (event) => {
-        if (event.target && event.target.id === 'settingsDisplayMode') {
-            appSettings.displayMode = event.target.value;
-            saveAppSettings();
-            showToast(getDisplayModeToast(appSettings.displayMode), 'success');
-            return;
-        }
         if (event.target && event.target.id === 'settingsTheme') {
             appSettings.theme = THEMES.has(event.target.value) ? event.target.value : DEFAULT_APP_SETTINGS.theme;
             saveAppSettings({ render: true });
@@ -1704,12 +1687,6 @@ function ensureSettingsOverlay() {
             appSettings.quickYesNoEnabled = event.target.value === 'on';
             saveAppSettings({ render: true });
             showToast(appSettings.quickYesNoEnabled ? 'Yes / No buttons on' : 'Yes / No buttons off', 'success');
-            return;
-        }
-        if (event.target && event.target.id === 'settingsGridLabelsVisible') {
-            appSettings.gridLabelsVisible = event.target.value !== 'off';
-            saveAppSettings({ render: true });
-            showToast(appSettings.gridLabelsVisible ? 'Grid text shown' : 'Grid images only', 'success');
             return;
         }
         if (event.target && event.target.id === 'settingsPressActivation') {
@@ -2357,8 +2334,14 @@ function closeAboutToSettings() {
 function returnToAppFromSettings() {
     // Settings controls autosave as they are changed. This explicit exit normalises
     // and saves the current app settings once more, then returns to the communication app.
-    saveAppSettings({ render: true });
-    hideSettingsOverlay();
+    try {
+        saveAppSettings({ render: true });
+    } catch (error) {
+        console.error('Unexpected error while leaving Settings:', error);
+        showToast('Could not save settings', 'error');
+    } finally {
+        hideSettingsOverlay();
+    }
 }
 
 function showSettingsOverlay() {
@@ -3510,42 +3493,47 @@ const DEFAULT_APP_SETTINGS = {
     }
 };
 const DISPLAY_MODES = new Set(['menu', 'simple-list', 'grid']);
-const THEMES = new Set(['default', 'sunny-day', 'ocean-calm', 'soft-garden', 'sci-fi', 'high-contrast']);
+const THEMES = new Set(['default', 'twilight-plum', 'forest-night', 'slate-studio', 'sci-fi-v2', 'high-contrast']);
 const LEGACY_THEME_ALIASES = {
-    'gentle-morning': 'sunny-day',
-    'deep-ocean': 'ocean-calm',
-    'earth-sage': 'soft-garden',
-    midnight: 'sci-fi',
-    sunrise: 'sunny-day',
-    ocean: 'ocean-calm',
-    sage: 'soft-garden',
+    'gentle-morning': 'default',
+    'deep-ocean': 'slate-studio',
+    'earth-sage': 'default',
+    'sunny-day': 'default',
+    'ocean-calm': 'slate-studio',
+    'soft-garden': 'default',
+    'sci-fi': 'sci-fi-v2',
+    midnight: 'forest-night',
+    sunrise: 'default',
+    ocean: 'slate-studio',
+    sage: 'default',
     metallic: 'default',
     photoreal: 'default',
     realistic: 'default',
     marble: 'default',
-    metal: 'sci-fi',
-    water: 'ocean-calm',
-    cyberpunk: 'sci-fi',
+    metal: 'sci-fi-v2',
+    water: 'slate-studio',
+    cyberpunk: 'sci-fi-v2',
     starTrek: 'default',
     'star-trek': 'default',
-    darthVader: 'sci-fi',
-    'darth-vader': 'sci-fi',
-    sunny: 'sunny-day',
-    banana: 'sunny-day',
-    'banana-split': 'sunny-day',
-    earth: 'soft-garden',
-    fire: 'sunny-day',
+    darthVader: 'sci-fi-v2',
+    'darth-vader': 'sci-fi-v2',
+    sunny: 'default',
+    banana: 'default',
+    'banana-split': 'default',
+    earth: 'default',
+    fire: 'twilight-plum',
     highcontrast: 'high-contrast',
     'high contrast': 'high-contrast',
-    scifi: 'sci-fi',
-    'sci fi': 'sci-fi'
+    scifi: 'sci-fi-v2',
+    'sci fi': 'sci-fi-v2',
+    'sci-fi console': 'sci-fi-v2'
 };
 const THEME_LABELS = {
     default: 'Classic',
-    'sunny-day': 'Sunny Day',
-    'ocean-calm': 'Ocean Calm',
-    'soft-garden': 'Soft Garden',
-    'sci-fi': 'Sci-Fi Console',
+    'twilight-plum': 'Twilight Plum',
+    'forest-night': 'Forest Night',
+    'slate-studio': 'Slate Studio',
+    'sci-fi-v2': 'Sci-Fi Console',
     'high-contrast': 'High Contrast'
 };
 const THEME_CATEGORY_PALETTES = {
@@ -3863,11 +3851,18 @@ function loadAppSettings() {
 function saveAppSettings({ render = true, persistContent = true, showSaveIndicator = true } = {}) {
     appSettings = normaliseAppSettings(appSettings);
     applyAppTheme();
-    localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(appSettings));
+    let settingsSaved = true;
+    try {
+        localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(appSettings));
+    } catch (error) {
+        settingsSaved = false;
+        console.error('Could not save app settings:', error);
+        showToast('Could not save settings', 'error');
+    }
     if (persistContent && typeof saveDataToStorage === 'function') {
         saveDataToStorage();
     }
-    if (showSaveIndicator) showAutoSave();
+    if (showSaveIndicator && settingsSaved) showAutoSave();
     updateSettingsControls();
     if (render) showMainMenu();
 }
@@ -3875,17 +3870,10 @@ function saveAppSettings({ render = true, persistContent = true, showSaveIndicat
 function updateSettingsControls() {
     appSettings = normaliseAppSettings(appSettings);
     applyAppTheme();
-    const displayModeSelect = document.getElementById('settingsDisplayMode');
-    if (displayModeSelect) displayModeSelect.value = appSettings.displayMode;
     const themeSelect = document.getElementById('settingsTheme');
     if (themeSelect) themeSelect.value = appSettings.theme;
     const quickYesNoSelect = document.getElementById('settingsQuickYesNoEnabled');
     if (quickYesNoSelect) quickYesNoSelect.value = appSettings.quickYesNoEnabled ? 'on' : 'off';
-    const gridLabelsSelect = document.getElementById('settingsGridLabelsVisible');
-    if (gridLabelsSelect) {
-        gridLabelsSelect.value = appSettings.gridLabelsVisible === false ? 'off' : 'on';
-        gridLabelsSelect.disabled = appSettings.displayMode !== 'grid';
-    }
     const pressActivationSelect = document.getElementById('settingsPressActivation');
     if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
     const speechEnabledSelect = document.getElementById('settingsSpeechEnabled');
@@ -10046,6 +10034,12 @@ installSingleButtonPressVisualGuard();
             if (e.key === 'Escape' && managementOverlay.classList.contains('show')) hideManagementPanel();
         });
     }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || !document.body.classList.contains('settings-real-screen-active')) return;
+        hideSettingsEntryOverlay();
+        hideSettingsOverlay();
+    });
 
     console.log('App initialization complete!');
 });

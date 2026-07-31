@@ -312,25 +312,7 @@ body {
 
 /* Main menu category image cards.
    v5_menu_image_submenus - top categories are stacked image buttons; phrase rows are shown after choosing a category. */
-.tab-container {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  margin-bottom: var(--space-lg);
-  background: var(--menu-surface-bg);
-  border-radius: 25px;
-  padding: var(--space-sm);
-  flex-wrap: nowrap;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  border: 2px solid #e9ecef;
-  gap: var(--space-md);
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
+
 
 .tab-container[hidden],
 .grid[hidden],
@@ -338,26 +320,7 @@ body {
   display: none !important;
 }
 
-.tab {
-  padding: 0;
-  background: var(--card-bg);
-  border: 3px solid var(--tab-color, transparent);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-sm);
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-  color: var(--text-dark);
-  flex: none;
-  width: 100%;
-  min-width: 0;
-  min-height: clamp(150px, 25vw, 220px);
-  display: grid;
-  grid-template-rows: auto 1fr;
-  overflow: hidden;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.10);
-}
+
 
 .menu-card-title {
   display: flex;
@@ -408,25 +371,11 @@ body {
   line-height: 1;
 }
 
-.tab.active {
-  border-color: var(--tab-dark, var(--primary-dark));
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-}
 
-.tab:hover:not(.active),
-.tab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 16px rgba(0,0,0,0.14);
-}
 
-.tab:hover .menu-card-image-shell img {
-  transform: scale(1.03);
-}
 
-.tab:focus {
-  outline: 3px solid var(--secondary-color);
-  outline-offset: 2px;
-}
+
+
 
 .submenu-header {
   display: flex;
@@ -1159,15 +1108,9 @@ body {
     min-height: clamp(98px, 21vw, 124px);
   }
   
-  .tab-container {
-    border-radius: 20px;
-    padding: var(--space-xs);
-    gap: var(--space-sm);
-  }
-  
-  .tab {
-    min-height: clamp(132px, 36vw, 184px);
-  }
+
+
+
 
   .menu-card-title {
     font-size: var(--font-md);
@@ -1232,13 +1175,10 @@ body {
     border-width: 3px;
   }
   
-  .tab {
-    border: 2px solid transparent;
-  }
-  
-  .tab.active {
-    border-color: var(--text-dark);
-  }
+
+
+
+
 }
 
 /* Reduced motion support */
@@ -2947,27 +2887,11 @@ button:active,
 }
 
 /* Main menu cards: same structure, cleaner card finish and pressed feel. */
-.tab-container {
-  background: linear-gradient(135deg, #f8fbff, #edf3f8);
-  border-color: var(--border-soft);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.75), var(--shadow-soft);
-}
 
-.tab {
-  background: var(--surface-card);
-  box-shadow: var(--shadow-soft);
-  border-color: var(--tab-color, #4CAF50);
-}
 
-.tab:hover:not(.active),
-.tab:hover {
-  box-shadow: var(--shadow-card);
-}
 
-.tab:active {
-  transform: translateY(2px) scale(0.996);
-  box-shadow: var(--shadow-press);
-}
+
+
 
 .menu-card-title {
   text-shadow: 0 1px 2px rgba(0,0,0,0.18);
@@ -2977,7 +2901,6 @@ button:active,
   background: linear-gradient(135deg, var(--tab-soft, #f8f9fa), #ffffff 65%, #f3f7fc);
 }
 
-.tab:focus-visible,
 .grid-button:focus-visible,
 .settings-action-btn:focus-visible,
 .management-btn:focus-visible,
@@ -3680,19 +3603,15 @@ body[data-theme="midnight"] {
 }
 
 /* concept theme surface refinements - no layout change */
-body[data-theme="gentle-morning"] .tab,
 body[data-theme="gentle-morning"] .grid-button,
 body[data-theme="gentle-morning"] .settings-action-btn,
-body[data-theme="deep-ocean"] .tab,
 body[data-theme="deep-ocean"] .grid-button,
 body[data-theme="deep-ocean"] .settings-action-btn,
-body[data-theme="earth-sage"] .tab,
 body[data-theme="earth-sage"] .grid-button,
 body[data-theme="earth-sage"] .settings-action-btn {
   background-image: linear-gradient(145deg, var(--theme-button-surface), var(--theme-button-surface-2)) !important;
 }
 
-body[data-theme="midnight"] .tab,
 body[data-theme="midnight"] .grid-button,
 body[data-theme="midnight"] .settings-action-btn {
   background-image: linear-gradient(145deg, var(--theme-button-surface), var(--theme-button-surface-2)) !important;
@@ -3739,24 +3658,12 @@ button:not(.tab):not(.grid-button):not(.management-toggle):focus,
   box-shadow: 0 14px 30px var(--theme-glow), inset 0 1px 0 rgba(255,255,255,0.28);
 }
 
-.tab-container {
-  background: var(--menu-surface-bg);
-  border-color: var(--theme-page-border);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.50), 0 14px 32px rgba(15,23,42,0.13);
-}
 
-.tab {
-  background: var(--theme-card-surface);
-  border-color: color-mix(in srgb, var(--tab-color, var(--primary-color)) 76%, var(--theme-border-soft));
-  border-radius: calc(var(--radius-lg) + 4px);
-  box-shadow: var(--theme-card-shadow);
-}
 
-.tab:hover,
-.tab:focus-visible {
-  box-shadow: var(--theme-card-shadow-hover);
-  border-color: var(--tab-dark, var(--primary-dark));
-}
+
+
+
+
 
 .menu-card-title {
   background: linear-gradient(135deg, var(--tab-color, var(--primary-color)), var(--tab-dark, var(--primary-dark)) 76%);
@@ -3915,7 +3822,6 @@ select:focus {
 }
 
 @supports not (color: color-mix(in srgb, white, black)) {
-  .tab,
   .grid-button,
   .grid-button:hover,
   .grid-button.speaking,
@@ -3984,7 +3890,6 @@ body[data-theme="midnight"] {
   backdrop-filter: blur(12px);
 }
 
-.tab-container,
 .grid {
   border-radius: calc(var(--radius-lg) + 12px);
   border: 1px solid color-mix(in srgb, var(--primary-color) 28%, rgba(255,255,255,0.72));
@@ -3998,7 +3903,6 @@ body[data-theme="midnight"] {
   padding: clamp(0.7rem, 2vw, 1rem) !important;
 }
 
-.tab,
 .grid-button {
   transform: translateZ(0);
   position: relative;
@@ -4018,7 +3922,6 @@ body[data-theme="midnight"] {
   transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease, border-color 0.16s ease;
 }
 
-.tab::before,
 .grid-button::before,
 .settings-action-btn::before,
 .management-btn::before,
@@ -4034,7 +3937,6 @@ body[data-theme="midnight"] {
   z-index: 0;
 }
 
-.tab > *,
 .grid-button > *,
 .settings-action-btn > *,
 .management-btn > *,
@@ -4043,8 +3945,6 @@ body[data-theme="midnight"] {
   z-index: 1;
 }
 
-.tab:hover,
-.tab:focus-visible,
 .grid-button:hover,
 .grid-button:focus-visible {
   transform: translateY(-3px) scale(1.004);
@@ -4056,7 +3956,6 @@ body[data-theme="midnight"] {
     inset 0 -16px 28px rgba(15,23,42,0.08) !important;
 }
 
-.tab:active,
 .grid-button:active,
 .grid-button.press-waiting {
   transform: translateY(1px) scale(0.992);
@@ -4066,7 +3965,6 @@ body[data-theme="midnight"] {
     inset 0 1px 0 rgba(255,255,255,0.34) !important;
 }
 
-.tab.active,
 .grid-button.speaking {
   border-color: color-mix(in srgb, var(--category-color, var(--tab-color, var(--primary-color))) 78%, #ffffff) !important;
   box-shadow:
@@ -4291,9 +4189,7 @@ select {
 @supports not (color: color-mix(in srgb, white, black)) {
   .container,
   #messageBar,
-  .tab-container,
   .grid,
-  .tab,
   .grid-button,
   .settings-panel,
   .settings-action-btn,
@@ -4641,16 +4537,9 @@ body[data-theme="midnight"] .content-media-summary {
 
 
 /* v69 - main menu image fit and card size adjustment */
-.tab-container {
-  padding: clamp(0.5rem, 1.35vw, 0.75rem) !important;
-}
 
-.tab {
-  width: calc(100% + 4px) !important;
-  margin-left: -2px !important;
-  margin-right: -2px !important;
-  min-height: clamp(174px, 28vw, 248px) !important;
-}
+
+
 
 .menu-card-title {
   min-height: clamp(52px, 8vw, 72px) !important;
@@ -4715,27 +4604,6 @@ body[data-theme="midnight"] .content-media-summary {
    Single column on phones; 2 cols on tablets; 3 cols on desktop.
    ───────────────────────────────────────────────────────────── */
 
-@media (min-width: 580px) {
-  .tab-container:not([hidden]) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: auto;
-    align-content: start;
-    /* Keep flex-sizing so it still fills the available height */
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-@media (min-width: 960px) {
-  .tab-container:not([hidden]) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 /* Empty-menu warning spans all columns */
 .tab-container .empty-menu-warning {
   grid-column: 1 / -1;
@@ -4743,11 +4611,8 @@ body[data-theme="midnight"] .content-media-summary {
 
 /* In grid mode, tabs fill their cell fully */
 @media (min-width: 580px) {
-  .tab {
-    width: 100%;
-    /* Slightly shorter cards work better side-by-side */
-    min-height: clamp(130px, 20vw, 200px);
-  }
+
+
   .menu-card-image-shell {
     min-height: clamp(88px, 14vw, 140px);
   }
@@ -4946,21 +4811,9 @@ body[data-theme="midnight"] .settings-preferences > .settings-select {
    6. MENU CARDS: More satisfying press / active state
    ───────────────────────────────────────────────────────────── */
 
-.tab {
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
 
-.tab:active {
-  transform: scale(0.975) !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.10) !important;
-  transition: transform 0.07s ease, box-shadow 0.07s ease;
-}
 
-/* Slightly more prominent hover lift */
-.tab:hover:not(.active) {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.15);
-}
+
 
 
 /* ─────────────────────────────────────────────────────────────
@@ -5107,8 +4960,7 @@ html {
    single visual source of truth while preserving normal click/tap behaviour. */
 @media (hover: none) and (pointer: coarse) {
   button:active,
-  .tab:active,
-  .grid-button:active,
+    .grid-button:active,
   .settings-action-btn:active,
   .management-btn:active,
   .small-management-btn:active,
@@ -5459,7 +5311,6 @@ body {
   padding: clamp(12px, 2vw, 18px) !important;
 }
 
-.tab-container:not([hidden]),
 .grid:not([hidden]) {
   background: rgba(255,255,255,0.52) !important;
   border: 1px solid rgba(74,124,89,0.18) !important;
@@ -5473,28 +5324,13 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-.tab {
-  border: 1px solid color-mix(in srgb, var(--tab-color, var(--primary-color)) 44%, white) !important;
-  border-radius: var(--mnv-v90-radius-lg) !important;
-  background: var(--mnv-v90-surface-solid) !important;
-  min-height: clamp(174px, 31vw, 240px) !important;
-  box-shadow: var(--mnv-v90-shadow-card) !important;
-  overflow: hidden !important;
-  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, filter 140ms ease !important;
-}
 
-.tab:hover,
-.tab:focus-visible {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 12px 24px rgba(27, 64, 44, 0.18) !important;
-}
 
-.tab:active,
-.tab.mnv-pressing,
-.tab.press-waiting {
-  transform: scale(0.985) !important;
-  box-shadow: var(--mnv-v90-shadow-pressed) !important;
-}
+
+
+
+
+
 
 .menu-card-title {
   min-height: clamp(50px, 8.5vw, 68px) !important;
@@ -5658,9 +5494,7 @@ button:not(.tab):not(.grid-button):not(.management-toggle) {
     padding-right: 68px !important;
   }
 
-  .tab {
-    min-height: clamp(162px, 38vw, 220px) !important;
-  }
+
 
   .menu-card-title {
     font-size: clamp(1.45rem, 6.4vw, 2.1rem) !important;
@@ -5854,24 +5688,9 @@ body[data-theme="default"]{
 
 /* Main menu: Apple-style image-led cards, with the image as the hero area and
    the title as a clear lower label rather than a heavy coloured banner. */
-.tab-container {
-  background: rgba(255,255,255,0.72) !important;
-  border: 1px solid rgba(31,45,61,0.08) !important;
-  border-radius: 30px !important;
-  box-shadow: 0 10px 30px rgba(31,45,61,0.07) !important;
-  gap: clamp(14px, 3vw, 22px) !important;
-}
 
-.tab {
-  display: grid !important;
-  grid-template-rows: minmax(136px, 1fr) auto !important;
-  min-height: clamp(196px, 39vw, 285px) !important;
-  border: 1px solid rgba(31,45,61,0.10) !important;
-  border-radius: 30px !important;
-  background: #ffffff !important;
-  box-shadow: 0 12px 28px rgba(31,45,61,0.10) !important;
-  overflow: hidden !important;
-}
+
+
 
 .menu-card-image-shell {
   grid-row: 1 !important;
@@ -5983,9 +5802,8 @@ body[data-theme="default"]{
 }
 
 @media (max-width: 520px) {
-  .tab {
-    min-height: clamp(190px, 52vw, 250px) !important;
-  }
+
+
   .menu-card-image-shell {
     min-height: clamp(128px, 36vw, 180px) !important;
   }
@@ -6166,22 +5984,9 @@ body[data-theme="default"]{
 
 /* v101: Apple-style image-first main menu redesign.
    Scope: main category cards only. Does not alter menus, phrases, speech, media, backup, import/export, or submenu behaviour. */
-.tab-container {
-  background: linear-gradient(180deg, rgba(248,250,252,0.94), rgba(241,245,249,0.92));
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.76);
-  padding: clamp(0.75rem, 2vw, 1.1rem);
-  gap: clamp(0.9rem, 2.4vw, 1.25rem);
-}
 
-.tab {
-  grid-template-rows: 1fr auto !important;
-  min-height: clamp(178px, 32vw, 258px);
-  border: 1px solid rgba(15,23,42,0.08) !important;
-  border-radius: clamp(24px, 4vw, 34px);
-  background: rgba(255,255,255,0.92);
-  box-shadow: 0 8px 22px rgba(15,23,42,0.10), 0 1px 0 rgba(255,255,255,0.88) inset;
-}
+
+
 
 .menu-card-image-shell {
   grid-row: 1;
@@ -6211,26 +6016,16 @@ body[data-theme="default"]{
   border-top: 1px solid rgba(15,23,42,0.07);
 }
 
-.tab.active {
-  border-color: color-mix(in srgb, var(--tab-color, #4CAF50) 42%, white) !important;
-  box-shadow: 0 10px 28px rgba(15,23,42,0.16), 0 0 0 3px color-mix(in srgb, var(--tab-color, #4CAF50) 18%, transparent);
-}
 
-.tab:active,
-.tab.button-pressed,
-body.has-active-press .tab.active-press {
-  transform: scale(0.985);
-}
+
+
+
 
 @media (max-width: 520px) {
-  .tab-container {
-    padding: clamp(0.6rem, 2vw, 0.85rem);
-    gap: clamp(0.75rem, 2vw, 1rem);
-  }
-  .tab {
-    min-height: clamp(168px, 40vw, 226px);
-    border-radius: 26px;
-  }
+
+
+
+
   .menu-card-image-shell {
     min-height: clamp(116px, 30vw, 164px);
   }
@@ -9067,35 +8862,125 @@ body[data-theme="high-contrast"] {
   --theme-card-shadow-hover: 0 18px 36px rgba(0, 0, 0, 0.24);
 }
 
-body[data-theme="sunny-day"] .tab,
+body[data-theme="twilight-plum"] {
+  --theme-page-surface: linear-gradient(180deg, #5B4B68, #463B55);
+  --theme-page-border: rgba(226, 199, 255, 0.38);
+  --theme-card-surface: linear-gradient(145deg, #725F82, #564664);
+  --theme-card-surface-2: #675575;
+  --theme-phrase-surface: #62506F;
+  --theme-phrase-surface-2: #756287;
+  --theme-settings-surface: linear-gradient(180deg, #665574, #51445F);
+  --theme-button-surface: #F6F0FA;
+  --theme-button-surface-2: #E8DAF2;
+  --theme-button-text: #2E2138;
+  --theme-muted-text: #EEE1F8;
+  --theme-border-strong: rgba(226, 199, 255, 0.70);
+  --theme-border-soft: rgba(246, 240, 250, 0.24);
+  --theme-glow: rgba(198, 154, 236, 0.26);
+  --theme-card-shadow: 0 14px 32px rgba(24, 14, 34, 0.24);
+  --theme-card-shadow-hover: 0 18px 42px rgba(24, 14, 34, 0.34);
+}
+
+body[data-theme="forest-night"] {
+  --theme-page-surface: linear-gradient(180deg, #25352B, #1E2B24);
+  --theme-page-border: rgba(232, 190, 118, 0.36);
+  --theme-card-surface: linear-gradient(145deg, #314633, #243529);
+  --theme-card-surface-2: #3A513C;
+  --theme-phrase-surface: #2A3D2F;
+  --theme-phrase-surface-2: #354B38;
+  --theme-settings-surface: linear-gradient(180deg, #2E4233, #223127);
+  --theme-button-surface: #F5EEDB;
+  --theme-button-surface-2: #DFD0AF;
+  --theme-button-text: #20301F;
+  --theme-muted-text: #E8D8B8;
+  --theme-border-strong: rgba(232, 190, 118, 0.68);
+  --theme-border-soft: rgba(245, 238, 219, 0.18);
+  --theme-glow: rgba(232, 190, 118, 0.24);
+  --theme-card-shadow: 0 14px 32px rgba(5, 15, 10, 0.28);
+  --theme-card-shadow-hover: 0 18px 42px rgba(5, 15, 10, 0.38);
+}
+
+body[data-theme="slate-studio"] {
+  --theme-page-surface: linear-gradient(180deg, #E6ECF2, #CBD5E1);
+  --theme-page-border: rgba(71, 85, 105, 0.36);
+  --theme-card-surface: linear-gradient(145deg, #F8FAFC, #D8E1EA);
+  --theme-card-surface-2: #DCE5EE;
+  --theme-phrase-surface: #F8FAFC;
+  --theme-phrase-surface-2: #E2E8F0;
+  --theme-settings-surface: linear-gradient(180deg, #F8FAFC, #DCE5EE);
+  --theme-button-surface: #F8FAFC;
+  --theme-button-surface-2: #DDE6EF;
+  --theme-button-text: #1E293B;
+  --theme-muted-text: #475569;
+  --theme-border-strong: rgba(51, 65, 85, 0.62);
+  --theme-border-soft: rgba(51, 65, 85, 0.20);
+  --theme-glow: rgba(59, 130, 246, 0.16);
+  --theme-card-shadow: 0 14px 30px rgba(30, 41, 59, 0.14);
+  --theme-card-shadow-hover: 0 18px 38px rgba(30, 41, 59, 0.22);
+}
+
+body[data-theme="sci-fi-v2"] {
+  --theme-page-surface: linear-gradient(180deg, #1A282C, #223236);
+  --theme-page-border: rgba(75, 226, 206, 0.42);
+  --theme-card-surface: linear-gradient(145deg, #24373C, #1B2A2E);
+  --theme-card-surface-2: #2D454A;
+  --theme-phrase-surface: #203136;
+  --theme-phrase-surface-2: #2A3F44;
+  --theme-settings-surface: linear-gradient(180deg, #22363B, #19292D);
+  --theme-button-surface: #E9FFFA;
+  --theme-button-surface-2: #BDEEE6;
+  --theme-button-text: #10282B;
+  --theme-muted-text: #D8FFF8;
+  --theme-border-strong: rgba(75, 226, 206, 0.72);
+  --theme-border-soft: rgba(216, 255, 248, 0.20);
+  --theme-glow: rgba(75, 226, 206, 0.26);
+  --theme-card-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
+  --theme-card-shadow-hover: 0 18px 44px rgba(0, 0, 0, 0.36);
+}
+
 body[data-theme="sunny-day"] .grid-button,
 body[data-theme="sunny-day"] .settings-action-btn,
-body[data-theme="ocean-calm"] .tab,
 body[data-theme="ocean-calm"] .grid-button,
 body[data-theme="ocean-calm"] .settings-action-btn,
-body[data-theme="soft-garden"] .tab,
 body[data-theme="soft-garden"] .grid-button,
 body[data-theme="soft-garden"] .settings-action-btn,
-body[data-theme="sci-fi"] .tab,
 body[data-theme="sci-fi"] .grid-button,
 body[data-theme="sci-fi"] .settings-action-btn,
-body[data-theme="high-contrast"] .tab,
+body[data-theme="twilight-plum"] .grid-button,
+body[data-theme="twilight-plum"] .settings-action-btn,
+body[data-theme="forest-night"] .grid-button,
+body[data-theme="forest-night"] .settings-action-btn,
+body[data-theme="slate-studio"] .grid-button,
+body[data-theme="slate-studio"] .settings-action-btn,
+body[data-theme="sci-fi-v2"] .grid-button,
+body[data-theme="sci-fi-v2"] .settings-action-btn,
 body[data-theme="high-contrast"] .grid-button,
 body[data-theme="high-contrast"] .settings-action-btn {
   background-image: linear-gradient(145deg, var(--theme-button-surface), var(--theme-button-surface-2)) !important;
 }
 
-body[data-theme="sci-fi"] .container {
+body[data-theme="sci-fi"] .container,
+body[data-theme="sci-fi-v2"] .container,
+body[data-theme="forest-night"] .container,
+body[data-theme="twilight-plum"] .container {
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(216, 255, 243, 0.06) !important;
 }
 
 body[data-theme="sci-fi"] #messageBar,
 body[data-theme="sci-fi"] .settings-v115-panel,
-body[data-theme="sci-fi"] .image-options-panel {
+body[data-theme="sci-fi"] .image-options-panel,
+body[data-theme="sci-fi-v2"] #messageBar,
+body[data-theme="sci-fi-v2"] .settings-v115-panel,
+body[data-theme="sci-fi-v2"] .image-options-panel,
+body[data-theme="forest-night"] #messageBar,
+body[data-theme="forest-night"] .settings-v115-panel,
+body[data-theme="forest-night"] .image-options-panel,
+body[data-theme="twilight-plum"] #messageBar,
+body[data-theme="twilight-plum"] .settings-v115-panel,
+body[data-theme="twilight-plum"] .image-options-panel {
   color: var(--theme-button-text) !important;
 }
 
-body[data-theme="high-contrast"] .tab,
 body[data-theme="high-contrast"] .grid-button,
 body[data-theme="high-contrast"] .settings-action-btn {
   border-width: 2px !important;
@@ -9153,29 +9038,56 @@ body {
   box-shadow: var(--mnv-ui-shadow-soft) !important;
 }
 
+/* v159: Main menu topic cards - single authoritative visual/layout block.
+   Earlier unscoped .tab/.tab-container patch layers were removed; grid view still hides this container separately. */
 body:not(.submenu-open) .tab-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-behavior: smooth !important;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.30)),
     color-mix(in srgb, var(--theme-card-surface-2, #eef8f2) 44%, #ffffff) !important;
   border: 1px solid var(--mnv-ui-line-soft) !important;
   border-radius: var(--mnv-ui-radius) !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), var(--mnv-ui-shadow-soft) !important;
-  padding: clamp(12px, 2vw, 18px) !important;
   gap: clamp(14px, 2.6vw, 22px) !important;
+  margin-bottom: 0 !important;
+  padding: clamp(12px, 2vw, 18px) !important;
+  padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
+  scroll-padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
 }
 
 body:not(.submenu-open) .tab {
   display: grid !important;
   grid-template-rows: auto minmax(0, 1fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
   min-height: clamp(218px, 35vw, 320px) !important;
+  padding: 0 !important;
   border: 1px solid color-mix(in srgb, var(--tab-color, var(--primary-color)) 32%, rgba(15,23,42,0.14)) !important;
   border-radius: var(--mnv-ui-radius) !important;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.58)),
     var(--theme-button-surface, #ffffff) !important;
+  color: var(--mnv-ui-text) !important;
   box-shadow: var(--mnv-ui-shadow-soft) !important;
-  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease !important;
+  cursor: pointer !important;
+  font-weight: 850 !important;
+  isolation: isolate !important;
   overflow: hidden !important;
+  position: relative !important;
+  text-align: center !important;
+  touch-action: manipulation !important;
+  transform: translateZ(0);
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease, filter 150ms ease !important;
 }
 
 body:not(.submenu-open) .tab:hover,
@@ -9183,6 +9095,69 @@ body:not(.submenu-open) .tab:focus-visible {
   border-color: color-mix(in srgb, var(--tab-color, var(--primary-color)) 58%, rgba(15,23,42,0.18)) !important;
   box-shadow: var(--mnv-ui-shadow-hover) !important;
   transform: translateY(-2px) !important;
+}
+
+body:not(.submenu-open) .tab:active,
+body:not(.submenu-open) .tab.button-pressed,
+body.has-active-press:not(.submenu-open) .tab.active-press {
+  transform: scale(0.985) !important;
+  box-shadow: 0 7px 14px rgba(15, 23, 42, 0.14), inset 0 2px 10px rgba(15, 23, 42, 0.12) !important;
+}
+
+body:not(.submenu-open) .tab.active {
+  border-color: color-mix(in srgb, var(--tab-color, var(--primary-color)) 42%, white) !important;
+  box-shadow: 0 10px 28px rgba(15,23,42,0.16), 0 0 0 3px color-mix(in srgb, var(--tab-color, var(--primary-color)) 18%, transparent) !important;
+}
+
+body:not(.submenu-open) .tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.08) 46%, rgba(255,255,255,0) 68%),
+    radial-gradient(circle at 20% 8%, rgba(255,255,255,0.24), transparent 34%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body:not(.submenu-open) .tab > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 580px) {
+  body:not(.submenu-open) .tab-container:not([hidden]) {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: auto !important;
+    align-content: start !important;
+  }
+}
+
+@media (min-width: 960px) {
+  body:not(.submenu-open) .tab-container:not([hidden]) {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  body:not(.submenu-open) .tab-container {
+    gap: clamp(12px, 3vw, 16px) !important;
+    padding: clamp(10px, 2vw, 14px) !important;
+    padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
+  }
+
+  body:not(.submenu-open) .tab {
+    min-height: clamp(168px, 40vw, 226px) !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  body:not(.submenu-open) .tab:hover,
+  body:not(.submenu-open) .tab:focus-visible {
+    transform: none !important;
+  }
 }
 
 body:not(.submenu-open) .menu-card-title {
@@ -9411,7 +9386,10 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay {
     var(--theme-page-surface, #f8fffb) !important;
 }
 
-body[data-theme="sci-fi"] {
+body[data-theme="sci-fi"],
+body[data-theme="sci-fi-v2"],
+body[data-theme="forest-night"],
+body[data-theme="twilight-plum"] {
   --mnv-ui-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
   --mnv-ui-shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.26);
   --mnv-ui-shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.42);
@@ -9424,8 +9402,21 @@ body[data-theme="sci-fi"] .management-input {
   background: #101819 !important;
 }
 
+body[data-theme="sci-fi-v2"] .settings-select,
+body[data-theme="sci-fi-v2"] .settings-textarea,
+body[data-theme="sci-fi-v2"] .settings-icon-input,
+body[data-theme="sci-fi-v2"] .management-input {
+  background: #1F3338 !important;
+}
+
 body[data-theme="sci-fi"] .remove-btn,
-body[data-theme="sci-fi"] .danger-settings-btn {
+body[data-theme="sci-fi"] .danger-settings-btn,
+body[data-theme="sci-fi-v2"] .remove-btn,
+body[data-theme="sci-fi-v2"] .danger-settings-btn,
+body[data-theme="forest-night"] .remove-btn,
+body[data-theme="forest-night"] .danger-settings-btn,
+body[data-theme="twilight-plum"] .remove-btn,
+body[data-theme="twilight-plum"] .danger-settings-btn {
   color: #ffdce4 !important;
   background: linear-gradient(180deg, #351a22, #241018) !important;
 }
@@ -10364,10 +10355,7 @@ body.submenu-open .grid-button > * {
 /* v124 mobile main-menu scroll clearance:
    The topic list is the scroll owner on the Dad-facing main screen. Give it
    enough final padding so the last topic can clear iPhone browser bars. */
-body:not(.submenu-open) .tab-container {
-  padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
-  scroll-padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
-}
+body:not(.submenu-open)
 
 @media (max-width: 640px) {
   body:not(.submenu-open) #messageBar:not(.submenu-titlebar) {
@@ -11217,9 +11205,7 @@ body:not(.grid-view-active) .mnv-label-toggle {
   display: none !important;
 }
 
-body.grid-view-active .tab-container {
-  display: none !important;
-}
+body.grid-view-active
 
 #settingsOverlay .settings-section-introduction {
   display: none !important;
