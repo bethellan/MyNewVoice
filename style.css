@@ -10911,7 +10911,7 @@ body {
 
 .mnv-app-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) repeat(2, 56px) repeat(3, clamp(42px, 5vw, 54px));
+  grid-template-columns: minmax(0, 1fr) repeat(2, 58px) repeat(3, clamp(44px, 5vw, 54px));
   align-items: center;
   gap: clamp(6px, 1vw, 12px);
   min-height: clamp(58px, 7vw, 74px);
@@ -10931,9 +10931,11 @@ body {
 
 .mnv-brand {
   min-width: 0;
+  max-width: 100%;
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  overflow: hidden;
 }
 
 .mnv-logo {
@@ -10991,6 +10993,8 @@ body[data-te-reo-mode="on"] .mnv-logo {
 .mnv-app-bar .management-toggle {
   position: static !important;
   transform: none !important;
+  justify-self: stretch !important;
+  align-self: stretch !important;
   min-width: 0 !important;
   min-height: clamp(42px, 5.5vw, 54px) !important;
   height: auto !important;
@@ -11008,6 +11012,9 @@ body[data-te-reo-mode="on"] .mnv-logo {
   box-shadow: none !important;
   cursor: pointer !important;
   touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 .mnv-view-cycle,
@@ -11023,17 +11030,17 @@ body[data-te-reo-mode="on"] .mnv-logo {
   display: grid !important;
   place-items: center !important;
   grid-template-columns: 1fr !important;
-  inline-size: 56px !important;
+  inline-size: 58px !important;
   block-size: 54px !important;
-  min-inline-size: 56px !important;
+  min-inline-size: 58px !important;
   min-block-size: 54px !important;
-  max-inline-size: 56px !important;
+  max-inline-size: 58px !important;
   max-block-size: 54px !important;
-  width: 56px !important;
+  width: 58px !important;
   height: 54px !important;
-  min-width: 56px !important;
+  min-width: 58px !important;
   min-height: 54px !important;
-  max-width: 56px !important;
+  max-width: 58px !important;
   max-height: 54px !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -11049,6 +11056,8 @@ body[data-te-reo-mode="on"] .mnv-logo {
   pointer-events: auto !important;
   touch-action: manipulation !important;
   -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
 }
 
 .mnv-edit-toggle-track,
@@ -11229,7 +11238,7 @@ body.grid-view-active
   }
 
   .mnv-app-bar {
-    grid-template-columns: minmax(0, 1fr) repeat(2, 56px) repeat(3, 40px);
+    grid-template-columns: minmax(0, 1fr) repeat(2, 54px) repeat(3, 44px);
     gap: 6px;
   }
 
@@ -11242,9 +11251,30 @@ body.grid-view-active
   }
 }
 
+@media (max-width: 560px) {
+  .mnv-app-bar {
+    grid-template-columns: 44px repeat(2, 54px) repeat(3, 44px);
+  }
+
+  .mnv-brand {
+    justify-content: center;
+    gap: 0;
+  }
+
+  .mnv-brand-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 420px) {
   .mnv-app-bar {
-    grid-template-columns: minmax(44px, 1fr) repeat(2, 50px) repeat(3, 40px);
+    grid-template-columns: 40px repeat(2, 50px) repeat(3, 40px);
+    gap: 5px;
   }
 
   .mnv-brand {
@@ -11255,15 +11285,6 @@ body.grid-view-active
     width: 38px;
     height: 38px;
     font-size: 0.7rem;
-  }
-
-  .mnv-brand-name {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   .mnv-view-cycle,

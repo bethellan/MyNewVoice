@@ -1,4 +1,4 @@
-v163_list_view_render_ownership
+v164_mobile_app_bar_tap_targets
 
-Repairs List View render ownership so stale main menu cards cannot remain visible under the list icon, while keeping the app-bar view control icon-only.
-Includes v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
+Stabilises the mobile title bar so the logo, edit switch, Te Reo switch, view icon, grid-label icon and settings cog keep fixed slots, with larger reliable switch tap targets on iPhone.
+Includes v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
