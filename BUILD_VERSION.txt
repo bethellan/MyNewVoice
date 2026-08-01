@@ -1,4 +1,4 @@
-v172_reliable_app_bar_controls
+v173_mobile_editor_focus_containment
 
-Top app-bar controls now share one reliable pointer/click activation path, improving iPhone taps on Edit, Te Reo, view, labels and Settings without changing their behaviour.
-Includes v171 Settings entry overlay cleanup, v170 iPhone app-bar tap target fix, v169 Information overlay sequence fix, v168 direct Settings/Information card, v167 quick Yes / No touch colour fix, v166 removed Introduction Message controls, v165 iOS app refresh cache fix, v164 mobile app-bar tap targets, v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
+Mobile Content Editor panels and controls now clamp more tightly to the visible viewport after input focus, reducing iPhone sideways zoom/shift after typing.
+Includes v172 reliable app-bar controls, v171 Settings entry overlay cleanup, v170 iPhone app-bar tap target fix, v169 Information overlay sequence fix, v168 direct Settings/Information card, v167 quick Yes / No touch colour fix, v166 removed Introduction Message controls, v165 iOS app refresh cache fix, v164 mobile app-bar tap targets, v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.

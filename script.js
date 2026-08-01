@@ -17,6 +17,7 @@
 /* v170: Keeps iPhone app-bar controls in fixed right-side slots with larger tap targets. */
 /* v171: Removes the obsolete Settings entry overlay route and its dead styling. */
 /* v172: Gives app-bar controls one reliable pointer/click activation path for iPhone. */
+/* v173: Tightens mobile Content Editor viewport containment after input focus. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -196,7 +197,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v172';
+const CURRENT_APP_VERSION = 'v173';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
