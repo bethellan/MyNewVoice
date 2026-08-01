@@ -15,6 +15,8 @@
 /* v168: Settings cog opens Settings directly and Information lives inside Settings. */
 /* v169: Makes Information a body-level overlay so it opens above Settings immediately. */
 /* v170: Keeps iPhone app-bar controls in fixed right-side slots with larger tap targets. */
+/* v171: Removes the obsolete Settings entry overlay route and its dead styling. */
+/* v172: Gives app-bar controls one reliable pointer/click activation path for iPhone. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -194,7 +196,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v170';
+const CURRENT_APP_VERSION = 'v172';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1302,112 +1304,6 @@ function getPhraseFilenameForSetup(category, phrase) {
 /* v114: mnvCaptureViewportBeforeSettings removed – no viewport capture/restore needed with contained fixed overlays. */
 
 /* v114: mnvRestoreViewportAfterSettings removed. */
-
-function ensureSettingsEntryOverlay() {
-    let overlay = document.getElementById('settingsEntryOverlay');
-    if (overlay) return overlay;
-
-    overlay = document.createElement('div');
-    overlay.id = 'settingsEntryOverlay';
-    overlay.className = 'settings-overlay settings-entry-overlay';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-labelledby', 'settingsEntryTitle');
-    overlay.innerHTML = `
-        <div class="settings-panel settings-entry-panel">
-            <div class="settings-header">
-                <h3 id="settingsEntryTitle">MyNewVoice</h3>
-                <button type="button" class="settings-close" data-settings-entry-close aria-label="Close settings menu">×</button>
-            </div>
-            <p class="settings-entry-intro">Choose an option.</p>
-            <div class="settings-actions settings-entry-actions">
-                <button type="button" class="settings-action-btn" data-settings-entry-information>
-                    <span class="settings-card-icon" aria-hidden="true">i</span>
-                    <span class="settings-card-text"><strong>Information</strong><small>About, version, storage and offline status.</small></span>
-                </button>
-                <button type="button" class="settings-action-btn settings-action-prominent" data-settings-entry-settings>
-                    <span class="settings-card-icon" aria-hidden="true">⚙</span>
-                    <span class="settings-card-text"><strong>Settings</strong><small>Carer controls.</small></span>
-                </button>
-            </div>
-        </div>
-    `;
-
-    overlay.addEventListener('click', (event) => {
-        if (event.target.closest('[data-settings-entry-close]')) {
-            hideSettingsEntryOverlay();
-            return;
-        }
-        if (event.target.closest('[data-settings-entry-information]')) {
-            showAboutFromSettingsEntry();
-            return;
-        }
-        if (event.target.closest('[data-settings-entry-settings]')) {
-            openSettingsFromEntryOverlay();
-            return;
-        }
-    });
-
-    document.body.appendChild(overlay);
-    return overlay;
-}
-
-function showSettingsEntryOverlay() {
-    const overlay = ensureSettingsEntryOverlay();
-    overlay.style.display = 'flex';
-    updateOfflineReadinessPanel();
-    requestAnimationFrame(() => { overlay.classList.add('show'); });
-    }
-
-function hideSettingsEntryOverlay() {
-    const overlay = document.getElementById('settingsEntryOverlay');
-    if (!overlay) return;
-    overlay.classList.remove('show');
-    overlay.style.display = 'none';
-    document.body.classList.remove('settings-real-screen-active');
-}
-
-function openSettingsFromEntryOverlay() {
-    if (editModeUnlocked) {
-        hideSettingsEntryOverlay();
-        showSettingsOverlay();
-        return;
-    }
-    hideSettingsEntryOverlay();
-    showPasswordModal('settings');
-}
-
-function showAboutFromSettingsEntry() {
-    const entryOverlay = document.getElementById('settingsEntryOverlay');
-    const aboutModal = document.getElementById('aboutModal');
-    if (!aboutModal) return;
-    aboutModal.dataset.returnTo = 'settings-entry';
-    if (entryOverlay) {
-        entryOverlay.style.display = 'flex';
-        entryOverlay.classList.add('show', 'about-underlay');
-        entryOverlay.setAttribute('aria-hidden', 'true');
-    }
-    aboutModal.style.display = 'flex';
-    aboutModal.classList.add('about-from-settings');
-    const closeButton = document.getElementById('aboutClose');
-    // v112: do not autofocus modal close buttons; preserve the underlying viewport.
-    updateAboutInformationPanel();
-}
-
-function closeAboutToSettingsEntry() {
-    const entryOverlay = document.getElementById('settingsEntryOverlay');
-    const aboutModal = document.getElementById('aboutModal');
-    if (!aboutModal) return;
-    aboutModal.style.display = 'none';
-    aboutModal.classList.remove('about-from-settings');
-    delete aboutModal.dataset.returnTo;
-    if (entryOverlay) {
-        entryOverlay.removeAttribute('aria-hidden');
-        entryOverlay.classList.remove('about-underlay');
-        if (entryOverlay.style.display !== 'flex') showSettingsEntryOverlay();
-        // v112: no autofocus when returning to Settings entry.
-    }
-}
 
 function ensureSettingsOverlay() {
     let overlay = document.getElementById('settingsOverlay');
@@ -3977,6 +3873,59 @@ function toggleGridLabelsFromAppBar() {
     } else {
         showMainMenu();
     }
+}
+
+function attachReliableAppBarButton(button, action) {
+    if (!button || typeof action !== 'function' || button.dataset.reliableAppBarButton === 'true') return;
+    button.dataset.reliableAppBarButton = 'true';
+
+    let pointerStarted = false;
+    let startX = 0;
+    let startY = 0;
+    let ignoreClickUntil = 0;
+    const TAP_TOLERANCE = 18;
+
+    const isDisabled = () => button.disabled || button.getAttribute('aria-disabled') === 'true';
+
+    const runAction = (event) => {
+        if (isDisabled()) return;
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        action();
+    };
+
+    button.addEventListener('pointerdown', (event) => {
+        if (isDisabled()) return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        pointerStarted = true;
+        startX = event.clientX || 0;
+        startY = event.clientY || 0;
+    }, { passive: true });
+
+    button.addEventListener('pointerup', (event) => {
+        if (!pointerStarted) return;
+        pointerStarted = false;
+        const dx = Math.abs((event.clientX || 0) - startX);
+        const dy = Math.abs((event.clientY || 0) - startY);
+        if (dx > TAP_TOLERANCE || dy > TAP_TOLERANCE) return;
+        ignoreClickUntil = Date.now() + 700;
+        runAction(event);
+    }, { passive: false });
+
+    ['pointercancel', 'pointerleave', 'lostpointercapture'].forEach((eventName) => {
+        button.addEventListener(eventName, () => { pointerStarted = false; });
+    });
+
+    button.addEventListener('click', (event) => {
+        if (Date.now() < ignoreClickUntil) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+        runAction(event);
+    }, { passive: false });
 }
 
 function setEditModeUnlocked(value) {
@@ -9933,49 +9882,33 @@ installSingleButtonPressVisualGuard();
     if (toggleBtn) {
         toggleBtn.title = 'Settings';
         toggleBtn.setAttribute('aria-label', 'Open settings');
-        toggleBtn.addEventListener('click', function(event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
+        attachReliableAppBarButton(toggleBtn, () => {
             if (editModeUnlocked) {
                 showSettingsOverlay();
             } else {
                 showPasswordModal('settings');
             }
-        }, { passive: false });
+        });
     }
 
     const displayModeCycle = document.getElementById('displayModeCycle');
     if (displayModeCycle) {
-        displayModeCycle.addEventListener('click', (event) => {
-            event.preventDefault();
-            cycleDisplayModeFromAppBar();
-        });
+        attachReliableAppBarButton(displayModeCycle, cycleDisplayModeFromAppBar);
     }
 
     const editModeToggle = document.getElementById('editModeToggle');
     if (editModeToggle) {
-        editModeToggle.addEventListener('click', (event) => {
-            event.preventDefault();
-            toggleEditModeFromAppBar();
-        });
+        attachReliableAppBarButton(editModeToggle, toggleEditModeFromAppBar);
     }
 
     const teReoModeToggle = document.getElementById('teReoModeToggle');
     if (teReoModeToggle) {
-        teReoModeToggle.addEventListener('click', (event) => {
-            event.preventDefault();
-            toggleTeReoModeFromAppBar();
-        });
+        attachReliableAppBarButton(teReoModeToggle, toggleTeReoModeFromAppBar);
     }
 
     const gridLabelsToggle = document.getElementById('gridLabelsToggle');
     if (gridLabelsToggle) {
-        gridLabelsToggle.addEventListener('click', (event) => {
-            event.preventDefault();
-            toggleGridLabelsFromAppBar();
-        });
+        attachReliableAppBarButton(gridLabelsToggle, toggleGridLabelsFromAppBar);
     }
     
 

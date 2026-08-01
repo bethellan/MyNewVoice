@@ -3415,83 +3415,11 @@ button:active,
 }
 
 /* ============================================================================
-   v41 Settings entry menu
-   Settings cog opens a simple Information / Settings choice before password.
-   ============================================================================ */
-.settings-entry-overlay.show {
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-}
-.settings-entry-overlay.show .settings-entry-panel {
-  width: min(560px, 94vw);
-  height: auto;
-  max-height: 92vh;
-  border-radius: 24px;
-  padding: 22px;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.32);
-  margin: 0;
-}
-.settings-entry-intro {
-  margin: 0 0 16px;
-  color: #475569;
-  font-size: 0.98rem;
-}
-.settings-entry-actions {
-  display: grid;
-  gap: 12px;
-}
-.settings-entry-actions .settings-action-btn {
-  min-height: 72px;
-}
-
-
-/* ============================================================================
-   v43 Submenu titlebar and Settings entry refinement
+   v43 Submenu titlebar refinement
    ============================================================================ */
 #introductionHeaderButton[hidden],
 body.submenu-open #introductionHeaderButton {
   display: none !important;
-}
-
-.settings-entry-actions .settings-action-btn {
-  grid-template-columns: 26px 1fr 16px;
-  min-height: 64px;
-  padding: 10px 13px;
-  gap: 10px;
-}
-
-.settings-entry-actions .settings-card-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #ffffff, #eef6ff);
-  border: 1px solid #c7d2fe;
-  color: #1d4ed8;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
-}
-
-.settings-entry-actions .settings-action-prominent .settings-card-icon {
-  background: linear-gradient(135deg, #f0fdf4, #e0f2fe);
-  border-color: #a7f3d0;
-  color: #047857;
-  font-size: 14px;
-}
-
-
-@media (max-width: 640px) {
-  .settings-entry-actions .settings-action-btn {
-    grid-template-columns: 24px 1fr;
-    min-height: 60px;
-    padding: 9px 12px;
-  }
-  .settings-entry-actions .settings-card-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-  }
 }
 
 /* ============================================================================
@@ -3727,7 +3655,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 }
 
 .settings-panel,
-.settings-entry-panel,
 .private-setup-panel,
 .image-crop-panel,
 .modal-content,
@@ -3746,7 +3673,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 }
 
 .settings-action-btn,
-.settings-entry-actions .settings-action-btn,
 .settings-actions-compact .settings-action-btn,
 .private-section-details,
 .private-selected-panel,
@@ -3763,8 +3689,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 
 .settings-action-btn:hover,
 .settings-action-btn:focus,
-.settings-entry-actions .settings-action-btn:hover,
-.settings-entry-actions .settings-action-btn:focus,
 .settings-actions-compact .settings-action-btn:hover,
 .settings-actions-compact .settings-action-btn:focus,
 .private-item-button:hover,
@@ -3778,7 +3702,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
   box-shadow: 0 14px 30px var(--theme-glow), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 
-.settings-entry-actions .settings-card-icon,
 .settings-card-icon {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
   color: var(--text-light);
@@ -3796,8 +3719,7 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 
 .settings-card-description,
 .private-selected-help,
-.private-item-button small,
-.settings-entry-intro {
+.private-item-button small {
   color: var(--theme-muted-text);
 }
 
@@ -3839,8 +3761,6 @@ select:focus {
   .grid-button.press-waiting,
   .settings-action-btn:hover,
   .settings-action-btn:focus,
-  .settings-entry-actions .settings-action-btn:hover,
-  .settings-entry-actions .settings-action-btn:focus,
   .settings-actions-compact .settings-action-btn:hover,
   .settings-actions-compact .settings-action-btn:focus,
   .private-item-button:hover,
@@ -4071,7 +3991,6 @@ body[data-theme="midnight"] .management-btn {
 }
 
 .settings-panel,
-.settings-entry-panel,
 .private-setup-panel,
 .image-crop-panel,
 .modal-content,
@@ -4104,7 +4023,6 @@ body[data-theme="midnight"] .management-btn {
 }
 
 .settings-action-btn,
-.settings-entry-actions .settings-action-btn,
 .settings-actions-compact .settings-action-btn,
 .management-btn,
 .small-management-btn,
@@ -4127,9 +4045,7 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 }
 
 .settings-action-btn:hover,
-.settings-action-btn:focus-visible,
-.settings-entry-actions .settings-action-btn:hover,
-.settings-entry-actions .settings-action-btn:focus-visible,
+.settings-action-btn:focus-visible,-visible,
 .management-btn:hover,
 .management-btn:focus-visible,
 .private-item-button:hover,
@@ -4159,7 +4075,6 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
     inset 0 2px 8px rgba(15,23,42,0.16) !important;
 }
 
-.settings-entry-actions .settings-card-icon,
 .settings-card-icon {
   width: clamp(34px, 8vw, 48px);
   height: clamp(34px, 8vw, 48px);
@@ -4792,29 +4707,6 @@ body[data-theme="midnight"] .settings-preferences > .settings-select {
 .settings-group-about .settings-card-icon {
   background: #f1f5f9;
   color: #334155;
-}
-
-
-/* ─────────────────────────────────────────────────────────────
-   5. SETTINGS ENTRY OVERLAY: Larger, more distinct buttons
-   ───────────────────────────────────────────────────────────── */
-
-.settings-entry-actions .settings-action-btn {
-  min-height: 80px;
-  border-radius: 18px;
-  font-size: 1.05rem;
-}
-
-.settings-entry-actions .settings-action-prominent {
-  background: linear-gradient(135deg, #f0fdf4, #e6f7ff) !important;
-  border-left-width: 6px !important;
-}
-
-.settings-entry-actions .settings-card-icon {
-  width: 34px;
-  height: 34px;
-  font-size: 20px;
-  border-radius: 12px;
 }
 
 
@@ -6817,7 +6709,6 @@ body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .gri
 
 /* v109: Settings cog jump and modal panel sizing repair.
    The Settings entry/settings panels must not use 100vw/100vh sizing because iPhone Safari can recalculate the viewport and shift the visible app behind it. */
-#settingsEntryOverlay.settings-overlay.show,
 #settingsOverlay.settings-overlay.show {
   position: fixed;
   inset: 0;
@@ -6833,7 +6724,6 @@ body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .gri
   overscroll-behavior: contain;
 }
 
-#settingsEntryOverlay.settings-overlay.show .settings-panel,
 #settingsOverlay.settings-overlay.show .settings-panel {
   width: min(760px, 100%);
   max-width: 100%;
@@ -6846,7 +6736,7 @@ body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .gri
   margin: 0;
 }
 
-/* v113: settings-entry-active / settings-dashboard-active body rules removed – classes no longer set by JS. */
+/* v113: old settings body rules removed - classes no longer set by JS. */
 
 /* Pressing the cog must not visually scale, nudge, or reflow the page. */
 .settings-cog,
@@ -6863,13 +6753,11 @@ body:not(.modal-open):not(.settings-open):not(.dialog-open):not(.crop-open) .gri
 }
 
 @media (max-width: 520px) {
-  #settingsEntryOverlay.settings-overlay.show,
-  #settingsOverlay.settings-overlay.show {
+    #settingsOverlay.settings-overlay.show {
     padding: max(12px, env(safe-area-inset-top, 0px)) 10px max(12px, env(safe-area-inset-bottom, 0px));
   }
 
-  #settingsEntryOverlay.settings-overlay.show .settings-panel,
-  #settingsOverlay.settings-overlay.show .settings-panel {
+    #settingsOverlay.settings-overlay.show .settings-panel {
     width: 100%;
     max-height: calc(100dvh - max(24px, env(safe-area-inset-top, 0px)) - max(24px, env(safe-area-inset-bottom, 0px)));
     border-radius: 24px;
@@ -6980,7 +6868,6 @@ body {
 
 /* Settings/password/about overlays use the same locked height and scroll only
    inside their own panels. They must not force a new document viewport. */
-#settingsEntryOverlay.settings-overlay,
 #settingsOverlay.settings-overlay,
 #passwordModal.modal,
 #aboutModal.modal {
@@ -6995,24 +6882,17 @@ body {
   overscroll-behavior: contain !important;
 }
 
-#settingsEntryOverlay.settings-overlay.show,
 #settingsOverlay.settings-overlay.show {
   height: var(--mnv-app-height) !important;
   min-height: var(--mnv-app-height) !important;
   max-height: var(--mnv-app-height) !important;
 }
 
-#settingsEntryOverlay.settings-overlay.about-underlay {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transition: none !important;
-}
 
 #aboutModal.about-from-settings {
   z-index: 10050 !important;
 }
 
-#settingsEntryOverlay.settings-overlay.show .settings-panel,
 #settingsOverlay.settings-overlay.show .settings-panel {
   max-height: calc(var(--mnv-app-height) - max(36px, env(safe-area-inset-top, 0px)) - max(36px, env(safe-area-inset-bottom, 0px))) !important;
 }
