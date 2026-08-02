@@ -21,6 +21,7 @@
 /* v174: Reports the exact Content Editor element causing mobile viewport overflow. */
 /* v175: Lets Photo Memories pinch/drag zoom bypass the global iOS page-zoom guard. */
 /* v176: Prevents mobile Content Editor input focus from horizontally scrolling the editor. */
+/* v177: Makes Classic the only active/selectable theme for the public baseline. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -200,7 +201,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v176';
+const CURRENT_APP_VERSION = 'v177';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1348,11 +1349,6 @@ function ensureSettingsOverlay() {
                         <label for="settingsTheme">Theme</label>
                         <select id="settingsTheme" class="settings-select">
                             <option value="default">Classic</option>
-                            <option value="twilight-plum">Twilight Plum</option>
-                            <option value="forest-night">Forest Night</option>
-                            <option value="slate-studio">Slate Studio</option>
-                            <option value="sci-fi-v2">Sci-Fi Console</option>
-                            <option value="high-contrast">High Contrast</option>
                         </select>
                         <label for="settingsQuickYesNoEnabled">Yes / No quick buttons</label>
                         <select id="settingsQuickYesNoEnabled" class="settings-select">
@@ -3371,48 +3367,48 @@ function normaliseDisplayModeName(value) {
     const raw = String(value || '').trim();
     return DISPLAY_MODE_ALIASES[raw] || DEFAULT_APP_SETTINGS.displayMode;
 }
-const THEMES = new Set(['default', 'twilight-plum', 'forest-night', 'slate-studio', 'sci-fi-v2', 'high-contrast']);
+const THEMES = new Set(['default']);
 const LEGACY_THEME_ALIASES = {
     'gentle-morning': 'default',
-    'deep-ocean': 'slate-studio',
+    'deep-ocean': 'default',
     'earth-sage': 'default',
     'sunny-day': 'default',
-    'ocean-calm': 'slate-studio',
+    'ocean-calm': 'default',
     'soft-garden': 'default',
-    'sci-fi': 'sci-fi-v2',
-    midnight: 'forest-night',
+    'sci-fi': 'default',
+    midnight: 'default',
     sunrise: 'default',
-    ocean: 'slate-studio',
+    ocean: 'default',
     sage: 'default',
     metallic: 'default',
     photoreal: 'default',
     realistic: 'default',
     marble: 'default',
-    metal: 'sci-fi-v2',
-    water: 'slate-studio',
-    cyberpunk: 'sci-fi-v2',
+    metal: 'default',
+    water: 'default',
+    cyberpunk: 'default',
     starTrek: 'default',
     'star-trek': 'default',
-    darthVader: 'sci-fi-v2',
-    'darth-vader': 'sci-fi-v2',
+    darthVader: 'default',
+    'darth-vader': 'default',
     sunny: 'default',
     banana: 'default',
     'banana-split': 'default',
     earth: 'default',
-    fire: 'twilight-plum',
-    highcontrast: 'high-contrast',
-    'high contrast': 'high-contrast',
-    scifi: 'sci-fi-v2',
-    'sci fi': 'sci-fi-v2',
-    'sci-fi console': 'sci-fi-v2'
+    fire: 'default',
+    highcontrast: 'default',
+    'high contrast': 'default',
+    scifi: 'default',
+    'sci fi': 'default',
+    'sci-fi console': 'default',
+    'twilight-plum': 'default',
+    'forest-night': 'default',
+    'slate-studio': 'default',
+    'sci-fi-v2': 'default',
+    'high-contrast': 'default'
 };
 const THEME_LABELS = {
-    default: 'Classic',
-    'twilight-plum': 'Twilight Plum',
-    'forest-night': 'Forest Night',
-    'slate-studio': 'Slate Studio',
-    'sci-fi-v2': 'Sci-Fi Console',
-    'high-contrast': 'High Contrast'
+    default: 'Classic'
 };
 const THEME_CATEGORY_PALETTES = {
     'sunny-day': {
