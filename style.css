@@ -12511,3 +12511,52 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   line-height: 1;
   touch-action: manipulation;
 }
+
+/* v176: final mobile owner for Content Editor horizontal containment.
+   iPhone Safari may try to horizontally scroll nested editor regions when an
+   input is focused; phone layouts are card-based, so sideways scroll is not
+   needed there. */
+@media (max-width: 760px) {
+  body.content-editor-open,
+  body.content-editor-open #managementOverlay,
+  body.content-editor-open #managementOverlay.management-overlay,
+  body.content-editor-open #managementOverlay.management-overlay.show,
+  body.content-editor-open #managementOverlay.management-overlay.show .management-panel,
+  body.content-editor-open #managementOverlay .management-content,
+  body.content-editor-open #managementOverlay .table-editor-body,
+  body.content-editor-open #managementOverlay .editor-table-wrap,
+  body.content-editor-open #managementOverlay .topic-card-editor-wrap,
+  body.content-editor-open #managementOverlay .one-row-table-wrap,
+  body.content-editor-open #managementOverlay .topic-card-list,
+  body.content-editor-open #managementOverlay .content-phrase-card-list {
+    inline-size: 100% !important;
+    max-inline-size: 100% !important;
+    min-inline-size: 0 !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-x: none !important;
+    box-sizing: border-box !important;
+  }
+
+  body.content-editor-open #managementOverlay .topic-card-list,
+  body.content-editor-open #managementOverlay .content-phrase-card-list {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.content-editor-open #managementOverlay .topic-editor-card,
+  body.content-editor-open #managementOverlay .content-phrase-card {
+    inline-size: 100% !important;
+    max-inline-size: 100% !important;
+    min-inline-size: 0 !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  body.content-editor-open #managementOverlay .topic-card-main,
+  body.content-editor-open #managementOverlay .topic-card-controls,
+  body.content-editor-open #managementOverlay .content-phrase-card-text,
+  body.content-editor-open #managementOverlay .content-phrase-card-details,
+  body.content-editor-open #managementOverlay .content-phrase-card-section {
+    min-inline-size: 0 !important;
+    max-inline-size: 100% !important;
+  }
+}

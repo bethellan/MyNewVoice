@@ -20,6 +20,7 @@
 /* v173: Tightens mobile Content Editor viewport containment after input focus. */
 /* v174: Reports the exact Content Editor element causing mobile viewport overflow. */
 /* v175: Lets Photo Memories pinch/drag zoom bypass the global iOS page-zoom guard. */
+/* v176: Prevents mobile Content Editor input focus from horizontally scrolling the editor. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -199,7 +200,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v175';
+const CURRENT_APP_VERSION = 'v176';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3999,6 +4000,27 @@ function showContentEditorLayoutWarning(message) {
     }, 9000);
 }
 
+function resetContentEditorHorizontalScroll(reason = 'focus') {
+    if (!document.body.classList.contains('content-editor-open')) return;
+    const overlay = document.getElementById('managementOverlay');
+    if (!overlay || !overlay.classList.contains('show')) return;
+    const scrollers = [
+        overlay,
+        overlay.querySelector('.management-panel'),
+        overlay.querySelector('.table-editor-body'),
+        ...overlay.querySelectorAll('.editor-table-wrap, .topic-card-editor-wrap, .content-phrase-card-list, .topic-card-list')
+    ].filter(Boolean);
+
+    scrollers.forEach(element => {
+        if (Math.abs(element.scrollLeft || 0) > 1) {
+            element.scrollLeft = 0;
+        }
+    });
+
+    if (document.documentElement.scrollLeft) document.documentElement.scrollLeft = 0;
+    if (document.body.scrollLeft) document.body.scrollLeft = 0;
+}
+
 function debugContentEditorViewportFit(reason = 'layout check') {
     if (!isContentEditorViewportDiagnosticActive()) return;
     const overlay = document.getElementById('managementOverlay');
@@ -4052,6 +4074,8 @@ function installContentEditorViewportDiagnostics() {
     document.addEventListener('focusin', (event) => {
         const target = event.target;
         if (target && target.closest && target.closest('#managementOverlay input, #managementOverlay textarea, #managementOverlay select')) {
+            resetContentEditorHorizontalScroll('input focus');
+            setTimeout(() => resetContentEditorHorizontalScroll('input focus settled'), 180);
             debugContentEditorViewportFit('input focus');
         }
     }, true);
