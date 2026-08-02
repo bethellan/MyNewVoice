@@ -18,6 +18,8 @@
 /* v171: Removes the obsolete Settings entry overlay route and its dead styling. */
 /* v172: Gives app-bar controls one reliable pointer/click activation path for iPhone. */
 /* v173: Tightens mobile Content Editor viewport containment after input focus. */
+/* v174: Reports the exact Content Editor element causing mobile viewport overflow. */
+/* v175: Lets Photo Memories pinch/drag zoom bypass the global iOS page-zoom guard. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -197,7 +199,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v173';
+const CURRENT_APP_VERSION = 'v175';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3929,6 +3931,138 @@ function attachReliableAppBarButton(button, action) {
     }, { passive: false });
 }
 
+let contentEditorLayoutWarningTimer = null;
+
+function getVisibleViewportWidth() {
+    const widths = [
+        window.innerWidth,
+        document.documentElement ? document.documentElement.clientWidth : null,
+        window.visualViewport ? window.visualViewport.width : null
+    ].map(Number).filter(value => Number.isFinite(value) && value > 0);
+    return widths.length ? Math.floor(Math.min(...widths)) : 0;
+}
+
+function isContentEditorViewportDiagnosticActive() {
+    const viewportWidth = getVisibleViewportWidth();
+    return viewportWidth > 0
+        && viewportWidth <= 760
+        && document.body.classList.contains('content-editor-open');
+}
+
+function getElementDebugLabel(element) {
+    if (!element || !element.tagName) return 'unknown element';
+    const tag = element.tagName.toLowerCase();
+    const id = element.id ? `#${element.id}` : '';
+    const classes = Array.from(element.classList || []).slice(0, 4).map(name => `.${name}`).join('');
+    const dataKey = element.dataset && element.dataset.key ? `[data-key="${element.dataset.key}"]` : '';
+    return `${tag}${id}${classes}${dataKey}`;
+}
+
+function ensureContentEditorLayoutWarning() {
+    let warning = document.getElementById('contentEditorLayoutWarning');
+    if (warning) return warning;
+    warning = document.createElement('div');
+    warning.id = 'contentEditorLayoutWarning';
+    warning.className = 'content-editor-layout-warning';
+    warning.setAttribute('role', 'status');
+    warning.setAttribute('aria-live', 'polite');
+    warning.innerHTML = `
+        <span data-content-editor-layout-warning-text></span>
+        <button type="button" aria-label="Dismiss layout warning">x</button>
+    `;
+    const closeButton = warning.querySelector('button');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => hideContentEditorLayoutWarning());
+    }
+    document.body.appendChild(warning);
+    return warning;
+}
+
+function hideContentEditorLayoutWarning() {
+    if (contentEditorLayoutWarningTimer) {
+        clearTimeout(contentEditorLayoutWarningTimer);
+        contentEditorLayoutWarningTimer = null;
+    }
+    const warning = document.getElementById('contentEditorLayoutWarning');
+    if (warning) warning.classList.remove('show');
+}
+
+function showContentEditorLayoutWarning(message) {
+    const warning = ensureContentEditorLayoutWarning();
+    const text = warning.querySelector('[data-content-editor-layout-warning-text]');
+    if (text) text.textContent = message;
+    warning.classList.add('show');
+    if (contentEditorLayoutWarningTimer) clearTimeout(contentEditorLayoutWarningTimer);
+    contentEditorLayoutWarningTimer = setTimeout(() => {
+        warning.classList.remove('show');
+        contentEditorLayoutWarningTimer = null;
+    }, 9000);
+}
+
+function debugContentEditorViewportFit(reason = 'layout check') {
+    if (!isContentEditorViewportDiagnosticActive()) return;
+    const overlay = document.getElementById('managementOverlay');
+    if (!overlay || !overlay.classList.contains('show')) return;
+
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            if (!isContentEditorViewportDiagnosticActive()) return;
+            const viewportWidth = getVisibleViewportWidth();
+            if (!viewportWidth) return;
+
+            const offenders = Array.from(overlay.querySelectorAll('*')).map(element => {
+                const rect = element.getBoundingClientRect();
+                const overflow = Math.max(
+                    rect.width - viewportWidth,
+                    rect.right - viewportWidth,
+                    0 - rect.left
+                );
+                return {
+                    selector: getElementDebugLabel(element),
+                    width: Math.round(rect.width),
+                    left: Math.round(rect.left),
+                    right: Math.round(rect.right),
+                    overflow: Math.round(overflow)
+                };
+            }).filter(item => item.overflow > 4)
+                .sort((a, b) => b.overflow - a.overflow);
+
+            if (!offenders.length) {
+                hideContentEditorLayoutWarning();
+                return;
+            }
+
+            const top = offenders[0];
+            console.warn('[MyNewVoice] Content Editor viewport overflow', {
+                reason,
+                viewportWidth,
+                offenders: offenders.slice(0, 8)
+            });
+            showContentEditorLayoutWarning(
+                `Layout issue after ${reason}: ${top.selector} is ${top.width}px wide on a ${viewportWidth}px screen.`
+            );
+        }, 140);
+    });
+}
+
+function installContentEditorViewportDiagnostics() {
+    if (document.documentElement.dataset.contentEditorViewportDiagnostics === 'true') return;
+    document.documentElement.dataset.contentEditorViewportDiagnostics = 'true';
+
+    document.addEventListener('focusin', (event) => {
+        const target = event.target;
+        if (target && target.closest && target.closest('#managementOverlay input, #managementOverlay textarea, #managementOverlay select')) {
+            debugContentEditorViewportFit('input focus');
+        }
+    }, true);
+
+    window.addEventListener('resize', () => debugContentEditorViewportFit('window resize'));
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => debugContentEditorViewportFit('visual viewport resize'));
+        window.visualViewport.addEventListener('scroll', () => debugContentEditorViewportFit('visual viewport scroll'));
+    }
+}
+
 function setEditModeUnlocked(value) {
     editModeUnlocked = Boolean(value);
     hideEditModeGuidance();
@@ -4363,10 +4497,12 @@ function installTouchInteractionLock() {
 
     const isEditableTarget = (target) => Boolean(target && target.closest && target.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'));
     const isInsideAppRoot = (target) => Boolean(target && appRoot.contains(target));
+    const isPhotoMemoryViewerTarget = (target) => Boolean(target && target.closest && target.closest('.phrase-popup-overlay.photo-memory-popup .phrase-popup-image-shell'));
 
     const blockAppGesture = (event) => {
         if (!isInsideAppRoot(event.target)) return;
         if (isEditableTarget(event.target)) return;
+        if (isPhotoMemoryViewerTarget(event.target)) return;
         event.preventDefault();
     };
 
@@ -4378,6 +4514,7 @@ function installTouchInteractionLock() {
     // One-finger scrolling and normal button taps are preserved.
     const preventZoomGesture = (event) => {
         if (isEditableTarget(event.target)) return;
+        if (isPhotoMemoryViewerTarget(event.target)) return;
         if (event.touches && event.touches.length > 1) {
             event.preventDefault();
         }
@@ -4388,6 +4525,7 @@ function installTouchInteractionLock() {
     ['gesturestart', 'gesturechange', 'gestureend'].forEach((eventName) => {
         document.addEventListener(eventName, (event) => {
             if (isEditableTarget(event.target)) return;
+            if (isPhotoMemoryViewerTarget(event.target)) return;
             event.preventDefault();
         }, { passive: false });
     });
@@ -5595,6 +5733,7 @@ function showManagementPanel() {
         renderContentManagementPanel();
         overlay.style.display = 'block';
         overlay.classList.add('show');
+        debugContentEditorViewportFit('editor open');
     }
 }
 
@@ -5607,6 +5746,7 @@ function hideManagementPanel() {
         overlay.style.display = 'none';
         document.body.classList.remove('content-editor-open');
         contentEditorCleanSnapshot = null;
+        hideContentEditorLayoutWarning();
     }
 }
 
@@ -9847,7 +9987,8 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('MyNewVoice app initializing...');
     mnvInstallLockedMainViewport();
     installTouchInteractionLock();
-installSingleButtonPressVisualGuard();
+    installSingleButtonPressVisualGuard();
+    installContentEditorViewportDiagnostics();
     
     // Load saved data first
     loadAppSettings();
