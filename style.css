@@ -12471,47 +12471,6 @@ body .phrase-popup-overlay.quick-no-popup .phrase-popup-image-shell {
   }
 }
 
-.content-editor-layout-warning {
-  position: fixed !important;
-  left: max(10px, env(safe-area-inset-left, 0px));
-  right: max(10px, env(safe-area-inset-right, 0px));
-  bottom: max(10px, env(safe-area-inset-bottom, 0px));
-  z-index: 100900;
-  display: none;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid rgba(180, 83, 9, 0.35);
-  border-radius: 14px;
-  background: linear-gradient(180deg, #fff8e1, #fff2bd);
-  box-shadow: 0 14px 30px rgba(92, 51, 11, 0.18);
-  color: #5b3410;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.25;
-  box-sizing: border-box;
-}
-
-.content-editor-layout-warning.show {
-  display: grid !important;
-}
-
-.content-editor-layout-warning button {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  min-height: 34px;
-  border: 1px solid rgba(180, 83, 9, 0.28);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.72);
-  color: #5b3410;
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1;
-  touch-action: manipulation;
-}
-
 /* v176: final mobile owner for Content Editor horizontal containment.
    iPhone Safari may try to horizontally scroll nested editor regions when an
    input is focused; phone layouts are card-based, so sideways scroll is not
