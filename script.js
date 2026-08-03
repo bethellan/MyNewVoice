@@ -23,6 +23,8 @@
 /* v176: Prevents mobile Content Editor input focus from horizontally scrolling the editor. */
 /* v177: Makes Classic the only active/selectable theme for the public baseline. */
 /* v178: Removes temporary mobile editor diagnostics while keeping the focus containment fix. */
+/* v179: Removes dead Introduction Settings panel code while keeping backup/runtime compatibility. */
+/* v180: Keeps app-bar controls out of generic button styling to stabilise mobile taps. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -202,7 +204,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v178';
+const CURRENT_APP_VERSION = 'v180';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -2865,10 +2867,6 @@ function ensureFallbackIconOverlay() {
             saveCategoryConfig();
             saveDataToStorage();
             renderCategoryMenuCards();
-        } else if (target.kind === 'introduction') {
-            const iconField = document.getElementById('settingsIntroductionIcon');
-            if (iconField) iconField.value = icon;
-            updateIntroductionSaveRowState();
         } else {
             const phrase = findPhraseById(target.category || contentSetupPhraseCategory, target.id);
             if (phrase) {
@@ -3772,16 +3770,9 @@ function updateSettingsControls() {
     [speechVoiceStyleSelect, voiceSelect, speechRate, speechPitch, previewSpeechButton].forEach(control => {
         if (control) control.disabled = speechControlsDisabled;
     });
-    const introEnabled = document.getElementById('settingsIntroductionEnabled');
-    if (introEnabled) introEnabled.value = appSettings.introduction.enabled ? 'on' : 'off';
-    const introText = document.getElementById('settingsIntroductionText');
-    if (introText) introText.value = appSettings.introduction.text || '';
-    const introIcon = document.getElementById('settingsIntroductionIcon');
-    if (introIcon) introIcon.value = appSettings.introduction.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon;
     const autoUpdateSelect = document.getElementById('settingsAutoUpdateCheck');
     if (autoUpdateSelect) autoUpdateSelect.value = appSettings.autoUpdateCheck ? 'on' : 'off';
     updateAppBarControls();
-    updateIntroductionSettingsPanelVisibility();
 }
 
 function updateAppBarControls() {
@@ -4004,102 +3995,6 @@ function setTeReoModeEnabled(value) {
 function toggleTeReoModeFromAppBar() {
     pendingTeReoModeTarget = !normaliseAppSettings(appSettings).teReoMode;
     showPasswordModal('teReoMode');
-}
-
-function updateIntroductionSettingsPanelVisibility() {
-    const enabledSelect = document.getElementById('settingsIntroductionEnabled');
-    const panel = document.getElementById('introductionSettingsPanel');
-    if (!panel) return;
-    panel.hidden = enabledSelect ? enabledSelect.value !== 'on' : !getIntroductionSettings().enabled;
-    markIntroductionPanelClean();
-}
-
-function getIntroductionPanelDraft() {
-    const textField = document.getElementById('settingsIntroductionText');
-    const iconField = document.getElementById('settingsIntroductionIcon');
-    return {
-        text: textField ? textField.value.trim() : '',
-        fallbackIcon: (iconField && iconField.value.trim()) ? iconField.value.trim().slice(0, 4) : DEFAULT_APP_SETTINGS.introduction.fallbackIcon
-    };
-}
-
-function getSavedIntroductionPanelDraft() {
-    const intro = getIntroductionSettings();
-    return {
-        text: String(intro.text || '').trim(),
-        fallbackIcon: String(intro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).trim().slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
-    };
-}
-
-function introductionPanelHasUnsavedTextChanges() {
-    const draft = getIntroductionPanelDraft();
-    const saved = getSavedIntroductionPanelDraft();
-    return draft.text !== saved.text || draft.fallbackIcon !== saved.fallbackIcon;
-}
-
-function updateIntroductionSaveRowState() {
-    const panel = document.getElementById('introductionSettingsPanel');
-    if (!panel) return;
-    const row = panel.querySelector('.settings-v115-save-row');
-    if (!row) return;
-    const dirty = introductionPanelHasUnsavedTextChanges();
-    row.hidden = !dirty;
-    row.setAttribute('aria-hidden', dirty ? 'false' : 'true');
-}
-
-function markIntroductionPanelClean() {
-    updateIntroductionSaveRowState();
-}
-
-function closeIntroductionSettingsPanelToPriorLevel() {
-    const panel = document.getElementById('introductionSettingsPanel');
-    if (panel) panel.hidden = true;
-    const enabledSelect = document.getElementById('settingsIntroductionEnabled');
-    if (enabledSelect) enabledSelect.focus({ preventScroll: true });
-}
-
-function saveIntroductionSettingsFromPanel({ closeToPriorLevel = false } = {}) {
-    const enabledSelect = document.getElementById('settingsIntroductionEnabled');
-    const textField = document.getElementById('settingsIntroductionText');
-    const iconField = document.getElementById('settingsIntroductionIcon');
-    appSettings.introduction = {
-        enabled: enabledSelect ? enabledSelect.value === 'on' : false,
-        text: textField ? textField.value.trim() : '',
-        fallbackIcon: (iconField && iconField.value.trim()) ? iconField.value.trim().slice(0, 4) : DEFAULT_APP_SETTINGS.introduction.fallbackIcon
-    };
-    saveAppSettings({ render: true });
-    updateIntroductionSaveRowState();
-    if (closeToPriorLevel) closeIntroductionSettingsPanelToPriorLevel();
-    showToast('Introduction settings saved', 'success');
-}
-
-function showIntroductionImageOptions() {
-    window.__mnvImageOptions = {
-        kind: 'introduction',
-        id: INTRODUCTION_ITEM_ID,
-        category: '',
-        key: INTRODUCTION_IMAGE_KEY,
-        label: 'Introduction picture',
-        text: getIntroductionSettings().text || 'Introduction'
-    };
-    const overlay = ensureManagementImageOptionsOverlay();
-    const textEl = overlay.querySelector('#managementImageOptionsText');
-    getPrivateMediaRecord(INTRODUCTION_IMAGE_KEY).then(record => {
-        const editBtn = overlay.querySelector('[data-image-options-edit]');
-        const deleteBtn = overlay.querySelector('[data-image-options-delete]');
-        if (textEl) textEl.textContent = record ? 'The introduction button already has a saved picture. You can crop it again, replace it, delete it, or choose a fallback icon.' : 'The introduction button does not yet have a saved picture. You can load/take a picture or choose a fallback icon.';
-        if (editBtn) editBtn.disabled = !record;
-        if (deleteBtn) deleteBtn.disabled = !record;
-    });
-    overlay.style.display = 'flex';
-    void overlay.offsetWidth;
-    overlay.classList.add('show');
-}
-
-function playIntroductionFromSettings() {
-    const textField = document.getElementById('settingsIntroductionText');
-    const text = (textField && textField.value.trim()) || getIntroductionSettings().text || 'Introduction';
-    playIntroduction({ text });
 }
 
 function playIntroduction(options = {}) {

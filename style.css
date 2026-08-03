@@ -3564,7 +3564,7 @@ body[data-theme="midnight"] .settings-action-btn {
 }
 
 .settings-close,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button),
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle),
 .buttonlike,
 .management-btn,
 .small-management-btn,
@@ -3579,8 +3579,8 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 
 .settings-close:hover,
 .settings-close:focus,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):hover,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):focus,
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle):hover,
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle):focus,
 .buttonlike:hover,
 .buttonlike:focus,
 .management-btn:hover,
@@ -4029,7 +4029,7 @@ body[data-theme="midnight"] .management-btn {
 .management-add-line,
 .private-item-button,
 .theme-toggle,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button) {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle) {
   position: relative;
   overflow: hidden;
   border-radius: calc(var(--radius-md) + 8px) !important;
@@ -4052,8 +4052,8 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 .private-item-button:focus-visible,
 .theme-toggle:hover,
 .theme-toggle:focus-visible,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):hover,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):focus-visible {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle):hover,
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle):focus-visible {
   transform: translateY(-2px);
   background:
     var(--v50-sheen),
@@ -4068,7 +4068,7 @@ button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-butt
 .management-btn:active,
 .private-item-button:active,
 .theme-toggle:active,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):active {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle):active {
   transform: translateY(1px) scale(0.99);
   box-shadow:
     0 5px 12px rgba(15,23,42,0.20),
@@ -4120,7 +4120,7 @@ select {
   .settings-panel,
   .settings-action-btn,
   .management-btn,
-  button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button) {
+  button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle) {
     background-image: linear-gradient(145deg, var(--theme-button-surface, #ffffff), var(--theme-button-surface-2, #eef4f8)) !important;
   }
 }
@@ -5353,7 +5353,7 @@ body {
 
 .management-btn,
 .settings-action-btn,
-button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button) {
+button:not(.tab):not(.grid-button):not(.management-toggle):not(.quick-strip-button):not(.mnv-edit-toggle):not(.mnv-switch-toggle):not(.mnv-view-cycle):not(.mnv-label-toggle) {
   border-radius: 18px !important;
   min-height: 52px;
   font-weight: 850 !important;
@@ -7144,16 +7144,6 @@ body {
   grid-template-columns: 1fr 1fr !important;
   gap: 0.55rem !important;
   margin-top: 0.7rem !important;
-}
-
-#settingsOverlay .settings-v115-intro-panel {
-  margin-top: 0.75rem !important;
-  display: grid !important;
-  gap: 0.55rem !important;
-}
-
-#settingsOverlay .settings-v115-intro-panel[hidden] {
-  display: none !important;
 }
 
 #settingsOverlay .settings-action-btn,
@@ -11092,8 +11082,6 @@ body:not(.grid-view-active) .mnv-label-toggle {
 .quick-communication-strip[hidden] {
   display: none !important;
 }
-
-body.grid-view-active
 
 @media (max-width: 720px) {
   .container {
