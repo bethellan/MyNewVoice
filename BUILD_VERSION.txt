@@ -1,6 +1,7 @@
-v188_te_reo_defaults_check_and_fill
+v189_te_reo_default_starter_pack_completion
 
-Added a Te Reo Defaults section in Settings with a read-only coverage check and a fill-defaults action.
-The fill action reuses the built-in starter pack, only fills blank Te Reo/pronunciation fields, skips My People names, and does not change the backup format.
-Fixed the starter-pack category key for the Comfort section, whose internal category id is environment.
+Completed the built-in Te Reo starter pack for default app phrases outside My People.
+Added missing Daily Routine, Social Chat, Activities and Memories starter wording, with pronunciation helper text for each added phrase.
+The Settings Te Reo Defaults checker now reports zero missing built-in default phrase entries, excluding My People names by design.
+Includes v188 Settings Te Reo defaults check/fill tools and Comfort category key fix.
 Includes v187 Settings Help guide and icon actions, v186 Help password note, v185 app-bar Help and touch refactor, v184 Settings Help manual, v183 phone app-bar slot cleanup, v182 reliable app-bar pointer capture, v181 neutral view icons and boot render, v180 app-bar button style isolation, v179 dead Introduction Settings cleanup, v178 remove editor diagnostics, v177 classic theme baseline, v176 mobile editor no-sideways-focus fix, v175 photo memory zoom guard fix, v173 mobile editor focus containment, v172 reliable app-bar controls, v171 Settings entry overlay cleanup, v170 iPhone app-bar tap target fix, v169 Information overlay sequence fix, v168 direct Settings/Information card, v167 quick Yes / No touch colour fix, v166 removed Introduction Message controls, v165 iOS app refresh cache fix, v164 mobile app-bar tap targets, v163 List View render ownership, v160 Edit unlock opens Settings, v159 Settings escape fix and tab CSS cleanup, v158 Settings theme simplification, v157 Content Editor CSS cleanup, v156 mobile Content Editor containment and v155 app-bar icon encoding.
