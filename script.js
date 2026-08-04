@@ -29,6 +29,9 @@
 /* v182: Makes app-bar taps capture the pointer so iPhone controls tolerate normal finger drift. */
 /* v183: Simplifies phone app-bar slots so logo and controls do not crowd each other. */
 /* v184: Adds a Settings Help manual overlay without crowding the app bar. */
+/* v185: Refactors the app bar into left brand and right controls, adds app-bar Help, and removes the grid label toggle UI. */
+/* v186: Adds the edit password note at the top of Help. */
+/* v187: Expands Help into a Settings guide and makes Settings Information/Help icons the action buttons. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -208,7 +211,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v184';
+const CURRENT_APP_VERSION = 'v187';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1452,28 +1455,22 @@ function ensureSettingsOverlay() {
 
                 <section class="settings-v115-card settings-section-information">
                     <div class="settings-v115-card-head">
-                        <span class="settings-v115-card-icon" aria-hidden="true">i</span>
+                        <button type="button" class="settings-v115-card-icon" data-open-information aria-label="Open Information">i</button>
                         <div>
                             <h4>Information</h4>
                             <p>About, version, storage and offline status.</p>
                         </div>
                     </div>
-                    <button type="button" class="settings-action-btn" data-open-information>
-                        <span class="settings-card-text"><strong>Open Information</strong><small>Review app details and device status.</small></span>
-                    </button>
                 </section>
 
                 <section class="settings-v115-card settings-section-help">
                     <div class="settings-v115-card-head">
-                        <span class="settings-v115-card-icon" aria-hidden="true">?</span>
+                        <button type="button" class="settings-v115-card-icon" data-open-help aria-label="Open Help">?</button>
                         <div>
                             <h4>Help</h4>
                             <p>Quick guide for using, editing, backing up and updating MyNewVoice.</p>
                         </div>
                     </div>
-                    <button type="button" class="settings-action-btn" data-open-help>
-                        <span class="settings-card-text"><strong>Open Help</strong><small>Read the built-in user guide.</small></span>
-                    </button>
                 </section>
             </div>
         </div>    `;
@@ -2200,25 +2197,30 @@ function closeAboutToSettings() {
     }
 }
 
-function showHelpFromSettings() {
+function showHelpOverlay(returnTo = 'app') {
     const settingsOverlay = document.getElementById('settingsOverlay');
     const helpModal = document.getElementById('helpModal');
     if (!helpModal) return;
     if (helpModal.parentElement !== document.body) document.body.appendChild(helpModal);
-    helpModal.dataset.returnTo = 'settings';
+    helpModal.dataset.returnTo = returnTo;
     helpModal.style.display = 'flex';
     helpModal.classList.add('help-from-settings');
-    if (settingsOverlay) settingsOverlay.setAttribute('aria-hidden', 'true');
+    if (returnTo === 'settings' && settingsOverlay) settingsOverlay.setAttribute('aria-hidden', 'true');
+}
+
+function showHelpFromSettings() {
+    showHelpOverlay('settings');
 }
 
 function closeHelpToSettings() {
     const helpModal = document.getElementById('helpModal');
     if (!helpModal) return;
     const settingsOverlay = document.getElementById('settingsOverlay');
+    const returnToSettings = helpModal.dataset.returnTo === 'settings';
     helpModal.style.display = 'none';
     helpModal.classList.remove('help-from-settings');
     delete helpModal.dataset.returnTo;
-    if (settingsOverlay) settingsOverlay.removeAttribute('aria-hidden');
+    if (returnToSettings && settingsOverlay) settingsOverlay.removeAttribute('aria-hidden');
 }
 
 function returnToAppFromSettings() {
@@ -3371,7 +3373,6 @@ const DEFAULT_APP_SETTINGS = {
     pressActivation: 'normal',
     quickYesNoEnabled: false,
     teReoMode: false,
-    gridLabelsVisible: true,
     autoUpdateCheck: false,
     popupCloseDelaySeconds: 2,
     popupCloseMode: 'timed',
@@ -3696,7 +3697,6 @@ function normaliseAppSettings(rawSettings) {
         : DEFAULT_APP_SETTINGS.pressActivation;
     const quickYesNoEnabled = raw.quickYesNoEnabled === true || raw.quickYesNoEnabled === 'on';
     const teReoMode = raw.teReoMode === true || raw.teReoMode === 'on';
-    const gridLabelsVisible = raw.gridLabelsVisible !== false && raw.gridLabelsVisible !== 'off';
     const autoUpdateCheck = false;
     const speechEnabled = raw.speechEnabled !== false && raw.speechEnabled !== 'off';
     const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
@@ -3714,7 +3714,7 @@ function normaliseAppSettings(rawSettings) {
         text: String(rawIntro.text || '').slice(0, 500),
         fallbackIcon: String(rawIntro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
     };
-    return { displayMode, theme, pressActivation, quickYesNoEnabled, teReoMode, gridLabelsVisible, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceStyle, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
+    return { displayMode, theme, pressActivation, quickYesNoEnabled, teReoMode, autoUpdateCheck, popupCloseDelaySeconds, popupCloseMode, speechEnabled, speechVoiceStyle, speechVoiceName, speechVoiceLang, speechRate, speechPitch, introduction };
 }
 
 function getDisplayModeToast(displayMode) {
@@ -3822,7 +3822,6 @@ function updateAppBarControls() {
     const gridActive = appSettings.displayMode === 'grid';
     document.body.dataset.displayMode = appSettings.displayMode;
     document.body.classList.toggle('grid-view-active', gridActive);
-    document.body.classList.toggle('grid-labels-hidden', gridActive && appSettings.gridLabelsVisible === false);
 
     const editButton = document.getElementById('editModeToggle');
     if (editButton) {
@@ -3854,15 +3853,6 @@ function updateAppBarControls() {
         cycleButton.dataset.currentDisplayMode = appSettings.displayMode;
     }
 
-    const labelToggle = document.getElementById('gridLabelsToggle');
-    if (labelToggle) {
-        labelToggle.disabled = !gridActive;
-        labelToggle.setAttribute('aria-disabled', gridActive ? 'false' : 'true');
-        labelToggle.textContent = appSettings.gridLabelsVisible === false ? '\u25A3' : '\u25A3\u2261';
-        labelToggle.title = appSettings.gridLabelsVisible === false ? 'Grid images only' : 'Grid images and text';
-        labelToggle.setAttribute('aria-label', appSettings.gridLabelsVisible === false ? 'Grid images only' : 'Grid images and text');
-        labelToggle.setAttribute('aria-pressed', appSettings.gridLabelsVisible === false ? 'true' : 'false');
-    }
 }
 
 function getDisplayModeIcon(displayMode) {
@@ -3895,18 +3885,6 @@ function setDisplayModeFromAppBar(displayMode) {
 
 function cycleDisplayModeFromAppBar() {
     setDisplayModeFromAppBar(getNextDisplayMode(normaliseAppSettings(appSettings).displayMode));
-}
-
-function toggleGridLabelsFromAppBar() {
-    if (normaliseAppSettings(appSettings).displayMode !== 'grid') return;
-    appSettings.gridLabelsVisible = normaliseAppSettings(appSettings).gridLabelsVisible === false;
-    const categoryToKeep = currentViewCategory;
-    saveAppSettings({ render: false, persistContent: false, showSaveIndicator: false });
-    if (normaliseAppSettings(appSettings).displayMode === 'grid' && categoryToKeep) {
-        showCategorySubmenu(categoryToKeep);
-    } else {
-        showMainMenu();
-    }
 }
 
 function markInitialAppRenderComplete() {
@@ -9903,6 +9881,13 @@ document.addEventListener('DOMContentLoaded', function() {
         attachReliableAppBarButton(displayModeCycle, cycleDisplayModeFromAppBar);
     }
 
+    const helpToggle = document.getElementById('helpToggle');
+    if (helpToggle) {
+        helpToggle.title = 'Help';
+        helpToggle.setAttribute('aria-label', 'Open help');
+        attachReliableAppBarButton(helpToggle, () => showHelpOverlay('app'));
+    }
+
     const editModeToggle = document.getElementById('editModeToggle');
     if (editModeToggle) {
         attachReliableAppBarButton(editModeToggle, toggleEditModeFromAppBar);
@@ -9912,12 +9897,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (teReoModeToggle) {
         attachReliableAppBarButton(teReoModeToggle, toggleTeReoModeFromAppBar);
     }
-
-    const gridLabelsToggle = document.getElementById('gridLabelsToggle');
-    if (gridLabelsToggle) {
-        attachReliableAppBarButton(gridLabelsToggle, toggleGridLabelsFromAppBar);
-    }
-    
 
     // Set up About box. It is opened from Settings only.
     const aboutModal = document.getElementById('aboutModal');

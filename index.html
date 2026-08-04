@@ -28,20 +28,22 @@ Created by Andrew Bethell in his own time for his father following a stroke.
                 <span class="mnv-logo" aria-hidden="true"><img src="assets/icon-192.png" alt=""></span>
                 <span class="mnv-brand-name">MyNewVoice</span>
             </div>
-            <button type="button" id="editModeToggle" class="mnv-edit-toggle" data-edit-mode-toggle aria-label="Unlock edit mode">
-                <span class="mnv-edit-toggle-track" aria-hidden="true">
-                    <span class="mnv-edit-toggle-thumb"></span>
-                </span>
-                <span class="mnv-edit-toggle-label">Edit</span>
-            </button>
-            <button type="button" id="teReoModeToggle" class="mnv-te-reo-toggle mnv-switch-toggle" data-te-reo-mode-toggle aria-label="Switch Te Reo mode on">
-                <span class="mnv-switch-track" aria-hidden="true">
-                    <span class="mnv-switch-thumb"></span>
-                </span>
-            </button>
-            <button type="button" id="displayModeCycle" class="mnv-view-cycle" data-display-mode-cycle aria-label="Current view: List View. Change view.">&#9776;</button>
-            <button type="button" id="gridLabelsToggle" class="mnv-label-toggle" data-grid-labels-toggle aria-label="Grid image and text mode">&#9635;&#8801;</button>
-            <button id="managementToggle" class="management-toggle" title="Settings" aria-label="Open settings">&#9881;</button>
+            <div class="mnv-app-controls" aria-label="App actions">
+                <button type="button" id="editModeToggle" class="mnv-edit-toggle" data-edit-mode-toggle aria-label="Unlock edit mode">
+                    <span class="mnv-edit-toggle-track" aria-hidden="true">
+                        <span class="mnv-edit-toggle-thumb"></span>
+                    </span>
+                    <span class="mnv-edit-toggle-label">Edit</span>
+                </button>
+                <button type="button" id="teReoModeToggle" class="mnv-te-reo-toggle mnv-switch-toggle" data-te-reo-mode-toggle aria-label="Switch Te Reo mode on">
+                    <span class="mnv-switch-track" aria-hidden="true">
+                        <span class="mnv-switch-thumb"></span>
+                    </span>
+                </button>
+                <button type="button" id="displayModeCycle" class="mnv-view-cycle" data-display-mode-cycle aria-label="Current view: List View. Change view.">&#9776;</button>
+                <button type="button" id="helpToggle" class="mnv-help-toggle" data-help-toggle aria-label="Open help">?</button>
+                <button id="managementToggle" class="management-toggle" title="Settings" aria-label="Open settings">&#9881;</button>
+            </div>
         </header>
 
         <!-- Message Display Bar: kept for older render/state ownership; visually retired by the app bar. -->
@@ -114,6 +116,84 @@ Created by Andrew Bethell in his own time for his father following a stroke.
                 <p class="privacy-note">Photos and recorded voices are stored privately on this device. Export a complete backup before changing devices or clearing browser data.</p>
                 <div class="modal-actions">
                     <button id="aboutClose" class="management-btn close-btn">Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div id="helpModal" class="modal" role="dialog" aria-labelledby="helpModalTitle" aria-modal="true">
+            <div class="modal-content help-content">
+                <h3 id="helpModalTitle">MyNewVoice Help</h3>
+                <section class="help-section">
+                    <h4>Password</h4>
+                    <p>Password: <strong>4321</strong></p>
+                </section>
+                <section class="help-section">
+                    <h4>Using the app</h4>
+                    <p>Tap a picture or phrase to show the message. If spoken voice is on, the device also speaks it aloud.</p>
+                    <p>Use the view button in the top bar to switch between List, Menu and Grid views.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Top bar</h4>
+                    <p>The green switch turns editing on after the password is entered. The red switch turns Te Reo mode on or off. The view button cycles List, Menu and Grid. The question mark opens this Help screen. The cog opens Settings.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Display and touch</h4>
+                    <p>Theme is currently kept on Classic for a consistent public version. Yes / No quick buttons adds two large quick replies below the top bar.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Voice and speech</h4>
+                    <p>Spoken voice turns device speech on or off. When it is off, the large message stays on screen until tapped, so the user can show it to someone else.</p>
+                    <p>Voice style asks the device for a default, male or female voice. Voice choice lets you pick a specific installed voice. Preview tests that selected voice. Speech speed and pitch adjust how phrases sound.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Content editor</h4>
+                    <p>Open Content Editor to change menu topics, phrases, photos, fallback icons, Te Reo wording, pronunciation wording and recorded voices.</p>
+                    <p>When edit mode is on, hold a button on the main screen to edit, move or delete it. When edit mode is off, editing choices are hidden so the communication screen stays simple.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Grid view</h4>
+                    <p>Grid view shows one section at a time with large picture tiles. Swipe left or right to move between sections. The arrows can also move between sections.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Photo Memories</h4>
+                    <p>Photo Memories are for family photos and special pictures. A photo opens large and stays open until tapped. While open, it can be pinched to zoom and dragged around.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Backup and restore</h4>
+                    <p>Use Export Backup before large edits or before moving to another device. Import Backup restores words, settings, photos and recordings.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Offline use</h4>
+                    <p>Save Offline asks the browser to cache the app files on this device. That means the app can still open when there is no internet, as long as the browser keeps its saved site data.</p>
+                    <p>Check Offline checks whether the main app files are saved. After publishing a new version, open the app online, use Save Offline, then test once with Wi-Fi or mobile data off.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Storage and backup size</h4>
+                    <p>Check Storage shows how much space photos, recorded voices and local app data use. It can also show unused media that is no longer attached to a current button.</p>
+                    <p>Compress Photos keeps good quality but reduces file size. Make Photos Smaller reduces backups further with lower quality. Make Photos Tiny makes the smallest backups, but images will look softer.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Test tools</h4>
+                    <p>Test Speech checks whether this device can speak a simple phrase using the current speech settings. Preview in Voice and Speech is for checking one selected voice; Test Speech is a general sound check.</p>
+                    <p>Test Photos and Voices checks that saved photos and recorded voices can still be found on this device after editing, importing or updating.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Advanced / Clear Device Data</h4>
+                    <p>Use this carefully. Remove Unused Media deletes images or recordings that are not linked to a current button. Remove All Images deletes pictures from this device. Remove All Audio deletes recorded voices from this device.</p>
+                    <p>Export a backup before using these buttons, because cleared device data cannot be recovered unless it is in a backup.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Information</h4>
+                    <p>Information shows the app version, copyright, backup size summary, storage summary and offline readiness. It is useful before sending a backup or checking whether a device has the latest version.</p>
+                </section>
+                <section class="help-section">
+                    <h4>Quick troubleshooting</h4>
+                    <p>If speech is silent, check device volume, mute/silent mode, and that Spoken voice is on in Settings.</p>
+                    <p>If buttons do not feel right after an update, close and reopen the app, then use Update App from Settings.</p>
+                </section>
+                <div class="modal-actions">
+                    <button id="helpClose" class="management-btn close-btn">Back</button>
                 </div>
             </div>
         </div>
