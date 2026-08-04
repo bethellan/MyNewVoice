@@ -28,6 +28,7 @@
 /* v181: Keeps app-bar view icons neutral and hides first-paint menu flicker until saved view renders. */
 /* v182: Makes app-bar taps capture the pointer so iPhone controls tolerate normal finger drift. */
 /* v183: Simplifies phone app-bar slots so logo and controls do not crowd each other. */
+/* v184: Adds a Settings Help manual overlay without crowding the app bar. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -207,7 +208,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v183';
+const CURRENT_APP_VERSION = 'v184';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1461,6 +1462,19 @@ function ensureSettingsOverlay() {
                         <span class="settings-card-text"><strong>Open Information</strong><small>Review app details and device status.</small></span>
                     </button>
                 </section>
+
+                <section class="settings-v115-card settings-section-help">
+                    <div class="settings-v115-card-head">
+                        <span class="settings-v115-card-icon" aria-hidden="true">?</span>
+                        <div>
+                            <h4>Help</h4>
+                            <p>Quick guide for using, editing, backing up and updating MyNewVoice.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="settings-action-btn" data-open-help>
+                        <span class="settings-card-text"><strong>Open Help</strong><small>Read the built-in user guide.</small></span>
+                    </button>
+                </section>
             </div>
         </div>    `;
 
@@ -1479,6 +1493,10 @@ function ensureSettingsOverlay() {
         }
         if (event.target.closest('[data-open-information]')) {
             showAboutFromSettings();
+            return;
+        }
+        if (event.target.closest('[data-open-help]')) {
+            showHelpFromSettings();
             return;
         }
         if (event.target.closest('[data-export-full-backup]')) {
@@ -2180,6 +2198,27 @@ function closeAboutToSettings() {
         const closeButton = settingsOverlay.querySelector('[data-settings-close]');
         // v112: do not autofocus modal close buttons; preserve the underlying viewport.
     }
+}
+
+function showHelpFromSettings() {
+    const settingsOverlay = document.getElementById('settingsOverlay');
+    const helpModal = document.getElementById('helpModal');
+    if (!helpModal) return;
+    if (helpModal.parentElement !== document.body) document.body.appendChild(helpModal);
+    helpModal.dataset.returnTo = 'settings';
+    helpModal.style.display = 'flex';
+    helpModal.classList.add('help-from-settings');
+    if (settingsOverlay) settingsOverlay.setAttribute('aria-hidden', 'true');
+}
+
+function closeHelpToSettings() {
+    const helpModal = document.getElementById('helpModal');
+    if (!helpModal) return;
+    const settingsOverlay = document.getElementById('settingsOverlay');
+    helpModal.style.display = 'none';
+    helpModal.classList.remove('help-from-settings');
+    delete helpModal.dataset.returnTo;
+    if (settingsOverlay) settingsOverlay.removeAttribute('aria-hidden');
 }
 
 function returnToAppFromSettings() {
@@ -9883,6 +9922,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up About box. It is opened from Settings only.
     const aboutModal = document.getElementById('aboutModal');
     const aboutClose = document.getElementById('aboutClose');
+    const helpModal = document.getElementById('helpModal');
+    const helpClose = document.getElementById('helpClose');
 
     if (aboutClose && aboutModal) {
         aboutClose.addEventListener('click', (event) => {
@@ -9891,6 +9932,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         aboutModal.addEventListener('click', (event) => {
             if (event.target === aboutModal) closeAboutToSettings();
+        });
+    }
+
+    if (helpClose && helpModal) {
+        helpClose.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeHelpToSettings();
+        });
+        helpModal.addEventListener('click', (event) => {
+            if (event.target === helpModal) closeHelpToSettings();
         });
     }
 
