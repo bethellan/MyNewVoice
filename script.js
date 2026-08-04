@@ -25,6 +25,7 @@
 /* v178: Removes temporary mobile editor diagnostics while keeping the focus containment fix. */
 /* v179: Removes dead Introduction Settings panel code while keeping backup/runtime compatibility. */
 /* v180: Keeps app-bar controls out of generic button styling to stabilise mobile taps. */
+/* v181: Keeps app-bar view icons neutral and hides first-paint menu flicker until saved view renders. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -204,7 +205,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v180';
+const CURRENT_APP_VERSION = 'v181';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3865,6 +3866,10 @@ function toggleGridLabelsFromAppBar() {
     } else {
         showMainMenu();
     }
+}
+
+function markInitialAppRenderComplete() {
+    document.body.classList.remove('mnv-booting');
 }
 
 function attachReliableAppBarButton(button, action) {
@@ -9811,6 +9816,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Build the main menu as stacked image cards, then show the main menu first.
     renderCategoryMenuCards();
     showMainMenu();
+    markInitialAppRenderComplete();
     
     // Top menu card click handlers are attached when renderCategoryMenuCards() builds the cards.
 

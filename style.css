@@ -10767,6 +10767,13 @@ body {
   overflow: hidden !important;
 }
 
+body.mnv-booting #messageBar,
+body.mnv-booting .quick-communication-strip,
+body.mnv-booting .tab-container,
+body.mnv-booting #buttonGrid {
+  visibility: hidden !important;
+}
+
 .mnv-app-bar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) repeat(2, 58px) repeat(3, clamp(44px, 5vw, 54px));
@@ -10873,14 +10880,6 @@ body[data-te-reo-mode="on"] .mnv-logo {
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent !important;
-}
-
-.mnv-view-cycle,
-.mnv-label-toggle[aria-pressed="true"] {
-  background: linear-gradient(135deg, var(--primary-color, #3f9f46), var(--primary-dark, #1f5b31)) !important;
-  color: #ffffff !important;
-  border-color: color-mix(in srgb, var(--primary-color, #3f9f46) 72%, #ffffff) !important;
-  box-shadow: 0 5px 13px rgba(15, 23, 42, 0.14) !important;
 }
 
 .mnv-edit-toggle,
