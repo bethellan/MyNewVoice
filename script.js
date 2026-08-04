@@ -32,6 +32,8 @@
 /* v185: Refactors the app bar into left brand and right controls, adds app-bar Help, and removes the grid label toggle UI. */
 /* v186: Adds the edit password note at the top of Help. */
 /* v187: Expands Help into a Settings guide and makes Settings Information/Help icons the action buttons. */
+/* v188: Adds Settings Te Reo coverage check and default fill tools without changing old backup compatibility. */
+/* v189: Expands the built-in Te Reo starter pack so the default baseline is more complete. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -211,7 +213,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v187';
+const CURRENT_APP_VERSION = 'v189';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1399,6 +1401,16 @@ function ensureSettingsOverlay() {
                     </div>
                 </details>
 
+                <details class="settings-v115-card settings-v115-foldout settings-section-te-reo">
+                    <summary><span>Te Reo Defaults</span><small>Check and fill starter wording.</small></summary>
+                    <div id="teReoCoveragePanel" class="settings-status-panel">Check Te Reo wording before using Te Reo mode.</div>
+                    <p class="settings-help settings-v115-wide">Please check Te Reo wording with a fluent/native speaker to ensure accuracy and avoid unintended or inappropriate wording.</p>
+                    <div class="settings-v115-actions-two">
+                        <button type="button" class="settings-action-btn" data-check-te-reo-defaults><span class="settings-card-text"><strong>Check Te Reo</strong><small>Find missing starter wording.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-fill-te-reo-defaults><span class="settings-card-text"><strong>Add Default Te Reo</strong><small>Fill blanks only.</small></span></button>
+                    </div>
+                </details>
+
                 <section class="settings-v115-card settings-section-backup">
                     <div class="settings-v115-card-head">
                         <span class="settings-v115-card-icon" aria-hidden="true">⇅</span>
@@ -1555,6 +1567,15 @@ function ensureSettingsOverlay() {
         }
         if (event.target.closest('[data-preview-speech-voice]')) {
             previewSelectedSpeechVoice();
+            return;
+        }
+        if (event.target.closest('[data-check-te-reo-defaults]')) {
+            renderTeReoCoveragePanel(buildTeReoCoverageReport());
+            showToast('Te Reo check complete', 'success');
+            return;
+        }
+        if (event.target.closest('[data-fill-te-reo-defaults]')) {
+            applyTeReoDefaultsFromSettings();
             return;
         }
     });
@@ -2241,6 +2262,7 @@ function showSettingsOverlay() {
     warmSpeechVoices().then(() => updateSettingsControls()).catch(() => updateSettingsControls());
     updateSettingsControls();
     updateMediaQualityPanel();
+    renderTeReoCoveragePanel();
     document.body.classList.add('settings-real-screen-active');
     overlay.style.display = 'flex';
     requestAnimationFrame(() => overlay.classList.add('show'));
@@ -3532,7 +3554,7 @@ const TE_REO_STARTER_PACK = {
         health: 'Hauora',
         selfcare: 'Tiaki Whaiaro',
         food: 'Kai me te Inu',
-        comfort: 'Whakamarie',
+        environment: 'Whakamarie',
         MyPeople: 'Āku Tāngata',
         photoMemories: 'Ngā Whakaahua Mahara',
         feelings: 'Ngā Kare ā-roto',
@@ -3637,23 +3659,57 @@ const TE_REO_STARTER_PACK = {
         feelings13: ['Kei te tau taku noho', 'Kei te tau taku noho'],
         feelings14: ['Kei te tino pai ahau i tēnei rā', 'Kei te tino pai ahau i tenei ra'],
         routine01: ['He aha te mea ka whai ake?', 'He aha te mea ka whai ake?'],
+        routine02: ['Ko wai tōku kaitiaki i tēnei rā?', 'Ko wai toku kaitiaki i tenei ra?'],
         routine03: ['He aha te rā?', 'He aha te ra?'],
         routine04: ['He aha ngā mahi o tēnei rā?', 'He aha nga mahi o tenei ra?'],
+        routine05: ['Ko wai e haere mai ana i tēnei rā?', 'Ko wai e haere mai ana i tenei ra?'],
+        routine06: ['Ka haere au ki tētahi wāhi i tēnei rā?', 'Ka haere au ki tetahi wahi i tenei ra?'],
+        routine07: ['Āhea tātou e wehe ai?', 'Ahea tatou e wehe ai?'],
         routine08: ['Āhea taku wāhui?', 'Ahea taku wahui?'],
+        routine09: ['Kua tae ki te wā mō aku rongoā?', 'Kua tae ki te wa mo aku rongoa?'],
+        routine10: ['He aha mō te parakuihi?', 'He aha mo te parakuihi?'],
         routine11: ['Kei te pēhea te huarere?', 'Kei te pehea te huarere?'],
+        routine12: ['He aha te mahere mō tēnei ahiahi?', 'He aha te mahere mo tenei ahiahi?'],
+        routine13: ['Hei te aha te wā ka haere mai koe āpōpō?', 'Hei te aha te wa ka haere mai koe apopo?'],
         social01: ['Kōrero pōturi mai koa', 'Korero poturi mai koa'],
         social02: ['Kōrero anō mai koa', 'Korero ano mai koa'],
         social03: ['Tuhia mai koa', 'Tuhia mai koa'],
         social04: ['Homai he wā ki ahau', 'Homai he wa ki ahau'],
+        social05: ['Kei te mōhio au ki taku tikanga', 'Kei te mohio au ki taku tikanga'],
+        social06: ['Kāore aku kupu e puta mai', 'Kaore aku kupu e puta mai'],
         social07: ['Kāore au i te mārama', 'Kaore au i te marama'],
+        social08: ['Ka taea e koe te kōrero anō mai?', 'Ka taea e koe te korero ano mai?'],
         social09: ['Tēnā koe mō tō āwhina', 'Tena koe mo to awhina'],
+        social10: ['He tino atawhai koe', 'He tino atawhai koe'],
+        social11: ['Kei te hiahia hoa ahau', 'Kei te hiahia hoa ahau'],
+        social12: ['Kei te mokemoke ahau', 'Kei te mokemoke ahau'],
+        social13: ['Āwhinatia ahau ki te waea atu koa', 'Awhinatia ahau ki te waea atu koa'],
         social14: ['Kei te pēhea koe i tēnei rā?', 'Kei te pehea koe i tenei ra?'],
+        social15: ['Kōrero mai mō tō rā', 'Korero mai mo to ra'],
+        social16: ['Me kōrero tātou mō te whānau', 'Me korero tatou mo te whanau'],
+        social17: ['He whakamere tērā', 'He whakamere tera'],
         activities01: ['Kei te hiahia ahau ki te mātakitaki pouaka whakaata', 'Kei te hiahia ahau ki te matakitaki pouaka whakaata'],
         activities02: ['Ka haere tāua ki te hīkoi?', 'Ka haere taua ki te hikoi?'],
         activities03: ['Kei te hiahia ahau ki te whakarongo waiata', 'Kei te hiahia ahau ki te whakarongo waiata'],
         activities04: ['Kei te hiahia ahau ki te titiro whakaahua', 'Kei te hiahia ahau ki te titiro whakaahua'],
+        activities05: ['Kei te hiahia ahau ki te pānui', 'Kei te hiahia ahau ki te panui'],
         activities06: ['Ka tākaro tāua?', 'Ka takaro taua?'],
+        activities07: ['Kei te hiahia ahau ki te kori tinana', 'Kei te hiahia ahau ki te kori tinana'],
+        activities08: ['Me noho tāua ki te māra', 'Me noho taua ki te mara'],
+        activities09: ['Kei te hiahia ahau ki te mātakitaki i ngā rongo kōrero', 'Kei te hiahia ahau ki te matakitaki i nga rongo korero'],
+        activities10: ['Kei te hiahia ahau ki te whakarongo ki te reo irirangi', 'Kei te hiahia ahau ki te whakarongo ki te reo irirangi'],
+        activities11: ['Ka mātakitaki tāua i tētahi kiriata?', 'Ka matakitaki taua i tetahi kiriata?'],
+        activities12: ['Me mātakitaki tātou i te kirikiti', 'Me matakitaki tatou i te kirikiti'],
+        activities13: ['Me kōrero tātou mō te whutupōro', 'Me korero tatou mo te whutuporo'],
+        activities14: ['Kei te hiahia ahau ki te mahi panga', 'Kei te hiahia ahau ki te mahi panga'],
+        memories01: ['Kei te hiahia ahau ki te kōrero mō te wā i noho ai tātou ki...', 'Kei te hiahia ahau ki te korero mo te wa i noho ai tatou ki...'],
+        memories02: ['Kei te hiahia ahau ki te kōrero mō tō tātou hararei', 'Kei te hiahia ahau ki te korero mo to tatou hararei'],
+        memories03: ['Kei te hiahia ahau ki te kōrero mō taku tamarikitanga', 'Kei te hiahia ahau ki te korero mo taku tamarikitanga'],
         memories04: ['Kei te hiahia ahau ki te kōrero mō ngā tamariki i a rātou e nohinohi ana', 'Kei te hiahia ahau ki te korero mo nga tamariki i a ratou e nohinohi ana'],
+        memories05: ['Kei te hiahia ahau ki te kōrero mō tō tātou rā mārena', 'Kei te hiahia ahau ki te korero mo to tatou ra marena'],
+        memories06: ['Kei te hiahia ahau ki te kōrero mō taku mahi tuatahi', 'Kei te hiahia ahau ki te korero mo taku mahi tuatahi'],
+        memories07: ['Kei te hiahia ahau ki te kōrero mō aku rā kura', 'Kei te hiahia ahau ki te korero mo aku ra kura'],
+        memories08: ['Me kōrero tātou mō tō tātou wharekai tino pai', 'Me korero tatou mo to tatou wharekai tino pai'],
         memories09: ['Kei te hiahia ahau ki te titiro ki ngā whakaahua tawhito', 'Kei te hiahia ahau ki te titiro ki nga whakaahua tawhito'],
         photoMemory01: ['Whakaahua whānau', 'Whakaahua whanau'],
         photoMemory02: ['He rā motuhake', 'He ra motuhake'],
@@ -4950,22 +5006,100 @@ function normaliseCategoryConfig(rawConfig) {
     return { order, categories };
 }
 
-function applyTeReoStarterPack() {
+function getTeReoStarterValuesForPhrase(phrase) {
+    if (!phrase || typeof phrase !== 'object') return null;
+    const byId = TE_REO_STARTER_PACK.phrases[phrase.id];
+    if (byId) return byId;
+
+    const english = String(phrase.text || '').trim().toLowerCase();
+    if (!english) return null;
+    for (const [id, values] of Object.entries(TE_REO_STARTER_PACK.phrases)) {
+        const defaultPhrase = Object.values(defaultButtonData || {})
+            .flat()
+            .find(item => item && item.id === id);
+        if (defaultPhrase && String(defaultPhrase.text || '').trim().toLowerCase() === english) return values;
+    }
+    return null;
+}
+
+function buildTeReoCoverageReport() {
+    categoryConfig = normaliseCategoryConfig(categoryConfig);
+    const report = {
+        categoryTotal: 0,
+        categoryMissing: [],
+        phraseTotal: 0,
+        phraseMissing: [],
+        defaultsAvailable: 0,
+        peopleSkipped: 0
+    };
+
+    getCategoryOrder({ includeHidden: true }).forEach(category => {
+        const meta = getCategoryMeta(category);
+        report.categoryTotal += 1;
+        if (!String(meta.reoLabel || '').trim()) {
+            report.categoryMissing.push({
+                category,
+                label: meta.label || category,
+                hasDefault: Boolean(TE_REO_STARTER_PACK.categories[category])
+            });
+        }
+
+        const phrases = Array.isArray(buttonData[category]) ? buttonData[category] : [];
+        if (category === 'MyPeople') {
+            report.peopleSkipped += phrases.length;
+            return;
+        }
+
+        phrases.forEach(phrase => {
+            if (!phrase || typeof phrase !== 'object' || !String(phrase.text || '').trim()) return;
+            report.phraseTotal += 1;
+            if (String(phrase.reoText || '').trim()) return;
+            const starterValues = getTeReoStarterValuesForPhrase(phrase);
+            if (starterValues) report.defaultsAvailable += 1;
+            report.phraseMissing.push({
+                category,
+                label: phrase.text,
+                id: phrase.id || '',
+                hasDefault: Boolean(starterValues)
+            });
+        });
+    });
+
+    return report;
+}
+
+function renderTeReoCoveragePanel(report = buildTeReoCoverageReport()) {
+    const panel = document.getElementById('teReoCoveragePanel');
+    if (!panel) return;
+
+    const missingCategories = report.categoryMissing.length;
+    const missingPhrases = report.phraseMissing.length;
+    const ready = missingCategories === 0 && missingPhrases === 0;
+    const phraseExamples = report.phraseMissing.slice(0, 5).map(item => {
+        const meta = getCategoryMeta(item.category);
+        return `<li>${escapeHtml(meta.label || item.category)}: ${escapeHtml(item.label)}${item.hasDefault ? ' (default available)' : ''}</li>`;
+    }).join('');
+    const categoryExamples = report.categoryMissing.slice(0, 5).map(item => (
+        `<li>${escapeHtml(item.label)}${item.hasDefault ? ' (default available)' : ''}</li>`
+    )).join('');
+
+    panel.innerHTML = `
+        <p><strong>${ready ? 'Te Reo starter wording is filled.' : 'Te Reo wording needs review.'}</strong></p>
+        <p>${report.categoryTotal - missingCategories}/${report.categoryTotal} section titles and ${report.phraseTotal - missingPhrases}/${report.phraseTotal} phrase buttons have Te Reo wording.</p>
+        <p>${report.defaultsAvailable} missing phrase${report.defaultsAvailable === 1 ? '' : 's'} can be filled from the built-in starter set. My People names are left for you to edit manually.</p>
+        ${categoryExamples ? `<p><strong>Missing section titles</strong></p><ul>${categoryExamples}</ul>` : ''}
+        ${phraseExamples ? `<p><strong>Missing phrase wording</strong></p><ul>${phraseExamples}</ul>` : ''}
+    `;
+}
+
+function applyTeReoStarterPack({ persist = true } = {}) {
+    const summary = { categoryFilled: 0, phraseFilled: 0, pronunciationFilled: 0 };
     categoryConfig = normaliseCategoryConfig(categoryConfig);
     Object.entries(TE_REO_STARTER_PACK.categories).forEach(([category, reoLabel]) => {
         if (!categoryConfig.categories[category]) return;
         if (!String(categoryConfig.categories[category].reoLabel || '').trim()) {
             categoryConfig.categories[category].reoLabel = reoLabel;
-        }
-    });
-
-    const phraseByEnglish = new Map();
-    Object.entries(TE_REO_STARTER_PACK.phrases).forEach(([id, values]) => {
-        const defaultPhrase = Object.values(defaultButtonData || {})
-            .flat()
-            .find(phrase => phrase && phrase.id === id);
-        if (defaultPhrase && defaultPhrase.text) {
-            phraseByEnglish.set(String(defaultPhrase.text).trim().toLowerCase(), values);
+            summary.categoryFilled += 1;
         }
     });
 
@@ -4973,17 +5107,32 @@ function applyTeReoStarterPack() {
         if (!Array.isArray(phrases)) return;
         phrases.forEach(phrase => {
             if (!phrase || typeof phrase !== 'object') return;
-            const byId = TE_REO_STARTER_PACK.phrases[phrase.id];
-            const byText = phraseByEnglish.get(String(phrase.text || '').trim().toLowerCase());
-            const values = byId || byText;
+            const values = getTeReoStarterValuesForPhrase(phrase);
             if (!values) return;
-            if (!String(phrase.reoText || '').trim()) phrase.reoText = values[0];
-            if (!String(phrase.reoSpokenText || '').trim()) phrase.reoSpokenText = values[1] || values[0];
+            if (!String(phrase.reoText || '').trim()) {
+                phrase.reoText = values[0];
+                summary.phraseFilled += 1;
+            }
+            if (!String(phrase.reoSpokenText || '').trim()) {
+                phrase.reoSpokenText = values[1] || values[0];
+                summary.pronunciationFilled += 1;
+            }
         });
     });
 
-    saveCategoryConfig();
-    saveDataToStorage();
+    if (persist) {
+        saveCategoryConfig();
+        saveDataToStorage();
+    }
+    return summary;
+}
+
+function applyTeReoDefaultsFromSettings() {
+    const summary = applyTeReoStarterPack();
+    renderTeReoCoveragePanel(buildTeReoCoverageReport());
+    if (isTeReoModeEnabled() && currentViewCategory) refreshCurrentCategoryView(currentViewCategory);
+    const changed = summary.categoryFilled + summary.phraseFilled + summary.pronunciationFilled;
+    showToast(changed ? `Added Te Reo defaults to ${changed} field${changed === 1 ? '' : 's'}` : 'Te Reo defaults already filled', changed ? 'success' : 'info');
 }
 
 function loadCategoryConfig() {
