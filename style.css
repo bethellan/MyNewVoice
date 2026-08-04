@@ -10875,10 +10875,13 @@ body[data-te-reo-mode="on"] .mnv-logo {
   line-height: 1.05 !important;
   white-space: nowrap;
   box-shadow: none !important;
+  position: relative !important;
+  z-index: 12 !important;
+  pointer-events: auto !important;
   cursor: pointer !important;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
+  touch-action: manipulation !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
   -webkit-tap-highlight-color: transparent !important;
 }
 

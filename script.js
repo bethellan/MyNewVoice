@@ -26,6 +26,7 @@
 /* v179: Removes dead Introduction Settings panel code while keeping backup/runtime compatibility. */
 /* v180: Keeps app-bar controls out of generic button styling to stabilise mobile taps. */
 /* v181: Keeps app-bar view icons neutral and hides first-paint menu flicker until saved view renders. */
+/* v182: Makes app-bar taps capture the pointer so iPhone controls tolerate normal finger drift. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -205,7 +206,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v181';
+const CURRENT_APP_VERSION = 'v182';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3880,7 +3881,8 @@ function attachReliableAppBarButton(button, action) {
     let startX = 0;
     let startY = 0;
     let ignoreClickUntil = 0;
-    const TAP_TOLERANCE = 18;
+    let activePointerId = null;
+    const TAP_TOLERANCE = 34;
 
     const isDisabled = () => button.disabled || button.getAttribute('aria-disabled') === 'true';
 
@@ -3897,13 +3899,26 @@ function attachReliableAppBarButton(button, action) {
         if (isDisabled()) return;
         if (event.pointerType === 'mouse' && event.button !== 0) return;
         pointerStarted = true;
+        activePointerId = event.pointerId;
         startX = event.clientX || 0;
         startY = event.clientY || 0;
+        try {
+            button.setPointerCapture(event.pointerId);
+        } catch (_) {
+            // Some older WebKit builds do not allow capture here; click fallback still works.
+        }
     }, { passive: true });
 
     button.addEventListener('pointerup', (event) => {
         if (!pointerStarted) return;
+        if (activePointerId !== null && event.pointerId !== activePointerId) return;
         pointerStarted = false;
+        activePointerId = null;
+        try {
+            if (button.hasPointerCapture && button.hasPointerCapture(event.pointerId)) {
+                button.releasePointerCapture(event.pointerId);
+            }
+        } catch (_) {}
         const dx = Math.abs((event.clientX || 0) - startX);
         const dy = Math.abs((event.clientY || 0) - startY);
         if (dx > TAP_TOLERANCE || dy > TAP_TOLERANCE) return;
@@ -3911,8 +3926,12 @@ function attachReliableAppBarButton(button, action) {
         runAction(event);
     }, { passive: false });
 
-    ['pointercancel', 'pointerleave', 'lostpointercapture'].forEach((eventName) => {
-        button.addEventListener(eventName, () => { pointerStarted = false; });
+    ['pointercancel', 'lostpointercapture'].forEach((eventName) => {
+        button.addEventListener(eventName, (event) => {
+            if (activePointerId !== null && event.pointerId !== activePointerId) return;
+            pointerStarted = false;
+            activePointerId = null;
+        });
     });
 
     button.addEventListener('click', (event) => {
