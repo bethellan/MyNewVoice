@@ -1,3 +1,8 @@
+v190_about_local_culture_wording
+
+Updated the About MyNewVoice wording to explain that the app grew from Andrew Bethell supporting his father after a stroke, and that it has been adapted to feel local, personal, familiar and respectful of local culture.
+Includes v189 Te Reo starter pack completion.
+
 v189_te_reo_default_starter_pack_completion
 
 Completed the built-in Te Reo starter pack for default app phrases outside My People.
