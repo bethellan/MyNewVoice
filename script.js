@@ -27,6 +27,7 @@
 /* v180: Keeps app-bar controls out of generic button styling to stabilise mobile taps. */
 /* v181: Keeps app-bar view icons neutral and hides first-paint menu flicker until saved view renders. */
 /* v182: Makes app-bar taps capture the pointer so iPhone controls tolerate normal finger drift. */
+/* v183: Simplifies phone app-bar slots so logo and controls do not crowd each other. */
 
 document.addEventListener('load', function(event) {
     const el = event.target;
@@ -206,7 +207,7 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-const CURRENT_APP_VERSION = 'v182';
+const CURRENT_APP_VERSION = 'v183';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
