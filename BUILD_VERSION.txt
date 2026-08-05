@@ -1,3 +1,9 @@
+v192_app_bar_switch_pointerdown_activation
+
+Made the Edit and Te Reo app-bar switches activate from the full housed switch area on pointerdown, improving iPhone reliability when a finger drifts slightly before release.
+Widened the switch housing while keeping the compact visual pill.
+Includes v191 app-bar switch hit-target cleanup.
+
 v191_app_bar_switch_hit_target_cleanup
 
 Cleaned up the Edit and Te Reo app-bar switch hit targets so the whole housed switch button is selected on touch devices.

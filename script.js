@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v191: Makes app-bar switch housings the only tap target owner so iPhone taps are not blocked by pseudo-elements.
-const CURRENT_APP_VERSION = 'v191';
+// v192: Lets app-bar switches activate from the whole housing on pointerdown for more reliable iPhone taps.
+const CURRENT_APP_VERSION = 'v192';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3948,10 +3948,11 @@ function markInitialAppRenderComplete() {
     document.body.classList.remove('mnv-booting');
 }
 
-function attachReliableAppBarButton(button, action) {
+function attachReliableAppBarButton(button, action, options = {}) {
     if (!button || typeof action !== 'function' || button.dataset.reliableAppBarButton === 'true') return;
     button.dataset.reliableAppBarButton = 'true';
 
+    const activateOnPointerDown = options.activateOnPointerDown === true;
     let pointerStarted = false;
     let startX = 0;
     let startY = 0;
@@ -3973,6 +3974,13 @@ function attachReliableAppBarButton(button, action) {
     button.addEventListener('pointerdown', (event) => {
         if (isDisabled()) return;
         if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (activateOnPointerDown) {
+            pointerStarted = false;
+            activePointerId = null;
+            ignoreClickUntil = Date.now() + 700;
+            runAction(event);
+            return;
+        }
         pointerStarted = true;
         activePointerId = event.pointerId;
         startX = event.clientX || 0;
@@ -3982,7 +3990,7 @@ function attachReliableAppBarButton(button, action) {
         } catch (_) {
             // Some older WebKit builds do not allow capture here; click fallback still works.
         }
-    }, { passive: true });
+    }, { passive: !activateOnPointerDown });
 
     button.addEventListener('pointerup', (event) => {
         if (!pointerStarted) return;
@@ -10040,12 +10048,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const editModeToggle = document.getElementById('editModeToggle');
     if (editModeToggle) {
-        attachReliableAppBarButton(editModeToggle, toggleEditModeFromAppBar);
+        attachReliableAppBarButton(editModeToggle, toggleEditModeFromAppBar, { activateOnPointerDown: true });
     }
 
     const teReoModeToggle = document.getElementById('teReoModeToggle');
     if (teReoModeToggle) {
-        attachReliableAppBarButton(teReoModeToggle, toggleTeReoModeFromAppBar);
+        attachReliableAppBarButton(teReoModeToggle, toggleTeReoModeFromAppBar, { activateOnPointerDown: true });
     }
 
     // Set up About box. It is opened from Settings only.

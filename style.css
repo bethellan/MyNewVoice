@@ -10949,18 +10949,18 @@ body[data-te-reo-mode="on"] .mnv-logo {
   display: grid !important;
   place-items: center !important;
   grid-template-columns: 1fr !important;
-  inline-size: 58px !important;
-  block-size: 54px !important;
-  min-inline-size: 58px !important;
-  min-block-size: 54px !important;
-  max-inline-size: 58px !important;
-  max-block-size: 54px !important;
-  width: 58px !important;
-  height: 54px !important;
-  min-width: 58px !important;
-  min-height: 54px !important;
-  max-width: 58px !important;
-  max-height: 54px !important;
+  inline-size: 64px !important;
+  block-size: 56px !important;
+  min-inline-size: 64px !important;
+  min-block-size: 56px !important;
+  max-inline-size: 64px !important;
+  max-block-size: 56px !important;
+  width: 64px !important;
+  height: 56px !important;
+  min-width: 64px !important;
+  min-height: 56px !important;
+  max-width: 64px !important;
+  max-height: 56px !important;
   margin: 0 !important;
   padding: 0 !important;
   border-radius: 14px !important;
@@ -11212,18 +11212,18 @@ body.edit-mode-guidance-active .mnv-edit-toggle {
 
   .mnv-edit-toggle,
   .mnv-switch-toggle {
-    inline-size: 52px !important;
-    block-size: 48px !important;
-    min-inline-size: 52px !important;
-    min-block-size: 48px !important;
-    max-inline-size: 52px !important;
-    max-block-size: 48px !important;
-    min-width: 52px !important;
-    width: 52px !important;
-    min-height: 48px !important;
-    height: 48px !important;
-    max-width: 52px !important;
-    max-height: 48px !important;
+    inline-size: 60px !important;
+    block-size: 52px !important;
+    min-inline-size: 60px !important;
+    min-block-size: 52px !important;
+    max-inline-size: 60px !important;
+    max-block-size: 52px !important;
+    min-width: 60px !important;
+    width: 60px !important;
+    min-height: 52px !important;
+    height: 52px !important;
+    max-width: 60px !important;
+    max-height: 52px !important;
     padding: 0 !important;
   }
 
