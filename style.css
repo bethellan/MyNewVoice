@@ -10964,10 +10964,10 @@ body[data-te-reo-mode="on"] .mnv-logo {
   margin: 0 !important;
   padding: 0 !important;
   border-radius: 14px !important;
-  border: 0 !important;
-  background: rgba(255, 255, 255, 0.28) !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.34)) !important;
   color: #334155 !important;
-  box-shadow: none !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70) !important;
   position: relative !important;
   z-index: 12 !important;
   transform: none !important;
@@ -10983,14 +10983,12 @@ body[data-te-reo-mode="on"] .mnv-logo {
 .mnv-switch-toggle::before {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: max(44px, 100%);
-  height: max(44px, 100%);
-  transform: translate(-50%, -50%);
+  inset: 0;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 16px;
   background: transparent;
-  pointer-events: auto;
+  pointer-events: none !important;
 }
 
 .mnv-edit-toggle-track,

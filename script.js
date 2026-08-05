@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v190: Refreshes the About wording to explain local, personal and culturally respectful adaptation.
-const CURRENT_APP_VERSION = 'v190';
+// v191: Makes app-bar switch housings the only tap target owner so iPhone taps are not blocked by pseudo-elements.
+const CURRENT_APP_VERSION = 'v191';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
