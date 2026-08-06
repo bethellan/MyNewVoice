@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v194: Tidies app-bar control consistency and narrow-phone spacing after the wide switch change.
-const CURRENT_APP_VERSION = 'v194';
+// v195: Keeps app-bar buttons visually neutral after taps and clears sticky iOS focus after activation.
+const CURRENT_APP_VERSION = 'v195';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3969,6 +3969,9 @@ function attachReliableAppBarButton(button, action, options = {}) {
             event.stopPropagation();
         }
         action();
+        if (typeof button.blur === 'function') {
+            button.blur();
+        }
     };
 
     button.addEventListener('pointerdown', (event) => {

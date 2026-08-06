@@ -1,3 +1,8 @@
+v195_neutral_app_bar_touch_states
+
+Kept the top app-bar icon buttons visually neutral after touch/focus and cleared sticky iOS focus after app-bar actions, reducing view-button shading and swipe repaint flicker without changing the view/render systems.
+Includes v194 app-bar control consistency.
+
 v194_app_bar_control_consistency
 
 Tidied the app-bar control family after the wide switch change: settings now has an explicit button type, app-bar spacing is owned by one gap variable, and very narrow iPhones get tighter control sizing to avoid crowding.

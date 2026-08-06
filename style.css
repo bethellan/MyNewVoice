@@ -10937,6 +10937,32 @@ body[data-te-reo-mode="on"] .mnv-logo {
   -webkit-tap-highlight-color: transparent !important;
 }
 
+.mnv-view-cycle:hover,
+.mnv-view-cycle:focus,
+.mnv-view-cycle:focus-visible,
+.mnv-view-cycle:active,
+.mnv-help-toggle:hover,
+.mnv-help-toggle:focus,
+.mnv-help-toggle:focus-visible,
+.mnv-help-toggle:active,
+.mnv-app-bar .management-toggle:hover,
+.mnv-app-bar .management-toggle:focus,
+.mnv-app-bar .management-toggle:focus-visible,
+.mnv-app-bar .management-toggle:active {
+  border-color: var(--mnv-ui-line-soft, rgba(15,23,42,0.12)) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.68)) !important;
+  color: var(--mnv-ui-text, #233042) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.mnv-view-cycle:focus-visible,
+.mnv-help-toggle:focus-visible,
+.mnv-app-bar .management-toggle:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.42) !important;
+  outline-offset: 2px !important;
+}
+
 .mnv-view-cycle > *,
 .mnv-help-toggle > *,
 .mnv-app-bar .management-toggle > *,
