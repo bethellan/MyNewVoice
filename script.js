@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v195: Keeps app-bar buttons visually neutral after taps and clears sticky iOS focus after activation.
-const CURRENT_APP_VERSION = 'v195';
+// v196: Consolidates List/Menu/Grid body-state ownership into one helper.
+const CURRENT_APP_VERSION = 'v196';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3876,9 +3876,7 @@ function updateSettingsControls() {
 
 function updateAppBarControls() {
     appSettings = normaliseAppSettings(appSettings);
-    const gridActive = appSettings.displayMode === 'grid';
-    document.body.dataset.displayMode = appSettings.displayMode;
-    document.body.classList.toggle('grid-view-active', gridActive);
+    applyDisplayModeBodyState({ displayMode: appSettings.displayMode });
 
     const editButton = document.getElementById('editModeToggle');
     if (editButton) {
@@ -3931,6 +3929,14 @@ function getNextDisplayMode(displayMode) {
     displayMode = normaliseDisplayModeName(displayMode);
     const index = modes.indexOf(displayMode);
     return modes[(index + 1 + modes.length) % modes.length];
+}
+
+function applyDisplayModeBodyState({ displayMode = appSettings.displayMode, submenuOpen = document.body.classList.contains('submenu-open') } = {}) {
+    const mode = normaliseDisplayModeName(displayMode);
+    document.body.dataset.displayMode = mode;
+    document.body.classList.toggle('submenu-open', Boolean(submenuOpen));
+    document.body.classList.toggle('grid-view-active', mode === 'grid');
+    return mode;
 }
 
 function setDisplayModeFromAppBar(displayMode) {
@@ -7869,9 +7875,7 @@ function showMainMenu() {
 
     gridRearrangeState = null;
     currentViewCategory = null;
-    document.body.dataset.displayMode = appSettings.displayMode;
-    document.body.classList.remove('submenu-open');
-    document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
+    applyDisplayModeBodyState({ displayMode: appSettings.displayMode, submenuOpen: false });
     setMessageBarText(MAIN_MENU_PROMPT);
 
     if (messageBar) messageBar.classList.remove('submenu-titlebar');
@@ -7936,9 +7940,7 @@ function showCategorySubmenu(category) {
 
     if (gridRearrangeState && gridRearrangeState.category !== category) gridRearrangeState = null;
     currentViewCategory = category;
-    document.body.dataset.displayMode = appSettings.displayMode;
-    document.body.classList.add('submenu-open');
-    document.body.classList.toggle('grid-view-active', appSettings.displayMode === 'grid');
+    applyDisplayModeBodyState({ displayMode: appSettings.displayMode, submenuOpen: true });
     setMessageBarText(displayLabel);
     renderQuickYesNoStrip();
 

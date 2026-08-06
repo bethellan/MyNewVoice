@@ -1,3 +1,9 @@
+v196_display_mode_state_owner
+
+Consolidated List/Menu/Grid body-state ownership into one helper so main-menu, submenu and app-bar updates no longer repeat separate display-mode class logic.
+Preserves existing List, Menu, Grid, swipe, Quick Yes / No and app-bar layouts.
+Includes v195 neutral app-bar touch states.
+
 v195_neutral_app_bar_touch_states
 
 Kept the top app-bar icon buttons visually neutral after touch/focus and cleared sticky iOS focus after app-bar actions, reducing view-button shading and swipe repaint flicker without changing the view/render systems.
