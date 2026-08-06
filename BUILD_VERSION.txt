@@ -1,3 +1,8 @@
+v194_app_bar_control_consistency
+
+Tidied the app-bar control family after the wide switch change: settings now has an explicit button type, app-bar spacing is owned by one gap variable, and very narrow iPhones get tighter control sizing to avoid crowding.
+Includes v193 wide app-bar switch pills.
+
 v193_wide_app_bar_switch_pills
 
 Changed the Edit and Te Reo app-bar controls to wider visible pill switches so the visible control and touch target match on iPhone.

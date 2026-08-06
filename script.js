@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v193: Replaces compact app-bar switches with wider visible pill controls for reliable iPhone tapping.
-const CURRENT_APP_VERSION = 'v193';
+// v194: Tidies app-bar control consistency and narrow-phone spacing after the wide switch change.
+const CURRENT_APP_VERSION = 'v194';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;

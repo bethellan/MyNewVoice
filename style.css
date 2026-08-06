@@ -10813,10 +10813,11 @@ body.mnv-booting #buttonGrid {
 }
 
 .mnv-app-bar {
+  --mnv-app-control-gap: 8px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: 8px;
+  column-gap: var(--mnv-app-control-gap);
   min-height: clamp(58px, 7vw, 74px);
   padding: clamp(7px, 1vw, 10px);
   border: 1px solid color-mix(in srgb, var(--primary-color, #3f9f46) 34%, rgba(15,23,42,0.18));
@@ -10898,7 +10899,7 @@ body[data-te-reo-mode="on"] .mnv-logo {
   grid-auto-columns: max-content;
   align-items: center;
   justify-content: end;
-  gap: 8px;
+  gap: var(--mnv-app-control-gap);
   min-width: 0;
   position: relative;
   z-index: 14;
@@ -11182,13 +11183,9 @@ body.edit-mode-guidance-active .mnv-edit-toggle {
 
 @media (max-width: 420px) {
   .mnv-app-bar {
+    --mnv-app-control-gap: 6px;
     grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 6px;
     padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) 6px max(8px, env(safe-area-inset-left, 0px));
-  }
-
-  .mnv-app-controls {
-    gap: 6px;
   }
 
   .mnv-brand {
@@ -11252,6 +11249,49 @@ body.edit-mode-guidance-active .mnv-edit-toggle {
     left: 28px;
   }
 
+}
+
+@media (max-width: 360px) {
+  .mnv-app-bar {
+    --mnv-app-control-gap: 4px;
+    padding-inline: max(6px, env(safe-area-inset-left, 0px)) max(6px, env(safe-area-inset-right, 0px));
+  }
+
+  .mnv-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mnv-view-cycle,
+  .mnv-help-toggle,
+  .mnv-app-bar .management-toggle {
+    min-width: 38px !important;
+    width: 38px !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    font-size: 1rem !important;
+  }
+
+  .mnv-edit-toggle,
+  .mnv-switch-toggle {
+    inline-size: 62px !important;
+    min-inline-size: 62px !important;
+    max-inline-size: 62px !important;
+    width: 62px !important;
+    min-width: 62px !important;
+    max-width: 62px !important;
+  }
+
+  .mnv-edit-toggle-track,
+  .mnv-switch-track {
+    inline-size: 54px !important;
+    width: 54px !important;
+  }
+
+  .mnv-edit-toggle.active .mnv-edit-toggle-thumb,
+  .mnv-te-reo-toggle.active .mnv-switch-thumb {
+    left: 22px;
+  }
 }
 
 /* v134: Grid view owns tile sizing in one scoped layer; rows expand to fit image plus label. */
