@@ -10949,25 +10949,25 @@ body[data-te-reo-mode="on"] .mnv-logo {
   display: grid !important;
   place-items: center !important;
   grid-template-columns: 1fr !important;
-  inline-size: 64px !important;
-  block-size: 56px !important;
-  min-inline-size: 64px !important;
-  min-block-size: 56px !important;
-  max-inline-size: 64px !important;
-  max-block-size: 56px !important;
-  width: 64px !important;
-  height: 56px !important;
-  min-width: 64px !important;
-  min-height: 56px !important;
-  max-width: 64px !important;
-  max-height: 56px !important;
+  inline-size: 78px !important;
+  block-size: 54px !important;
+  min-inline-size: 78px !important;
+  min-block-size: 54px !important;
+  max-inline-size: 78px !important;
+  max-block-size: 54px !important;
+  width: 78px !important;
+  height: 54px !important;
+  min-width: 78px !important;
+  min-height: 54px !important;
+  max-width: 78px !important;
+  max-height: 54px !important;
   margin: 0 !important;
-  padding: 0 !important;
-  border-radius: 14px !important;
-  border: 1px solid rgba(148, 163, 184, 0.24) !important;
-  background: linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.34)) !important;
+  padding: 4px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  background: rgba(255,255,255,0.52) !important;
   color: #334155 !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70), 0 3px 10px rgba(15, 23, 42, 0.06) !important;
   position: relative !important;
   z-index: 12 !important;
   transform: none !important;
@@ -10994,10 +10994,10 @@ body[data-te-reo-mode="on"] .mnv-logo {
 .mnv-edit-toggle-track,
 .mnv-switch-track {
   position: relative;
-  inline-size: 40px !important;
-  block-size: 22px !important;
-  width: 40px;
-  height: 22px;
+  inline-size: 68px !important;
+  block-size: 40px !important;
+  width: 68px;
+  height: 40px;
   border-radius: 999px;
   border: 2px solid rgba(71, 85, 105, 0.34);
   background: linear-gradient(180deg, #f8fafc, #cbd5e1);
@@ -11010,11 +11010,11 @@ body[data-te-reo-mode="on"] .mnv-logo {
 .mnv-switch-thumb {
   position: absolute;
   top: 50%;
-  left: 3px;
-  inline-size: 14px !important;
-  block-size: 14px !important;
-  width: 14px;
-  height: 14px;
+  left: 4px;
+  inline-size: 30px !important;
+  block-size: 30px !important;
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
   background: #ffffff;
   transform: translateY(-50%);
@@ -11060,7 +11060,7 @@ body[data-te-reo-mode="on"] .mnv-logo {
 
 .mnv-edit-toggle.active .mnv-edit-toggle-thumb,
 .mnv-te-reo-toggle.active .mnv-switch-thumb {
-  left: 19px;
+  left: 32px;
 }
 
 .mnv-edit-toggle:active .mnv-edit-toggle-track,
@@ -11183,8 +11183,12 @@ body.edit-mode-guidance-active .mnv-edit-toggle {
 @media (max-width: 420px) {
   .mnv-app-bar {
     grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 8px;
+    column-gap: 6px;
     padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) 6px max(8px, env(safe-area-inset-left, 0px));
+  }
+
+  .mnv-app-controls {
+    gap: 6px;
   }
 
   .mnv-brand {
@@ -11194,8 +11198,8 @@ body.edit-mode-guidance-active .mnv-edit-toggle {
   }
 
   .mnv-logo {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     font-size: 0.7rem;
   }
 
@@ -11212,19 +11216,40 @@ body.edit-mode-guidance-active .mnv-edit-toggle {
 
   .mnv-edit-toggle,
   .mnv-switch-toggle {
+    inline-size: 68px !important;
+    block-size: 48px !important;
+    min-inline-size: 68px !important;
+    min-block-size: 48px !important;
+    max-inline-size: 68px !important;
+    max-block-size: 48px !important;
+    min-width: 68px !important;
+    width: 68px !important;
+    min-height: 48px !important;
+    height: 48px !important;
+    max-width: 68px !important;
+    max-height: 48px !important;
+    padding: 3px !important;
+  }
+
+  .mnv-edit-toggle-track,
+  .mnv-switch-track {
     inline-size: 60px !important;
-    block-size: 52px !important;
-    min-inline-size: 60px !important;
-    min-block-size: 52px !important;
-    max-inline-size: 60px !important;
-    max-block-size: 52px !important;
-    min-width: 60px !important;
+    block-size: 36px !important;
     width: 60px !important;
-    min-height: 52px !important;
-    height: 52px !important;
-    max-width: 60px !important;
-    max-height: 52px !important;
-    padding: 0 !important;
+    height: 36px !important;
+  }
+
+  .mnv-edit-toggle-thumb,
+  .mnv-switch-thumb {
+    inline-size: 26px !important;
+    block-size: 26px !important;
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .mnv-edit-toggle.active .mnv-edit-toggle-thumb,
+  .mnv-te-reo-toggle.active .mnv-switch-thumb {
+    left: 28px;
   }
 
 }

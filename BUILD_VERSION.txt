@@ -1,3 +1,9 @@
+v193_wide_app_bar_switch_pills
+
+Changed the Edit and Te Reo app-bar controls to wider visible pill switches so the visible control and touch target match on iPhone.
+Kept pointerdown activation and tightened very-small-screen app-bar spacing so controls remain on the right.
+Includes v192 app-bar switch pointerdown activation.
+
 v192_app_bar_switch_pointerdown_activation
 
 Made the Edit and Te Reo app-bar switches activate from the full housed switch area on pointerdown, improving iPhone reliability when a finger drifts slightly before release.
