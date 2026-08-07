@@ -1,3 +1,16 @@
+v208_speech_always_on_and_compression_warning
+
+Removed the visible Spoken voice on/off setting and old Settings references to visual-popup-only speech mode.
+Speech is now kept internally on, including when older backups/settings contain speechEnabled off.
+Strengthened image compression warnings to recommend exporting a complete backup first because quality loss cannot be undone without restoring a backup.
+Includes v207 Classic theme CSS consolidation.
+
+v207_consolidate_classic_theme_css
+
+Merged the later Classic theme variable overrides into the first body[data-theme="default"] owner.
+Removed the redundant later Classic body blocks while preserving the final visible Classic colours.
+Includes v206 unused category theme lookup cleanup.
+
 v206_remove_unused_category_theme_lookup
 
 Removed the empty category theme override lookup and its now-unused active-theme helper.
