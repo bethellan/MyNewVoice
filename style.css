@@ -8643,226 +8643,6 @@ body[data-theme="sci-fi"] .private-media-shell.private-media-pending::after {
     radial-gradient(circle at 74% 68%, rgba(77,208,225,0.12), transparent 28%) !important;
 }
 
-/* v124 follow-up: refreshed theme choices, driven by the existing Settings theme owner. */
-body[data-theme="sunny-day"] {
-  --theme-page-surface: linear-gradient(180deg, #FFFDF7, #F1FAFF);
-  --theme-page-border: rgba(241, 174, 60, 0.48);
-  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #FFF4D8);
-  --theme-card-surface-2: #FFF3CD;
-  --theme-phrase-surface: #FFFFFF;
-  --theme-phrase-surface-2: #FFF7E6;
-  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #FFF5DE);
-  --theme-button-surface: #FFFFFF;
-  --theme-button-surface-2: #FFF4D8;
-  --theme-button-text: #5E3A00;
-  --theme-muted-text: #76562C;
-  --theme-border-strong: rgba(224, 123, 42, 0.66);
-  --theme-border-soft: rgba(224, 123, 42, 0.20);
-  --theme-glow: rgba(241, 174, 60, 0.22);
-  --theme-card-shadow: 0 14px 30px rgba(123, 61, 0, 0.12);
-  --theme-card-shadow-hover: 0 18px 38px rgba(123, 61, 0, 0.18);
-}
-
-body[data-theme="ocean-calm"] {
-  --theme-page-surface: linear-gradient(180deg, #F7FDFF, #EFF8FA);
-  --theme-page-border: rgba(50, 148, 166, 0.44);
-  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #E4F7FA);
-  --theme-card-surface-2: #DDF4F8;
-  --theme-phrase-surface: #FFFFFF;
-  --theme-phrase-surface-2: #EAF8FB;
-  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #E6F7FA);
-  --theme-button-surface: #FFFFFF;
-  --theme-button-surface-2: #E4F7FA;
-  --theme-button-text: #073B4C;
-  --theme-muted-text: #38606D;
-  --theme-border-strong: rgba(24, 118, 145, 0.64);
-  --theme-border-soft: rgba(24, 118, 145, 0.20);
-  --theme-glow: rgba(50, 148, 166, 0.20);
-  --theme-card-shadow: 0 14px 30px rgba(7, 59, 76, 0.12);
-  --theme-card-shadow-hover: 0 18px 38px rgba(7, 59, 76, 0.18);
-}
-
-body[data-theme="soft-garden"] {
-  --theme-page-surface: linear-gradient(180deg, #FCFFFB, #F2F8F0);
-  --theme-page-border: rgba(89, 142, 86, 0.44);
-  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #ECF8E8);
-  --theme-card-surface-2: #E8F5E9;
-  --theme-phrase-surface: #FFFFFF;
-  --theme-phrase-surface-2: #F0F7EA;
-  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #EEF7EA);
-  --theme-button-surface: #FFFFFF;
-  --theme-button-surface-2: #ECF8E8;
-  --theme-button-text: #1E4B31;
-  --theme-muted-text: #536B59;
-  --theme-border-strong: rgba(59, 122, 87, 0.64);
-  --theme-border-soft: rgba(59, 122, 87, 0.20);
-  --theme-glow: rgba(89, 142, 86, 0.20);
-  --theme-card-shadow: 0 14px 30px rgba(27, 77, 53, 0.11);
-  --theme-card-shadow-hover: 0 18px 38px rgba(27, 77, 53, 0.17);
-}
-
-body[data-theme="sci-fi"] {
-  --theme-page-surface: linear-gradient(180deg, #121A1C, #1B2120);
-  --theme-page-border: rgba(37, 214, 162, 0.34);
-  --theme-card-surface: linear-gradient(145deg, #182426, #11191B);
-  --theme-card-surface-2: #203033;
-  --theme-phrase-surface: #121A1C;
-  --theme-phrase-surface-2: #1B2829;
-  --theme-settings-surface: linear-gradient(180deg, #162123, #101819);
-  --theme-button-surface: #182426;
-  --theme-button-surface-2: #203033;
-  --theme-button-text: #D8FFF3;
-  --theme-muted-text: #A8D9CE;
-  --theme-border-strong: rgba(37, 214, 162, 0.66);
-  --theme-border-soft: rgba(216, 255, 243, 0.16);
-  --theme-glow: rgba(37, 214, 162, 0.22);
-  --theme-card-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
-  --theme-card-shadow-hover: 0 18px 42px rgba(0, 0, 0, 0.40);
-}
-
-body[data-theme="high-contrast"] {
-  --theme-page-surface: linear-gradient(180deg, #FFFFFF, #F2F4F7);
-  --theme-page-border: rgba(0, 0, 0, 0.44);
-  --theme-card-surface: linear-gradient(145deg, #FFFFFF, #EEF2F6);
-  --theme-card-surface-2: #F2F4F7;
-  --theme-phrase-surface: #FFFFFF;
-  --theme-phrase-surface-2: #F4F6F8;
-  --theme-settings-surface: linear-gradient(180deg, #FFFFFF, #F2F4F7);
-  --theme-button-surface: #FFFFFF;
-  --theme-button-surface-2: #F1F3F5;
-  --theme-button-text: #101820;
-  --theme-muted-text: #2C3640;
-  --theme-border-strong: rgba(0, 0, 0, 0.72);
-  --theme-border-soft: rgba(0, 0, 0, 0.22);
-  --theme-glow: rgba(0, 95, 204, 0.18);
-  --theme-card-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
-  --theme-card-shadow-hover: 0 18px 36px rgba(0, 0, 0, 0.24);
-}
-
-body[data-theme="twilight-plum"] {
-  --theme-page-surface: linear-gradient(180deg, #5B4B68, #463B55);
-  --theme-page-border: rgba(226, 199, 255, 0.38);
-  --theme-card-surface: linear-gradient(145deg, #725F82, #564664);
-  --theme-card-surface-2: #675575;
-  --theme-phrase-surface: #62506F;
-  --theme-phrase-surface-2: #756287;
-  --theme-settings-surface: linear-gradient(180deg, #665574, #51445F);
-  --theme-button-surface: #F6F0FA;
-  --theme-button-surface-2: #E8DAF2;
-  --theme-button-text: #2E2138;
-  --theme-muted-text: #EEE1F8;
-  --theme-border-strong: rgba(226, 199, 255, 0.70);
-  --theme-border-soft: rgba(246, 240, 250, 0.24);
-  --theme-glow: rgba(198, 154, 236, 0.26);
-  --theme-card-shadow: 0 14px 32px rgba(24, 14, 34, 0.24);
-  --theme-card-shadow-hover: 0 18px 42px rgba(24, 14, 34, 0.34);
-}
-
-body[data-theme="forest-night"] {
-  --theme-page-surface: linear-gradient(180deg, #25352B, #1E2B24);
-  --theme-page-border: rgba(232, 190, 118, 0.36);
-  --theme-card-surface: linear-gradient(145deg, #314633, #243529);
-  --theme-card-surface-2: #3A513C;
-  --theme-phrase-surface: #2A3D2F;
-  --theme-phrase-surface-2: #354B38;
-  --theme-settings-surface: linear-gradient(180deg, #2E4233, #223127);
-  --theme-button-surface: #F5EEDB;
-  --theme-button-surface-2: #DFD0AF;
-  --theme-button-text: #20301F;
-  --theme-muted-text: #E8D8B8;
-  --theme-border-strong: rgba(232, 190, 118, 0.68);
-  --theme-border-soft: rgba(245, 238, 219, 0.18);
-  --theme-glow: rgba(232, 190, 118, 0.24);
-  --theme-card-shadow: 0 14px 32px rgba(5, 15, 10, 0.28);
-  --theme-card-shadow-hover: 0 18px 42px rgba(5, 15, 10, 0.38);
-}
-
-body[data-theme="slate-studio"] {
-  --theme-page-surface: linear-gradient(180deg, #E6ECF2, #CBD5E1);
-  --theme-page-border: rgba(71, 85, 105, 0.36);
-  --theme-card-surface: linear-gradient(145deg, #F8FAFC, #D8E1EA);
-  --theme-card-surface-2: #DCE5EE;
-  --theme-phrase-surface: #F8FAFC;
-  --theme-phrase-surface-2: #E2E8F0;
-  --theme-settings-surface: linear-gradient(180deg, #F8FAFC, #DCE5EE);
-  --theme-button-surface: #F8FAFC;
-  --theme-button-surface-2: #DDE6EF;
-  --theme-button-text: #1E293B;
-  --theme-muted-text: #475569;
-  --theme-border-strong: rgba(51, 65, 85, 0.62);
-  --theme-border-soft: rgba(51, 65, 85, 0.20);
-  --theme-glow: rgba(59, 130, 246, 0.16);
-  --theme-card-shadow: 0 14px 30px rgba(30, 41, 59, 0.14);
-  --theme-card-shadow-hover: 0 18px 38px rgba(30, 41, 59, 0.22);
-}
-
-body[data-theme="sci-fi-v2"] {
-  --theme-page-surface: linear-gradient(180deg, #1A282C, #223236);
-  --theme-page-border: rgba(75, 226, 206, 0.42);
-  --theme-card-surface: linear-gradient(145deg, #24373C, #1B2A2E);
-  --theme-card-surface-2: #2D454A;
-  --theme-phrase-surface: #203136;
-  --theme-phrase-surface-2: #2A3F44;
-  --theme-settings-surface: linear-gradient(180deg, #22363B, #19292D);
-  --theme-button-surface: #E9FFFA;
-  --theme-button-surface-2: #BDEEE6;
-  --theme-button-text: #10282B;
-  --theme-muted-text: #D8FFF8;
-  --theme-border-strong: rgba(75, 226, 206, 0.72);
-  --theme-border-soft: rgba(216, 255, 248, 0.20);
-  --theme-glow: rgba(75, 226, 206, 0.26);
-  --theme-card-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
-  --theme-card-shadow-hover: 0 18px 44px rgba(0, 0, 0, 0.36);
-}
-
-body[data-theme="sunny-day"] .grid-button,
-body[data-theme="sunny-day"] .settings-action-btn,
-body[data-theme="ocean-calm"] .grid-button,
-body[data-theme="ocean-calm"] .settings-action-btn,
-body[data-theme="soft-garden"] .grid-button,
-body[data-theme="soft-garden"] .settings-action-btn,
-body[data-theme="sci-fi"] .grid-button,
-body[data-theme="sci-fi"] .settings-action-btn,
-body[data-theme="twilight-plum"] .grid-button,
-body[data-theme="twilight-plum"] .settings-action-btn,
-body[data-theme="forest-night"] .grid-button,
-body[data-theme="forest-night"] .settings-action-btn,
-body[data-theme="slate-studio"] .grid-button,
-body[data-theme="slate-studio"] .settings-action-btn,
-body[data-theme="sci-fi-v2"] .grid-button,
-body[data-theme="sci-fi-v2"] .settings-action-btn,
-body[data-theme="high-contrast"] .grid-button,
-body[data-theme="high-contrast"] .settings-action-btn {
-  background-image: linear-gradient(145deg, var(--theme-button-surface), var(--theme-button-surface-2)) !important;
-}
-
-body[data-theme="sci-fi"] .container,
-body[data-theme="sci-fi-v2"] .container,
-body[data-theme="forest-night"] .container,
-body[data-theme="twilight-plum"] .container {
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(216, 255, 243, 0.06) !important;
-}
-
-body[data-theme="sci-fi"] #messageBar,
-body[data-theme="sci-fi"] .settings-v115-panel,
-body[data-theme="sci-fi"] .image-options-panel,
-body[data-theme="sci-fi-v2"] #messageBar,
-body[data-theme="sci-fi-v2"] .settings-v115-panel,
-body[data-theme="sci-fi-v2"] .image-options-panel,
-body[data-theme="forest-night"] #messageBar,
-body[data-theme="forest-night"] .settings-v115-panel,
-body[data-theme="forest-night"] .image-options-panel,
-body[data-theme="twilight-plum"] #messageBar,
-body[data-theme="twilight-plum"] .settings-v115-panel,
-body[data-theme="twilight-plum"] .image-options-panel {
-  color: var(--theme-button-text) !important;
-}
-
-body[data-theme="high-contrast"] .grid-button,
-body[data-theme="high-contrast"] .settings-action-btn {
-  border-width: 2px !important;
-}
-
 /* ============================================================================
    v124 professional UI shell
    ----------------------------------------------------------------------------
@@ -10061,7 +9841,7 @@ body.submenu-open .grid-button {
   min-height: clamp(104px, 12vw, 136px) !important;
   padding: clamp(11px, 1.7vw, 16px) clamp(13px, 2vw, 20px) !important;
   border: 1px solid color-mix(in srgb, var(--category-color, var(--primary-color)) 32%, rgba(15,23,42,0.14)) !important;
-  border-left: 7px solid var(--category-color, var(--primary-color)) !important;
+  border-left-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 26%, rgba(15,23,42,0.12)) !important;
   border-radius: var(--mnv-ui-radius, 8px) !important;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.68)),
@@ -10072,6 +9852,27 @@ body.submenu-open .grid-button {
   -webkit-backdrop-filter: blur(12px);
   transform: none !important;
   overflow: hidden !important;
+  position: relative !important;
+}
+
+body.submenu-open .grid-button::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 12px !important;
+  top: 22px !important;
+  bottom: 22px !important;
+  width: 6px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, var(--category-color, var(--primary-color)), var(--category-dark, var(--primary-dark))) !important;
+  opacity: 0.9 !important;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--category-color, var(--primary-color)) 28%, transparent) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+body.submenu-open .grid-button > * {
+  position: relative !important;
+  z-index: 2 !important;
 }
 
 body.submenu-open .grid-button:hover,
@@ -10127,7 +9928,13 @@ body.submenu-open .button-media img {
   border-radius: calc(var(--mnv-ui-radius, 8px) - 2px) !important;
 }
 
-body.submenu-open .button-fallback-icon {
+body.submenu-open .button-fallback-icon[hidden],
+body.submenu-open .button-media img.loaded + .button-fallback-icon,
+body.submenu-open .button-media img[style*="display: none"] + .button-fallback-icon[hidden] {
+  display: none !important;
+}
+
+body.submenu-open .button-fallback-icon:not([hidden]) {
   width: 100% !important;
   height: 100% !important;
   display: flex !important;
@@ -10152,6 +9959,24 @@ body.submenu-open .grid-button > span {
   text-align: left !important;
   overflow-wrap: normal !important;
   word-break: normal !important;
+}
+
+body.submenu-open .grid-button:not([data-category="MyPeople"]) {
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+body.submenu-open .grid-button:not([data-category="MyPeople"]) > span {
+  align-self: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 100% !important;
+  width: 100% !important;
+}
+
+body.submenu-open .grid-button[data-category="MyPeople"] > span,
+body.submenu-open [data-category="MyPeople"] .grid-button > span {
+  align-self: end !important;
 }
 
 body.submenu-open .person-details {
@@ -10188,7 +10013,6 @@ body.submenu-open [data-category="MyPeople"] .grid-button .button-fallback-icon 
     min-height: 94px !important;
     column-gap: 11px !important;
     padding: 10px 11px !important;
-    border-left-width: 6px !important;
   }
 
   body.submenu-open .grid-button .button-media,
@@ -10205,67 +10029,7 @@ body.submenu-open [data-category="MyPeople"] .grid-button .button-fallback-icon 
   body.submenu-open .person-details small {
     font-size: 0.78rem !important;
   }
-}
 
-/* v124 hotfix: submenu photos and text alignment. */
-body.submenu-open .button-fallback-icon[hidden],
-body.submenu-open .button-media img.loaded + .button-fallback-icon,
-body.submenu-open .button-media img[style*="display: none"] + .button-fallback-icon[hidden] {
-  display: none !important;
-}
-
-body.submenu-open .button-fallback-icon:not([hidden]) {
-  display: flex !important;
-}
-
-body.submenu-open .grid-button:not([data-category="MyPeople"]) {
-  grid-template-rows: minmax(0, 1fr) !important;
-}
-
-body.submenu-open .grid-button:not([data-category="MyPeople"]) > span {
-  grid-row: 1 !important;
-  align-self: center !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  min-height: 100% !important;
-  width: 100% !important;
-  text-align: left !important;
-}
-
-body.submenu-open .grid-button[data-category="MyPeople"] > span,
-body.submenu-open [data-category="MyPeople"] .grid-button > span {
-  grid-row: 1 !important;
-  align-self: end !important;
-  min-height: 0 !important;
-}
-
-body.submenu-open .grid-button {
-  border-left-width: 1px !important;
-  border-left-color: color-mix(in srgb, var(--category-color, var(--primary-color)) 26%, rgba(15,23,42,0.12)) !important;
-}
-
-body.submenu-open .grid-button::before {
-  content: "" !important;
-  position: absolute !important;
-  left: 12px !important;
-  top: 22px !important;
-  bottom: 22px !important;
-  width: 6px !important;
-  border-radius: 999px !important;
-  background: linear-gradient(180deg, var(--category-color, var(--primary-color)), var(--category-dark, var(--primary-dark))) !important;
-  opacity: 0.9 !important;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--category-color, var(--primary-color)) 28%, transparent) !important;
-  pointer-events: none !important;
-  z-index: 1 !important;
-}
-
-body.submenu-open .grid-button > * {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-@media (max-width: 640px) {
   body.submenu-open .grid-button::before {
     left: 9px !important;
     top: 18px !important;

@@ -1,3 +1,26 @@
+v201_classic_theme_payload_cleanup
+
+Removed inactive non-Classic theme palette payloads from CSS and JavaScript now that Classic is the only selectable active theme.
+Kept legacy theme aliases so older backups/settings still normalize safely to Classic.
+Includes v200 submenu phrase row owner.
+
+v200_submenu_phrase_row_owner
+
+Folded the remaining submenu phrase-row text alignment and vertical colour-strip rules into the main submenu row owner, then removed the older v124 hotfix block.
+Keeps the same visible submenu rows while reducing late CSS override layers.
+Includes v199 submenu fallback icon display owner.
+
+v199_submenu_fallback_icon_display_owner
+
+Moved submenu fallback-icon show/hide ownership into the main submenu media block, removing the later duplicate hotfix while preserving phrase-row image/fallback behaviour.
+Includes v198 submenu phrase button border owner.
+
+v198_submenu_phrase_button_border_owner
+
+Consolidated submenu phrase-button border ownership so the final thin border and vertical colour strip are defined by the main submenu button block instead of a later hotfix undoing an earlier thick border.
+Preserves the visible submenu/list phrase-row design.
+Includes v197 Simple List CSS owner.
+
 v197_simple_list_css_owner
 
 Moved the Simple List heading/gap styling into a scoped List View owner block beside the other view owners, and removed a dangling view selector left behind in the stylesheet.

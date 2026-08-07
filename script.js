@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v197: Scopes Simple List CSS ownership and removes a dangling view selector.
-const CURRENT_APP_VERSION = 'v197';
+// v201: Removes inactive legacy theme payloads while preserving Classic aliases.
+const CURRENT_APP_VERSION = 'v201';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3475,78 +3475,7 @@ const LEGACY_THEME_ALIASES = {
 const THEME_LABELS = {
     default: 'Classic'
 };
-const THEME_CATEGORY_PALETTES = {
-    'sunny-day': {
-        quick: { colour: '#E09B30', dark: '#7B4B00', soft: '#FFF3CD' },
-        health: { colour: '#E05050', dark: '#7B1515', soft: '#FFE8E8' },
-        selfcare: { colour: '#9B59B6', dark: '#5B0F8F', soft: '#F8E8FF' },
-        food: { colour: '#3DAF60', dark: '#0F5E28', soft: '#E8F8E8' },
-        environment: { colour: '#4090D0', dark: '#0A3A6B', soft: '#E8F4FF' },
-        MyPeople: { colour: '#E07B2A', dark: '#7B3D00', soft: '#FFF1DC' },
-        photoMemories: { colour: '#B97848', dark: '#68401F', soft: '#F7E7D8' },
-        feelings: { colour: '#D96CA8', dark: '#7A2458', soft: '#FFE6F4' },
-        routine: { colour: '#2AA6A1', dark: '#0B5C58', soft: '#E2F7F4' },
-        social: { colour: '#F0A43A', dark: '#7B4B00', soft: '#FFF0C4' },
-        activities: { colour: '#5DAE4A', dark: '#2D641B', soft: '#ECF8E8' },
-        memories: { colour: '#B97848', dark: '#68401F', soft: '#F7E7D8' }
-    },
-    'ocean-calm': {
-        quick: { colour: '#3B82F6', dark: '#1E3A8A', soft: '#DBEAFE' },
-        health: { colour: '#10B981', dark: '#064E3B', soft: '#D1FAE5' },
-        selfcare: { colour: '#7C3AED', dark: '#3B0764', soft: '#EDE9FE' },
-        food: { colour: '#CA8A04', dark: '#713F12', soft: '#FEF9C3' },
-        environment: { colour: '#EC4899', dark: '#831843', soft: '#FCE7F3' },
-        MyPeople: { colour: '#1A7EC8', dark: '#0A3A6B', soft: '#E0F2FF' },
-        photoMemories: { colour: '#64748B', dark: '#334155', soft: '#E2E8F0' },
-        feelings: { colour: '#8B5CF6', dark: '#4C1D95', soft: '#F3E8FF' },
-        routine: { colour: '#0891B2', dark: '#164E63', soft: '#CFFAFE' },
-        social: { colour: '#6366F1', dark: '#312E81', soft: '#E0E7FF' },
-        activities: { colour: '#059669', dark: '#064E3B', soft: '#D1FAE5' },
-        memories: { colour: '#64748B', dark: '#334155', soft: '#E2E8F0' }
-    },
-    'soft-garden': {
-        quick: { colour: '#43A047', dark: '#1B5E20', soft: '#E8F5E9' },
-        health: { colour: '#FFB300', dark: '#7B4B00', soft: '#FFF8E1' },
-        selfcare: { colour: '#8E24AA', dark: '#4A148C', soft: '#F3E5F5' },
-        food: { colour: '#00897B', dark: '#004D40', soft: '#E0F2F1' },
-        environment: { colour: '#E64A19', dark: '#7B2300', soft: '#FBE9E7' },
-        MyPeople: { colour: '#3B7A57', dark: '#1B4D35', soft: '#EAF5ED' },
-        photoMemories: { colour: '#8D6E63', dark: '#4E342E', soft: '#EFEBE9' },
-        feelings: { colour: '#6D8F45', dark: '#304E1F', soft: '#EFF6E6' },
-        routine: { colour: '#7A8F3B', dark: '#3E4A1E', soft: '#F2F5DF' },
-        social: { colour: '#9B6B3D', dark: '#593B1F', soft: '#F3E7D8' },
-        activities: { colour: '#2F8F5B', dark: '#15492E', soft: '#E3F3EA' },
-        memories: { colour: '#8D6E63', dark: '#4E342E', soft: '#EFEBE9' }
-    },
-    'sci-fi': {
-        quick: { colour: '#25D6A2', dark: '#D8FFF3', soft: '#102A25' },
-        health: { colour: '#FF6B6B', dark: '#FFE1E1', soft: '#341717' },
-        selfcare: { colour: '#B98CFF', dark: '#F0E7FF', soft: '#24183A' },
-        food: { colour: '#FFC857', dark: '#FFF1C2', soft: '#302514' },
-        environment: { colour: '#4DD0E1', dark: '#D7FAFF', soft: '#102A31' },
-        MyPeople: { colour: '#25D6A2', dark: '#D8FFF3', soft: '#102A25' },
-        photoMemories: { colour: '#B7C1CC', dark: '#F2F6FA', soft: '#202832' },
-        feelings: { colour: '#FF8FB8', dark: '#FFE2EF', soft: '#351626' },
-        routine: { colour: '#7BE3C8', dark: '#E0FFF7', soft: '#132D28' },
-        social: { colour: '#7AA7FF', dark: '#E0EAFF', soft: '#17233B' },
-        activities: { colour: '#9BE564', dark: '#EDFFD7', soft: '#1F3116' },
-        memories: { colour: '#B7C1CC', dark: '#F2F6FA', soft: '#202832' }
-    },
-    'high-contrast': {
-        quick: { colour: '#005FCC', dark: '#001F4D', soft: '#EAF2FF' },
-        health: { colour: '#C00000', dark: '#3B0000', soft: '#FFEAEA' },
-        selfcare: { colour: '#6F1AB6', dark: '#250044', soft: '#F4E8FF' },
-        food: { colour: '#007A3D', dark: '#003316', soft: '#E8FFF1' },
-        environment: { colour: '#B85C00', dark: '#402000', soft: '#FFF1E0' },
-        MyPeople: { colour: '#005FCC', dark: '#001F4D', soft: '#EAF2FF' },
-        photoMemories: { colour: '#5E4634', dark: '#23160F', soft: '#F5EEE8' },
-        feelings: { colour: '#B0005B', dark: '#3A001E', soft: '#FFE8F4' },
-        routine: { colour: '#006C70', dark: '#002C2E', soft: '#E5FEFF' },
-        social: { colour: '#3D2BB8', dark: '#140C48', soft: '#EFECFF' },
-        activities: { colour: '#4F7800', dark: '#1F3000', soft: '#F2FFD8' },
-        memories: { colour: '#5E4634', dark: '#23160F', soft: '#F5EEE8' }
-    }
-};
+const THEME_CATEGORY_PALETTES = {};
 const TE_REO_BRAND_NAME = 'Tōku Reo Hou';
 const TE_REO_FLUENCY_WARNING = 'Te Reo mode is ready. If you are not fluent in te reo Māori, please ask a fluent speaker to check important wording and pronunciation before relying on it.';
 const TE_REO_STARTER_PACK = {
