@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v196: Consolidates List/Menu/Grid body-state ownership into one helper.
-const CURRENT_APP_VERSION = 'v196';
+// v197: Scopes Simple List CSS ownership and removes a dangling view selector.
+const CURRENT_APP_VERSION = 'v197';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;

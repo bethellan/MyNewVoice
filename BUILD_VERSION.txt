@@ -1,3 +1,9 @@
+v197_simple_list_css_owner
+
+Moved the Simple List heading/gap styling into a scoped List View owner block beside the other view owners, and removed a dangling view selector left behind in the stylesheet.
+Preserves the visible List, Menu and Grid layouts.
+Includes v196 display-mode state owner.
+
 v196_display_mode_state_owner
 
 Consolidated List/Menu/Grid body-state ownership into one helper so main-menu, submenu and app-bar updates no longer repeat separate display-mode class logic.

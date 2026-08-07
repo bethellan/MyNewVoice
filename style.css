@@ -2782,33 +2782,6 @@ body[data-theme="dark"] .private-item-button small {
   line-height: 1.35;
 }
 
-.simple-vocabulary-list {
-  gap: 12px;
-}
-
-.simple-vocabulary-heading {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 52px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  border: 2px solid var(--category-color, #4CAF50);
-  background: linear-gradient(135deg, var(--category-color, #4CAF50), var(--category-dark, #2f7d32));
-  color: #ffffff;
-  font-size: clamp(1.1rem, 4vw, 1.45rem);
-  font-weight: 900;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-}
-
-.simple-heading-icon {
-  font-size: 1.35em;
-  line-height: 1;
-}
-
 .grid-button.press-waiting {
   transform: scale(0.992);
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22), 0 7px 16px rgba(0,0,0,0.14);
@@ -8969,6 +8942,36 @@ body:not(.submenu-open) .tab-container {
   scroll-padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 96px)) !important;
 }
 
+/* v197: Simple List view owner.
+   Keep the all-phrases list styling scoped to List View so it no longer
+   participates in Menu or Grid view cascade decisions. */
+body[data-display-mode="simple-list"] #buttonGrid.simple-vocabulary-list {
+  gap: 12px !important;
+}
+
+body[data-display-mode="simple-list"] .simple-vocabulary-heading {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 52px !important;
+  padding: 10px 14px !important;
+  border-radius: 14px !important;
+  border: 2px solid var(--category-color, #4CAF50) !important;
+  background: linear-gradient(135deg, var(--category-color, #4CAF50), var(--category-dark, #2f7d32)) !important;
+  color: #ffffff !important;
+  font-size: clamp(1.1rem, 4vw, 1.45rem) !important;
+  font-weight: 900 !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12) !important;
+}
+
+body[data-display-mode="simple-list"] .simple-heading-icon {
+  font-size: 1.35em !important;
+  line-height: 1 !important;
+}
+
 body:not(.submenu-open) .tab {
   display: grid !important;
   grid-template-rows: auto minmax(0, 1fr) !important;
@@ -10274,8 +10277,6 @@ body.submenu-open .grid-button > * {
 /* v124 mobile main-menu scroll clearance:
    The topic list is the scroll owner on the Dad-facing main screen. Give it
    enough final padding so the last topic can clear iPhone browser bars. */
-body:not(.submenu-open)
-
 @media (max-width: 640px) {
   body:not(.submenu-open) #messageBar:not(.submenu-titlebar) {
     grid-template-columns: minmax(0, 1fr) auto !important;
