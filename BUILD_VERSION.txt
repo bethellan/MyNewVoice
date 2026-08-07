@@ -1,3 +1,16 @@
+v210_tighter_quick_yes_no_spacing
+
+Reduced the vertical margin and padding around the optional Yes / No quick-button strip.
+Kept the buttons comfortably tappable while giving more space back to the communication area, with a tighter mobile spacing rule.
+Includes v209 unreachable speech-off cleanup.
+
+v209_unreachable_speech_off_cleanup
+
+Removed unreachable speech-off branches now that generated/recorded speech is kept internally enabled.
+Edit mode no longer shows an extra toast when toggled; the switch state is the feedback.
+Te Reo mode keeps the fluent-speaker warning when enabled and uses a shorter standard toast when turned off.
+Includes v208 speech always-on and compression warning update.
+
 v208_speech_always_on_and_compression_warning
 
 Removed the visible Spoken voice on/off setting and old Settings references to visual-popup-only speech mode.

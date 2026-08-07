@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v208: Keeps spoken voice internally on and strengthens image compression warnings.
-const CURRENT_APP_VERSION = 'v208';
+// v210: Tightens optional Yes / No quick-button spacing.
+const CURRENT_APP_VERSION = 'v210';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1216,10 +1216,6 @@ function openImageCropper(file, options = {}) {
 }
 
 async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken = null) {
-    if (!isSpeechOutputEnabled()) {
-        if (popupToken) closePhrasePopupAfterMinimum(popupToken);
-        return false;
-    }
     const text = buttonInfo && buttonInfo.text ? buttonInfo.text : '';
     const key = getPrivateMediaKey('voice', buttonInfo);
     if (!key) return false;
@@ -1273,13 +1269,6 @@ function getPhraseSpeechText(buttonInfo) {
 
 function speakPhrase(buttonInfo, buttonElement) {
     const popupToken = showPhrasePopup(buttonInfo);
-
-    if (!isSpeechOutputEnabled()) {
-        stopSpokenOutput();
-        playOptionalClickSound();
-        closePhrasePopupAfterMinimum(popupToken);
-        return;
-    }
 
     // iPhone/iPad Safari can fail generated speech if speechSynthesis is started
     // only after an asynchronous IndexedDB lookup. Use a synchronous local voice
@@ -3970,7 +3959,6 @@ function setEditModeUnlocked(value) {
     hideEditModeGuidance();
     updateAppBarControls();
     if (shouldUseIpadImageGrid() && currentViewCategory) renderIpadImageGrid(currentViewCategory);
-    showToast(editModeUnlocked ? 'Edit mode on' : 'Edit mode off', editModeUnlocked ? 'success' : 'info');
 }
 
 function toggleEditModeFromAppBar() {
@@ -3993,7 +3981,7 @@ function setTeReoModeEnabled(value) {
             actions: [{ id: 'ok', label: 'OK', className: 'management-btn close-btn' }]
         });
     } else {
-        showToast('Te Reo mode off', 'info');
+        showToast('Te Reo mode off', 'info', 1800);
     }
 }
 
@@ -9227,11 +9215,6 @@ function speakText(text, buttonElement, options = {}) {
     if (buttonElement) buttonElement.classList.remove('speaking');
     if (popupToken) closePhrasePopupAfterMinimum(popupToken);
   };
-
-  if (!isSpeechOutputEnabled()) {
-    finishSpeech();
-    return;
-  }
 
   if (!spokenText || !synth || typeof SpeechSynthesisUtterance === 'undefined') {
     finishSpeech();

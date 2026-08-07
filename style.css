@@ -10078,9 +10078,9 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 
 /* v126: optional main-screen Yes / No quick buttons. */
 .quick-communication-strip {
-  width: min(100%, 760px);
-  margin: clamp(8px, 1.2vw, 14px) auto clamp(12px, 1.8vw, 22px);
-  padding: clamp(8px, 1vw, 12px);
+  width: min(100%, 840px);
+  margin: clamp(4px, 0.8vw, 9px) auto clamp(6px, 1vw, 12px);
+  padding: clamp(5px, 0.8vw, 9px);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(8px, 1.2vw, 14px);
@@ -10096,8 +10096,8 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 
 .quick-strip-button {
   min-width: 0;
-  min-height: clamp(58px, 7vw, 76px);
-  padding: 8px 14px;
+  min-height: clamp(56px, 6.4vw, 72px);
+  padding: 7px 14px;
   border-radius: 12px;
   font: inherit;
   font-size: clamp(1.15rem, 2.1vw, 1.55rem);
@@ -10587,6 +10587,17 @@ body.edit-mode-guidance-active .mnv-edit-toggle {
 
   .mnv-brand-name {
     display: none !important;
+  }
+
+  .quick-communication-strip {
+    margin: 2px auto 6px !important;
+    padding: 4px !important;
+    gap: 7px !important;
+  }
+
+  .quick-strip-button {
+    min-height: 52px !important;
+    padding-block: 6px !important;
   }
 }
 
