@@ -9073,47 +9073,6 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay {
     var(--theme-page-surface, #f8fffb) !important;
 }
 
-body[data-theme="sci-fi"],
-body[data-theme="sci-fi-v2"],
-body[data-theme="forest-night"],
-body[data-theme="twilight-plum"] {
-  --mnv-ui-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
-  --mnv-ui-shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.26);
-  --mnv-ui-shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.42);
-}
-
-body[data-theme="sci-fi"] .settings-select,
-body[data-theme="sci-fi"] .settings-textarea,
-body[data-theme="sci-fi"] .settings-icon-input,
-body[data-theme="sci-fi"] .management-input {
-  background: #101819 !important;
-}
-
-body[data-theme="sci-fi-v2"] .settings-select,
-body[data-theme="sci-fi-v2"] .settings-textarea,
-body[data-theme="sci-fi-v2"] .settings-icon-input,
-body[data-theme="sci-fi-v2"] .management-input {
-  background: #1F3338 !important;
-}
-
-body[data-theme="sci-fi"] .remove-btn,
-body[data-theme="sci-fi"] .danger-settings-btn,
-body[data-theme="sci-fi-v2"] .remove-btn,
-body[data-theme="sci-fi-v2"] .danger-settings-btn,
-body[data-theme="forest-night"] .remove-btn,
-body[data-theme="forest-night"] .danger-settings-btn,
-body[data-theme="twilight-plum"] .remove-btn,
-body[data-theme="twilight-plum"] .danger-settings-btn {
-  color: #ffdce4 !important;
-  background: linear-gradient(180deg, #351a22, #241018) !important;
-}
-
-body[data-theme="high-contrast"] {
-  --mnv-ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-  --mnv-ui-shadow-soft: 0 5px 14px rgba(0, 0, 0, 0.14);
-  --mnv-ui-shadow-hover: 0 14px 30px rgba(0, 0, 0, 0.24);
-}
-
 @media (max-width: 720px) {
   :root {
     --mnv-ui-gap: 10px;

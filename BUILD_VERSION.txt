@@ -1,3 +1,9 @@
+v202_unreachable_theme_override_cleanup
+
+Removed a remaining non-Classic theme-specific override cluster from CSS after v201 made Classic the only active selectable theme.
+Preserves legacy theme aliases so old backups/settings still normalize to Classic.
+Includes v201 Classic theme payload cleanup.
+
 v201_classic_theme_payload_cleanup
 
 Removed inactive non-Classic theme palette payloads from CSS and JavaScript now that Classic is the only selectable active theme.
