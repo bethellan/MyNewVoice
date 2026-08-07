@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v202: Removes unreachable non-Classic theme override CSS.
-const CURRENT_APP_VERSION = 'v202';
+// v206: Removes unused category theme override lookup after Classic-only cleanup.
+const CURRENT_APP_VERSION = 'v206';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1359,10 +1359,6 @@ function ensureSettingsOverlay() {
                 <details class="settings-v115-card settings-v115-foldout settings-section-display" open>
                     <summary><span>Display &amp; Touch</span><small>Main screen appearance and tap behaviour.</small></summary>
                     <div class="settings-v115-form-grid">
-                        <label for="settingsTheme">Theme</label>
-                        <select id="settingsTheme" class="settings-select">
-                            <option value="default">Classic</option>
-                        </select>
                         <label for="settingsQuickYesNoEnabled">Yes / No quick buttons</label>
                         <select id="settingsQuickYesNoEnabled" class="settings-select">
                             <option value="off">Off</option>
@@ -1582,12 +1578,6 @@ function ensureSettingsOverlay() {
     });
 
     overlay.addEventListener('change', (event) => {
-        if (event.target && event.target.id === 'settingsTheme') {
-            appSettings.theme = THEMES.has(event.target.value) ? event.target.value : DEFAULT_APP_SETTINGS.theme;
-            saveAppSettings({ render: true });
-            showToast(`Theme saved: ${THEME_LABELS[appSettings.theme] || 'Classic'}`, 'success');
-            return;
-        }
         if (event.target && event.target.id === 'settingsQuickYesNoEnabled') {
             appSettings.quickYesNoEnabled = event.target.value === 'on';
             saveAppSettings({ render: true });
@@ -3472,10 +3462,6 @@ const LEGACY_THEME_ALIASES = {
     'sci-fi-v2': 'default',
     'high-contrast': 'default'
 };
-const THEME_LABELS = {
-    default: 'Classic'
-};
-const THEME_CATEGORY_PALETTES = {};
 const TE_REO_BRAND_NAME = 'Tōku Reo Hou';
 const TE_REO_FLUENCY_WARNING = 'Te Reo mode is ready. If you are not fluent in te reo Māori, please ask a fluent speaker to check important wording and pronunciation before relying on it.';
 const TE_REO_STARTER_PACK = {
@@ -3652,9 +3638,6 @@ function normaliseThemeName(value) {
     if (THEMES.has(raw)) return raw;
     return LEGACY_THEME_ALIASES[raw] || DEFAULT_APP_SETTINGS.theme;
 }
-function getActiveThemeKey() {
-    return normaliseThemeName(appSettings && appSettings.theme);
-}
 const PRESS_ACTIVATION_DELAYS = {
     normal: 0,
     long: 650,
@@ -3771,8 +3754,6 @@ function saveAppSettings({ render = true, persistContent = true, showSaveIndicat
 function updateSettingsControls() {
     appSettings = normaliseAppSettings(appSettings);
     applyAppTheme();
-    const themeSelect = document.getElementById('settingsTheme');
-    if (themeSelect) themeSelect.value = appSettings.theme;
     const quickYesNoSelect = document.getElementById('settingsQuickYesNoEnabled');
     if (quickYesNoSelect) quickYesNoSelect.value = appSettings.quickYesNoEnabled ? 'on' : 'off';
     const pressActivationSelect = document.getElementById('settingsPressActivation');
@@ -7632,11 +7613,9 @@ let buttonData = JSON.parse(JSON.stringify(defaultButtonData));
 
 function getCategoryMeta(category) {
     const base = CATEGORY_META[category] || makeFallbackCategoryMeta(category);
-    const themed = THEME_CATEGORY_PALETTES[getActiveThemeKey()]?.[category] || {};
     const configured = getCategoryConfigEntry(category);
     return {
         ...base,
-        ...themed,
         ...configured,
         label: configured.label || base.label || category,
         hidden: Boolean(configured.hidden)

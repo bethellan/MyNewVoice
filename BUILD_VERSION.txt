@@ -1,3 +1,27 @@
+v206_remove_unused_category_theme_lookup
+
+Removed the empty category theme override lookup and its now-unused active-theme helper.
+Category colours now come directly from the baseline category metadata plus user category settings.
+Includes v205 fixed theme setting cleanup.
+
+v205_remove_fixed_theme_setting
+
+Removed the visible Classic-only Theme row from Settings along with its unreachable change/update-control code.
+Kept internal theme normalization and legacy aliases so older backups/settings still load safely as Classic.
+Includes v204 dead theme-toggle CSS cleanup.
+
+v204_dead_theme_toggle_css_cleanup
+
+Removed dead .theme-toggle CSS and references from shared selector lists after confirming no app markup renders that class.
+Preserves the live Classic theme setting compatibility and all app-bar controls.
+Includes v203 legacy theme selector cleanup.
+
+v203_legacy_theme_selector_cleanup
+
+Removed older unreachable non-Classic theme CSS selectors for former dark, midnight and concept themes.
+Kept Classic/default styling and JavaScript legacy aliases so older saved settings still normalize safely.
+Includes v202 unreachable theme override cleanup.
+
 v202_unreachable_theme_override_cleanup
 
 Removed a remaining non-Classic theme-specific override cluster from CSS after v201 made Classic the only active selectable theme.
