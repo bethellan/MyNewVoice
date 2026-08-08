@@ -551,9 +551,17 @@ body[data-display-mode="simple-list"]:not(.submenu-open) #buttonGrid:not([hidden
 
 .modal-actions {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--mnv-action-gap, var(--space-sm));
   margin-top: var(--space-lg);
   justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.modal-actions .management-btn {
+  margin: 0;
+  min-height: var(--mnv-action-button-height, 52px);
+  min-width: min(100%, 150px);
 }
 
 
@@ -6809,8 +6817,8 @@ body {
 #settingsOverlay .settings-v115-actions-two {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 0.55rem !important;
-  margin-top: 0.7rem !important;
+  gap: var(--mnv-action-gap, 10px) !important;
+  margin-top: 0.75rem !important;
 }
 
 #settingsOverlay .settings-v115-button-row {
@@ -6820,15 +6828,15 @@ body {
 #settingsOverlay .settings-v115-save-row {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  gap: 0.55rem !important;
-  margin-top: 0.7rem !important;
+  gap: var(--mnv-action-gap, 10px) !important;
+  margin-top: 0.75rem !important;
 }
 
 #settingsOverlay .settings-action-btn,
 #settingsOverlay .settings-v115-primary-action,
 #settingsOverlay .management-btn,
 #settingsOverlay .small-management-btn {
-  min-height: 3.1rem !important;
+  min-height: var(--mnv-action-button-height, 52px) !important;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
@@ -6836,7 +6844,7 @@ body {
   align-items: center !important;
   justify-content: flex-start !important;
   text-align: left !important;
-  padding: 0.65rem 0.78rem !important;
+  padding: 0.68rem 0.85rem !important;
   line-height: 1.15 !important;
   white-space: normal !important;
 }
@@ -8339,6 +8347,8 @@ img[data-private-media-key].private-media-pending {
   --mnv-ui-radius: 8px;
   --mnv-ui-gap: 14px;
   --mnv-ui-control-height: 50px;
+  --mnv-action-gap: 10px;
+  --mnv-action-button-height: 52px;
 }
 
 body {
@@ -8921,7 +8931,7 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay {
 #settingsOverlay .settings-v115-actions-two {
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)) !important;
-  gap: 10px !important;
+  gap: var(--mnv-action-gap, 10px) !important;
 }
 
 #settingsOverlay .settings-action-btn {
@@ -9004,14 +9014,14 @@ body.settings-real-screen-active #settingsOverlay.settings-overlay {
 
 #managementOverlay .table-editor-footer {
   border-radius: var(--mnv-ui-radius) !important;
-  padding: 10px !important;
-  gap: 10px !important;
+  padding: var(--mnv-action-gap, 10px) !important;
+  gap: var(--mnv-action-gap, 10px) !important;
 }
 
 #managementOverlay .table-editor-footer .management-btn {
-  min-height: 48px !important;
-  height: 48px !important;
-  max-height: 48px !important;
+  min-height: var(--mnv-action-button-height, 52px) !important;
+  height: var(--mnv-action-button-height, 52px) !important;
+  max-height: var(--mnv-action-button-height, 52px) !important;
   border-radius: var(--mnv-ui-radius) !important;
 }
 
@@ -9980,9 +9990,9 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
   width: 100% !important;
   height: 100% !important;
   min-width: 0 !important;
-  min-height: 72px !important;
+  min-height: var(--mnv-action-button-height, 52px) !important;
   margin: 0 !important;
-  padding: 12px 14px !important;
+  padding: 11px 14px !important;
   box-sizing: border-box !important;
   justify-content: center !important;
   line-height: 1.12 !important;
@@ -10018,14 +10028,14 @@ body:not(.submenu-open) #messageBar:not(.submenu-titlebar) .introduction-header-
 
 .content-unsaved-panel.content-move-dialog .content-unsaved-actions {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
-  grid-auto-rows: minmax(68px, auto);
+  grid-auto-rows: minmax(var(--mnv-action-button-height, 52px), auto);
   max-height: min(56vh, 500px);
   padding: 3px 8px 3px 3px;
   scrollbar-gutter: stable;
 }
 
 .content-unsaved-panel.content-move-dialog .content-unsaved-actions .management-btn {
-  min-height: 68px !important;
+  min-height: var(--mnv-action-button-height, 52px) !important;
   align-items: flex-start !important;
   justify-content: flex-start !important;
   text-align: left !important;

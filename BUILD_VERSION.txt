@@ -1,3 +1,9 @@
+v211_standardised_settings_action_buttons
+
+Standardised spacing, height and wrapping for Settings, modal and editor action buttons such as Cancel, OK, Confirm, Back and Return.
+Kept existing button colours and behaviours while making the action rows follow one consistent spacing rhythm.
+Includes v210 tighter Yes / No quick-button spacing.
+
 v210_tighter_quick_yes_no_spacing
 
 Reduced the vertical margin and padding around the optional Yes / No quick-button strip.
