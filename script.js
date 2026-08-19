@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v212: Release-candidate Help and About fallback wording tidy.
-const CURRENT_APP_VERSION = 'v212';
+// v215: Restores a visible Settings update button using the existing safe refresh path.
+const CURRENT_APP_VERSION = 'v215';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1412,6 +1412,7 @@ function ensureSettingsOverlay() {
                     <div class="settings-v115-actions-two">
                         <button type="button" class="settings-action-btn" data-prepare-offline><span class="settings-card-text"><strong>Save Offline</strong><small>Download app files.</small></span></button>
                         <button type="button" class="settings-action-btn" data-check-offline-ready><span class="settings-card-text"><strong>Check Offline</strong><small>Check saved files.</small></span></button>
+                        <button type="button" class="settings-action-btn" data-check-app-update><span class="settings-card-text"><strong>Update App</strong><small>Refresh app files.</small></span></button>
                     </div>
                 </details>
 
@@ -1543,6 +1544,10 @@ function ensureSettingsOverlay() {
         }
         if (event.target.closest('[data-check-offline-ready]')) {
             updateOfflineReadinessPanel({ showToastOnComplete: true });
+            return;
+        }
+        if (event.target.closest('[data-check-app-update]')) {
+            checkForAppUpdate({ manual: true, forceRefreshIfSame: true });
             return;
         }
         if (event.target.closest('[data-preview-speech-voice]')) {

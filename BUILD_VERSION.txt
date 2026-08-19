@@ -1,3 +1,15 @@
+v215_visible_update_app_button
+
+Restored a visible Update App button inside Offline Use using the existing safe app refresh/update path.
+Updated Help troubleshooting wording so GitHub/iPhone/iPad updates have a clear in-app route: Update App, then Save Offline, then test.
+Includes v214 visible version metadata alignment.
+
+v214_align_visible_version_metadata
+
+Aligned the app-facing version shown in Information, app-version.json and runtime exports after the v213 Git housekeeping checkpoint.
+Keeps v213 as the Git-only cleanup that ignored the iCloud-created app-version 2.json placeholder.
+Includes v212 release-candidate wording tidy.
+
 v212_release_candidate_wording_tidy
 
 Updated release-candidate Help/About fallback wording so visible guidance matches the current Settings flow.
