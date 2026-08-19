@@ -213,8 +213,8 @@ const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
-// v215: Restores a visible Settings update button using the existing safe refresh path.
-const CURRENT_APP_VERSION = 'v215';
+// v216: Removes stale Settings handlers for controls no longer rendered in the Settings dashboard.
+const CURRENT_APP_VERSION = 'v216';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -1502,10 +1502,6 @@ function ensureSettingsOverlay() {
             confirmAndClearAllImages();
             return;
         }
-        if (event.target.closest('[data-check-media-quality]')) {
-            updateMediaQualityPanel({ showToastOnComplete: true });
-            return;
-        }
         if (event.target.closest('[data-check-storage-health]')) {
             updateStorageHealthPanel({ showToastOnComplete: true });
             return;
@@ -1572,12 +1568,6 @@ function ensureSettingsOverlay() {
             showToast(appSettings.quickYesNoEnabled ? 'Yes / No buttons on' : 'Yes / No buttons off', 'success');
             return;
         }
-        if (event.target && event.target.id === 'settingsPressActivation') {
-            appSettings.pressActivation = event.target.value;
-            saveAppSettings({ render: false });
-            showToast(appSettings.pressActivation === 'normal' ? 'Normal tap on' : 'Long press saved', 'success');
-            return;
-        }
         if (event.target && event.target.id === 'settingsSpeechVoice') {
             setSpeechVoiceFromSelect(event.target.value);
             saveAppSettings({ render: false });
@@ -1595,13 +1585,6 @@ function ensureSettingsOverlay() {
             } else {
                 showToast(match ? `${appSettings.speechVoiceStyle === 'male' ? 'Male' : 'Female'} voice selected` : 'No matching voice found on this device yet', match ? 'success' : 'warning');
             }
-            return;
-        }
-        if (event.target && event.target.id === 'settingsAutoUpdateCheck') {
-            appSettings.autoUpdateCheck = event.target.value === 'on';
-            saveAppSettings({ render: false });
-            showToast(appSettings.autoUpdateCheck ? 'Auto check on' : 'Auto check off', 'success');
-            if (appSettings.autoUpdateCheck) checkForAppUpdate({ manual: false });
             return;
         }
     });
@@ -3732,8 +3715,6 @@ function updateSettingsControls() {
     applyAppTheme();
     const quickYesNoSelect = document.getElementById('settingsQuickYesNoEnabled');
     if (quickYesNoSelect) quickYesNoSelect.value = appSettings.quickYesNoEnabled ? 'on' : 'off';
-    const pressActivationSelect = document.getElementById('settingsPressActivation');
-    if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
     const speechVoiceStyleSelect = document.getElementById('settingsSpeechVoiceStyle');
     if (speechVoiceStyleSelect) speechVoiceStyleSelect.value = appSettings.speechVoiceStyle || DEFAULT_APP_SETTINGS.speechVoiceStyle;
     populateSpeechVoiceSelect();
@@ -3752,8 +3733,6 @@ function updateSettingsControls() {
     [speechVoiceStyleSelect, voiceSelect, speechRate, speechPitch, previewSpeechButton].forEach(control => {
         if (control) control.disabled = false;
     });
-    const autoUpdateSelect = document.getElementById('settingsAutoUpdateCheck');
-    if (autoUpdateSelect) autoUpdateSelect.value = appSettings.autoUpdateCheck ? 'on' : 'off';
     updateAppBarControls();
 }
 

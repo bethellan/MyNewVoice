@@ -1,3 +1,9 @@
+v216_settings_dead_handler_cleanup
+
+Removed stale Settings event handlers and control-sync code for Settings controls that are no longer rendered.
+Kept stored settings fields for backup compatibility while reducing patch-drift in the visible Settings flow.
+Includes v215 visible Update App button.
+
 v215_visible_update_app_button
 
 Restored a visible Update App button inside Offline Use using the existing safe app refresh/update path.
