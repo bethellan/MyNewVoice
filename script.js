@@ -45,6 +45,8 @@ document.addEventListener('load', function(event) {
 /*
 Copyright © Andrew Bethell. All rights reserved.
 Created by Andrew Bethell in his own time for his father following a stroke.
+Developed by Andrew Bethell in his own time and at his own expense.
+Educational simulation tool. Not for clinical decision-making.
 
 Version history:
 v2_public_template_placeholders - Public-safe template with generic image placeholders, stable photo IDs, category colours, and About box.
@@ -268,7 +270,6 @@ const PRIVATE_CROP_OUTPUTS = {
     zoom: { width: 600, height: 600, aspect: 1, shape: 'square', label: 'phrase picture' }
 };
 // Do not add a version number here - see BUILD_VERSION.txt for the human-readable release log instead.
-const OFFLINE_CACHE_NAME = 'mnv-offline-cache';
 const OFFLINE_CORE_FILES = [
     './',
     './index.html',
@@ -333,6 +334,7 @@ let introductionPlaybackGuardUntil = 0;
 let speechPlaybackRunId = 0;
 let speechVoicesReadyPromise = null;
 let speechSynthesisPrimed = false;
+let activeSpeechCleanup = null;
 
 function openPrivateMediaDb() {
     if (privateMediaDbPromise) return privateMediaDbPromise;
@@ -370,6 +372,7 @@ async function privateMediaTransaction(mode, callback) {
         try {
             request = callback(store);
         } catch (error) {
+            transaction.abort();
             reject(error);
             return;
         }
@@ -382,6 +385,7 @@ async function privateMediaTransaction(mode, callback) {
 
 async function getPrivateMediaRecord(id) {
     if (!id) return null;
+    if (contentEditorMediaDraft?.has(id)) return contentEditorMediaDraft.get(id);
     try {
         return await privateMediaTransaction('readonly', store => store.get(id));
     } catch (error) {
@@ -403,7 +407,12 @@ async function putPrivateMediaRecord(id, type, blob, meta = {}) {
         updatedAt: new Date().toISOString()
     };
 
-    await privateMediaTransaction('readwrite', store => store.put(record));
+    if (contentEditorMediaDraft) {
+        contentEditorMediaDraft.set(id, record);
+        updateContentEditorSaveState();
+    } else {
+        await privateMediaTransaction('readwrite', store => store.put(record));
+    }
     privateMediaSizeIndex.set(id, { type, size: blob.size || 0, mime: record.mime || '' });
     if (type === 'voice') privateVoiceKeySet.add(id);
     revokePrivateMediaUrl(id);
@@ -412,16 +421,28 @@ async function putPrivateMediaRecord(id, type, blob, meta = {}) {
 
 async function deletePrivateMediaRecord(id) {
     if (!id) return;
-    await privateMediaTransaction('readwrite', store => store.delete(id));
+    if (contentEditorMediaDraft) {
+        contentEditorMediaDraft.set(id, null);
+        updateContentEditorSaveState();
+    } else {
+        await privateMediaTransaction('readwrite', store => store.delete(id));
+    }
     privateVoiceKeySet.delete(id);
     privateMediaSizeIndex.delete(id);
     revokePrivateMediaUrl(id);
 }
 
-async function getAllPrivateMediaRecords() {
+async function getAllPrivateMediaRecords({ strict = false } = {}) {
     try {
-        return await privateMediaTransaction('readonly', store => store.getAll());
+        const records = await privateMediaTransaction('readonly', store => store.getAll());
+        const merged = new Map(records.map(record => [record.id, record]));
+        contentEditorMediaDraft?.forEach((record, id) => {
+            if (record) merged.set(id, record);
+            else merged.delete(id);
+        });
+        return [...merged.values()];
     } catch (error) {
+        if (strict) throw error;
         console.warn('Could not read all private media:', error);
         return [];
     }
@@ -470,15 +491,17 @@ function getContentSectionMediaTotals(category) {
     let audioCount = 0;
     phrases.forEach(phrase => {
         const imageBytes = getPrivateMediaSizeBytes(getPrivateMediaKey('phrase', phrase));
-        const voiceBytes = getPrivateMediaSizeBytes(getPrivateMediaKey('voice', phrase));
         if (imageBytes > 0) {
             phraseImageBytes += imageBytes;
             imageCount += 1;
         }
-        if (voiceBytes > 0) {
-            audioBytes += voiceBytes;
-            audioCount += 1;
-        }
+        ['voice', 'voice-mi'].forEach(kind => {
+            const voiceBytes = getPrivateMediaSizeBytes(getPrivateMediaKey(kind, phrase));
+            if (voiceBytes > 0) {
+                audioBytes += voiceBytes;
+                audioCount += 1;
+            }
+        });
     });
     return {
         menuImageBytes,
@@ -503,7 +526,7 @@ function renderContentSectionMediaTotals(category) {
 }
 
 function hasKnownPrivateVoice(buttonInfo) {
-    const key = getPrivateMediaKey('voice', buttonInfo);
+    const key = getPhraseVoiceKey(buttonInfo);
     return Boolean(key && privateVoiceKeySet.has(key));
 }
 
@@ -513,12 +536,16 @@ function isSpeechOutputEnabled() {
 
 function stopSpokenOutput() {
     speechPlaybackRunId += 1;
+    if (activeSpeechCleanup) activeSpeechCleanup();
+    activeSpeechCleanup = null;
     if (window.speechSynthesis) {
         try { window.speechSynthesis.cancel(); } catch (_) {}
     }
     activeSpeechUtterance = null;
     if (activePrivateVoiceAudio) {
         try {
+            activePrivateVoiceAudio.onended = null;
+            activePrivateVoiceAudio.onerror = null;
             activePrivateVoiceAudio.pause();
             activePrivateVoiceAudio.removeAttribute('src');
             activePrivateVoiceAudio.load();
@@ -555,6 +582,14 @@ function getPrivateMediaKey(kind, idOrItem) {
     const id = typeof idOrItem === 'string' ? idOrItem : (idOrItem && idOrItem.id);
     if (!id) return '';
     return `${kind}:${id}`;
+}
+
+function getPhraseSpeechLanguage(phrase) {
+    return isTeReoModeEnabled() && String(phrase?.reoSpokenText || phrase?.reoText || '').trim() ? 'mi' : 'en';
+}
+
+function getPhraseVoiceKey(phrase) {
+    return getPrivateMediaKey(getPhraseSpeechLanguage(phrase) === 'mi' ? 'voice-mi' : 'voice', phrase);
 }
 
 function revokePrivateMediaUrl(id) {
@@ -1215,17 +1250,20 @@ function openImageCropper(file, options = {}) {
     });
 }
 
-async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken = null) {
-    const text = buttonInfo && buttonInfo.text ? buttonInfo.text : '';
-    const key = getPrivateMediaKey('voice', buttonInfo);
+async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken = null, runId = null, recordingKey = null) {
+    if (runId === null) {
+        stopSpokenOutput();
+        runId = speechPlaybackRunId;
+    }
+    const key = recordingKey || getPhraseVoiceKey(buttonInfo);
     if (!key) return false;
 
     const record = await getPrivateMediaRecord(key);
+    // A cancelled lookup must not start audio or trigger a text-to-speech fallback.
+    if (runId !== speechPlaybackRunId) return true;
     if (!record || !record.blob) return false;
 
     try {
-        stopSpokenOutput();
-
         playOptionalClickSound();
 
         if (buttonElement) buttonElement.classList.add('speaking');
@@ -1236,11 +1274,17 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
         activePrivateVoiceObjectUrl = url;
         audio.volume = 1.0;
 
-        const finishPlayback = () => {
+        const cleanupPlayback = () => {
             if (activePrivateVoiceObjectUrl === url) activePrivateVoiceObjectUrl = '';
             URL.revokeObjectURL(url);
-            if (activePrivateVoiceAudio === audio) activePrivateVoiceAudio = null;
             if (buttonElement) buttonElement.classList.remove('speaking');
+        };
+        activeSpeechCleanup = cleanupPlayback;
+        const finishPlayback = () => {
+            if (runId !== speechPlaybackRunId) return;
+            cleanupPlayback();
+            activeSpeechCleanup = null;
+            if (activePrivateVoiceAudio === audio) activePrivateVoiceAudio = null;
             if (popupToken) closePhrasePopupAfterMinimum(popupToken);
         };
 
@@ -1250,8 +1294,10 @@ async function playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken =
         await audio.play();
         return true;
     } catch (error) {
+        if (runId !== speechPlaybackRunId) return true;
         console.warn('Private voice playback failed; falling back to text-to-speech.', error);
-        if (buttonElement) buttonElement.classList.remove('speaking');
+        if (activeSpeechCleanup) activeSpeechCleanup();
+        activeSpeechCleanup = null;
         return false;
     }
 }
@@ -1275,13 +1321,15 @@ function speakPhrase(buttonInfo, buttonElement) {
     // index so phrases without recordings call text-to-speech immediately within
     // the original tap event.
     if (!hasKnownPrivateVoice(buttonInfo)) {
-        speakText(getPhraseSpeechText(buttonInfo), buttonElement, { popupToken, showPopup: false });
+        speakText(getPhraseSpeechText(buttonInfo), buttonElement, { popupToken, showPopup: false, language: getPhraseSpeechLanguage(buttonInfo) });
         return;
     }
 
-    playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken).then(playedPrivateVoice => {
-        if (!playedPrivateVoice) {
-            speakText(getPhraseSpeechText(buttonInfo), buttonElement, { popupToken, showPopup: false });
+    stopSpokenOutput();
+    const runId = speechPlaybackRunId;
+    playPrivateVoiceForPhrase(buttonInfo, buttonElement, popupToken, runId).then(playedPrivateVoice => {
+        if (!playedPrivateVoice && runId === speechPlaybackRunId) {
+            speakText(getPhraseSpeechText(buttonInfo), buttonElement, { popupToken, showPopup: false, language: getPhraseSpeechLanguage(buttonInfo) });
         }
     });
 }
@@ -1404,6 +1452,7 @@ function ensureSettingsOverlay() {
                         <button type="button" class="settings-action-btn" data-import-full-backup><span class="settings-card-text"><strong>Import Backup</strong><small>Load a saved backup.</small></span></button>
                         <input type="file" id="fullBackupImportFile" accept=".mnvoice,.mnvoice.json,.json,application/json" hidden>
                     </div>
+                    <div id="backupStatusPanel" class="settings-status-panel" role="status"></div>
                 </section>
 
                 <details class="settings-v115-card settings-v115-foldout settings-section-offline">
@@ -1712,6 +1761,7 @@ function buildExpectedPrivateMediaKeys() {
             if (!phraseId) return;
             keys.add(getPrivateMediaKey('phrase', phrase));
             keys.add(getPrivateMediaKey('voice', phrase));
+            keys.add(getPrivateMediaKey('voice-mi', phrase));
         });
     });
     keys.add(INTRODUCTION_IMAGE_KEY);
@@ -1886,35 +1936,63 @@ function formatOfflinePreparedTime(value) {
     return date.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
 }
 
-function normaliseOfflineUrl(path) {
-    try {
-        return new URL(path, window.location.href).href;
-    } catch (error) {
-        return path;
-    }
-}
 
 async function countCachedOfflineCoreFiles() {
-    if (!('caches' in window)) return { cachedFiles: 0, missingFiles: OFFLINE_CORE_FILES.slice(), cacheNames: [] };
-    const cacheNames = await caches.keys();
-    const myNewVoiceCaches = cacheNames.filter(key => key === OFFLINE_CACHE_NAME || key === 'mnv-shell-cache' || key.startsWith('mnv-offline-') || key.startsWith('mnv-shell-'));
-    const missingFiles = [];
-    let cachedFiles = 0;
-    for (const path of OFFLINE_CORE_FILES) {
-        const url = normaliseOfflineUrl(path);
-        let found = false;
-        for (const name of myNewVoiceCaches) {
-            const cache = await caches.open(name);
-            const match = await cache.match(url) || await cache.match(path);
-            if (match) {
-                found = true;
-                break;
-            }
-        }
-        if (found) cachedFiles += 1;
-        else missingFiles.push(path);
-    }
-    return { cachedFiles, missingFiles, cacheNames: myNewVoiceCaches };
+    const registration = await navigator.serviceWorker?.getRegistration();
+    const worker = navigator.serviceWorker?.controller || registration?.active;
+    if (!worker) return { cachedFiles: 0, missingFiles: OFFLINE_CORE_FILES.slice(), cacheNames: [] };
+    const status = await requestOfflineWorker(worker, 'getShellStatus');
+    const missingFiles = OFFLINE_CORE_FILES.filter(path => status.missingFiles?.includes(path));
+    if (!status.ready && !missingFiles.length) throw new Error(status.error || 'Offline shell is incomplete.');
+    return { cachedFiles: OFFLINE_CORE_FILES.length - missingFiles.length, missingFiles, cacheNames: [status.cacheName] };
+}
+
+function requestOfflineWorker(worker, type) {
+    return new Promise((resolve, reject) => {
+        const channel = new MessageChannel();
+        const finish = (error, data) => {
+            clearTimeout(timer);
+            channel.port1.close();
+            channel.port2.close();
+            if (error) reject(error);
+            else resolve(data);
+        };
+        const timer = setTimeout(() => finish(new Error('Offline worker did not respond. Use Update App online.')), 15000);
+        channel.port1.onmessage = event => finish(event.data?.error ? new Error(event.data.error) : null, event.data);
+        try { worker.postMessage({ type }, [channel.port2]); }
+        catch (error) { finish(error); }
+    });
+}
+
+function waitForOfflineWorker(worker, states) {
+    return new Promise((resolve, reject) => {
+        const finish = error => {
+            clearTimeout(timer);
+            worker.removeEventListener('statechange', check);
+            if (error) reject(error);
+            else resolve(worker);
+        };
+        const check = () => {
+            if (states.includes(worker.state)) finish();
+            else if (worker.state === 'redundant') finish(new Error('App update could not be installed.'));
+        };
+        const timer = setTimeout(() => finish(new Error('App update timed out. The current offline files have been kept.')), 45000);
+        worker.addEventListener('statechange', check);
+        check();
+    });
+}
+
+async function getPreparedOfflineRegistration() {
+    if (!('serviceWorker' in navigator)) throw new Error('Offline use requires HTTPS or localhost.');
+    const registration = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+    await registration.update();
+    if (registration.installing) await waitForOfflineWorker(registration.installing, ['installed', 'activated']);
+    const worker = registration.waiting || registration.active;
+    if (!worker) throw new Error('No offline worker is available.');
+    if (worker.state === 'activating') await waitForOfflineWorker(worker, ['activated']);
+    const status = await requestOfflineWorker(worker, 'refreshAppShell');
+    if (!status.ready) throw new Error('The complete app could not be saved offline.');
+    return { registration, worker };
 }
 
 async function prepareAppForOffline(options = {}) {
@@ -1929,23 +2007,13 @@ async function prepareAppForOffline(options = {}) {
         return null;
     }
     try {
-        if ('serviceWorker' in navigator) {
-            try {
-                const registration = await navigator.serviceWorker.register('./sw.js');
-                if (registration && registration.update) registration.update().catch(() => {});
-            } catch (error) {
-                console.warn('Service worker registration/update failed during offline preparation:', error);
-            }
-        }
-        const cache = await caches.open(OFFLINE_CACHE_NAME);
-        const results = await Promise.allSettled(OFFLINE_CORE_FILES.map(path => cache.add(path)));
-        const failed = results.filter(result => result.status === 'rejected').length;
+        const { registration } = await getPreparedOfflineRegistration();
         const now = new Date().toISOString();
         try { localStorage.setItem(OFFLINE_PREPARED_AT_KEY, now); } catch (error) { /* localStorage may be blocked */ }
         const status = await getOfflineReadinessStatus();
         if (panel) panel.innerHTML = renderOfflineStatusHtml(status);
         if (options.showToastOnComplete) {
-            showToast(failed ? `Offline save partly complete · ${failed} file issue${failed === 1 ? '' : 's'}` : 'Offline files saved', failed ? 'warning' : 'success');
+            showToast(registration.waiting ? 'Offline update saved. Use Update App to switch to it.' : 'Offline files saved', 'success');
         }
         return status;
     } catch (error) {
@@ -2209,6 +2277,7 @@ function returnToAppFromSettings() {
 
 function showSettingsOverlay() {
     const overlay = ensureSettingsOverlay();
+    updateBackupStatusPanel();
     warmSpeechVoices().then(() => updateSettingsControls()).catch(() => updateSettingsControls());
     updateSettingsControls();
     updateMediaQualityPanel();
@@ -2262,61 +2331,35 @@ async function refreshAppCodeSafely() {
     await performSafeAppCodeRefresh('Refreshing app files… local photos and voices will be kept.');
 }
 
-async function performSafeAppCodeRefresh(message = 'Refreshing app files… local photos and voices will be kept.', expectedVersion = '') {
-    hideSettingsOverlay();
+let appCodeRefreshInProgress = false;
+async function performSafeAppCodeRefresh(message = 'Preparing app update...', expectedVersion = '') {
+    if (appCodeRefreshInProgress) return;
+    if (contentEditorMediaDraft && contentEditorHasUnsavedChanges()) {
+        showToast('Save or discard your edits before updating.', 'warning');
+        return;
+    }
+    appCodeRefreshInProgress = true;
     showToast(message, 'info');
-    if (expectedVersion) rememberExpectedWebsiteVersion(expectedVersion);
-
-    let didReload = false;
-    const reloadWithCacheBust = () => {
-        if (didReload) return;
-        didReload = true;
+    try {
+        const { registration, worker } = await getPreparedOfflineRegistration();
+        if (expectedVersion) rememberExpectedWebsiteVersion(expectedVersion);
+        if (registration.waiting) {
+            worker.postMessage({ type: 'skipWaiting' });
+            await waitForOfflineWorker(worker, ['activated']);
+        }
+        // Only reload after a complete shell has installed and activated.
         const url = new URL(window.location.href);
         url.searchParams.set('refresh', Date.now().toString());
         window.location.replace(url.toString());
-    };
-
-    try {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('controllerchange', reloadWithCacheBust, { once: true });
-        }
-
-        if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            await Promise.all(cacheNames
-                .filter(isMyNewVoiceAppCacheName)
-                .map(name => caches.delete(name))
-            );
-        }
-
-        if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(registrations.map(async registration => {
-                try {
-                    await registration.update();
-                    if (registration.waiting) registration.waiting.postMessage({ type: 'skipWaiting' });
-                    if (registration.installing) registration.installing.postMessage({ type: 'skipWaiting' });
-                    if (registration.active) registration.active.postMessage({ type: 'refreshAppShell' });
-                } catch (error) {
-                    console.warn('Service worker update failed:', error);
-                }
-            }));
-        }
     } catch (error) {
-        console.warn('Safe app refresh had a non-fatal error:', error);
+        clearExpectedWebsiteVersion();
+        console.warn('App update failed; current files kept.', error);
+        showToast('Update failed. Existing offline files have been kept. Try again online.', 'error', 6000);
+    } finally {
+        appCodeRefreshInProgress = false;
     }
-
-    setTimeout(reloadWithCacheBust, 900);
 }
 
-function isMyNewVoiceAppCacheName(name) {
-    const key = String(name || '').toLowerCase();
-    return key === 'mnv-shell-cache' ||
-        key === 'mnv-offline-cache' ||
-        key.startsWith('mnv-shell-') ||
-        key.startsWith('mnv-offline-') ||
-        key.includes('mynewvoice');
-}
 
 async function fetchWebsiteAppVersion() {
     const response = await fetch(`./app-version.json?check=${Date.now()}`, {
@@ -2679,6 +2722,7 @@ function handlePrivateSetupChange(event) {
 }
 
 async function choosePrivateImage(key, label = '', text = '', category = '') {
+    const editorDraft = contentEditorMediaDraft;
     let input = document.getElementById('privateImagePicker');
     if (!input) {
         input = document.createElement('input');
@@ -2695,6 +2739,7 @@ async function choosePrivateImage(key, label = '', text = '', category = '') {
         const file = event.target.files && event.target.files[0];
         event.target.value = '';
         if (!file) return;
+        if (editorDraft !== contentEditorMediaDraft) return;
         if (!file.type.startsWith('image/')) {
             showToast('Please choose an image file.', 'error');
             return;
@@ -2713,8 +2758,9 @@ async function choosePrivateImage(key, label = '', text = '', category = '') {
                 optimisationRole: getImageOptimisationRole(key, category)
             });
             const blob = croppedBlob;
+            if (editorDraft !== contentEditorMediaDraft || contentEditorLeaving) return;
             await putPrivateMediaRecord(key, 'image', blob, { label, text, mime: blob.type || 'image/jpeg' });
-            showToast('Photo saved locally on this device', 'success');
+            showToast(editorDraft ? 'Photo added to draft' : 'Photo saved locally on this device', 'success');
             refreshAfterPrivateMediaChange();
         } catch (error) {
             if (error && /cancelled/i.test(error.message || '')) {
@@ -2772,6 +2818,7 @@ function ensureManagementImageOptionsOverlay() {
             return;
         }
         if (event.target.closest('[data-image-options-edit]')) {
+            const editorDraft = contentEditorMediaDraft;
             const record = await getPrivateMediaRecord(state.key);
             if (!record || !record.blob) {
                 showToast('No picture is saved in this box yet.', 'warning');
@@ -2791,6 +2838,7 @@ function ensureManagementImageOptionsOverlay() {
                     optimisationRole: getImageOptimisationRole(state.key, state.category || '')
                 });
                 const finalBlob = croppedBlob;
+                if (editorDraft !== contentEditorMediaDraft || contentEditorLeaving) return;
                 await putPrivateMediaRecord(state.key, 'image', finalBlob, { label: state.label, text: state.text, mime: finalBlob.type || 'image/jpeg' });
                 showToast('Picture updated', 'success');
                 refreshAfterPrivateMediaChange();
@@ -2963,7 +3011,7 @@ async function toggleVoiceRecording(key, text, button) {
         return;
     }
 
-    if (activeRecorder) {
+    if (activeRecorder || recordingPermissionPending) {
         showToast('Stop the current recording first.', 'warning');
         return;
     }
@@ -2973,8 +3021,15 @@ async function toggleVoiceRecording(key, text, button) {
         return;
     }
 
+    const editorDraft = contentEditorMediaDraft;
+    recordingPermissionPending = true;
     try {
-        activeRecorderStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (editorDraft !== contentEditorMediaDraft) {
+            stream.getTracks().forEach(track => track.stop());
+            return;
+        }
+        activeRecorderStream = stream;
         const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/mpeg'].find(type => {
             try { return MediaRecorder.isTypeSupported(type); } catch (_) { return false; }
         });
@@ -2982,22 +3037,27 @@ async function toggleVoiceRecording(key, text, button) {
         activeRecorderChunks = [];
         activeRecordingKey = key;
         activeRecordingButton = button;
+        const recorder = activeRecorder;
+        const chunks = activeRecorderChunks;
 
         activeRecorder.ondataavailable = (event) => {
-            if (event.data && event.data.size > 0) activeRecorderChunks.push(event.data);
+            if (event.data && event.data.size > 0) chunks.push(event.data);
         };
 
         activeRecorder.onstop = async () => {
-            const finalMime = activeRecorder.mimeType || 'audio/webm';
-            const blob = new Blob(activeRecorderChunks, { type: finalMime });
+            const finalMime = recorder.mimeType || 'audio/webm';
+            const blob = new Blob(chunks, { type: finalMime });
             try {
+                if (editorDraft !== contentEditorMediaDraft) return;
+                if (!blob.size) throw new Error('Recording is empty.');
                 await putPrivateMediaRecord(key, 'voice', blob, { text, label: text, mime: finalMime });
-                showToast('Voice recording saved locally', 'success');
+                showToast(editorDraft ? 'Voice recording added to draft' : 'Voice recording saved locally', 'success');
             } catch (error) {
                 console.error(error);
                 showToast('Could not save recording', 'error');
+            } finally {
+                cleanupRecorderState();
             }
-            cleanupRecorderState();
             await refreshAfterPrivateMediaChange();
         };
 
@@ -3011,6 +3071,8 @@ async function toggleVoiceRecording(key, text, button) {
         console.error(error);
         cleanupRecorderState();
         showToast('Microphone permission was not granted or recording failed.', 'error');
+    } finally {
+        recordingPermissionPending = false;
     }
 }
 
@@ -3018,6 +3080,10 @@ function stopActiveRecording(saveRecording = true) {
     if (!activeRecorder) return;
 
     try {
+        if (!saveRecording) {
+            activeRecorder.onstop = null;
+            activeRecorder.ondataavailable = null;
+        }
         if (activeRecorder.state !== 'inactive') {
             activeRecorder.stop();
         }
@@ -3044,21 +3110,10 @@ function cleanupRecorderState() {
 }
 
 async function playSetupVoice(key) {
-    const record = await getPrivateMediaRecord(key);
-    if (!record || !record.blob) {
-        showToast('No recorded voice saved for this phrase.', 'warning');
-        return;
-    }
-
-    const url = URL.createObjectURL(record.blob);
-    const audio = new Audio(url);
-    audio.onended = () => URL.revokeObjectURL(url);
-    audio.onerror = () => URL.revokeObjectURL(url);
-    audio.play().catch(error => {
-        console.warn(error);
-        URL.revokeObjectURL(url);
-        showToast('Could not play recording.', 'error');
-    });
+    stopSpokenOutput();
+    const runId = speechPlaybackRunId;
+    const played = await playPrivateVoiceForPhrase(null, null, null, runId, key);
+    if (!played && runId === speechPlaybackRunId) showToast('Could not play recording.', 'warning');
 }
 
 async function exportPrivateMediaBackup() {
@@ -3134,7 +3189,7 @@ async function importPrivateMediaBackup(file) {
 
 
 async function buildCompleteBackupPayload() {
-    const records = await getAllPrivateMediaRecords();
+    const records = await getAllPrivateMediaRecords({ strict: true });
     const exportRecords = [];
     for (const record of records) {
         exportRecords.push({
@@ -3195,6 +3250,44 @@ async function saveBlobWithBestAvailableDestination(blob, filename) {
     return 'download';
 }
 
+function updateBackupStatusPanel() {
+    const panel = document.getElementById('backupStatusPanel');
+    if (!panel) return;
+    panel.textContent = 'No backup export recorded on this device.';
+    try {
+        const last = JSON.parse(localStorage.getItem('mynewvoiceLastBackupExport') || 'null');
+        if (!last || !['picker', 'download'].includes(last.destination) || !Number.isFinite(Date.parse(last.at))) return;
+        const label = last.destination === 'picker' ? 'Last backup saved' : 'Last backup download started';
+        panel.textContent = `${label}: ${new Date(last.at).toLocaleString()}.` +
+            (last.destination === 'download' ? ' Check your Downloads folder.' : '') +
+            ' Later edits are not included.';
+    } catch (error) {
+        panel.textContent = 'Backup export history is unavailable on this device.';
+    }
+}
+
+function rememberBackupExport(destination) {
+    if (!['picker', 'download'].includes(destination)) return;
+    try {
+        localStorage.setItem('mynewvoiceLastBackupExport', JSON.stringify({ at: new Date().toISOString(), destination }));
+    } catch (error) {
+        showToast('Backup exported, but its history could not be saved on this device.', 'warning');
+    }
+    updateBackupStatusPanel();
+}
+
+function buildBackupImportPreview(incoming) {
+    const menus = Object.values(incoming.buttonData);
+    const phrases = menus.reduce((total, items) => total + items.length, 0);
+    const records = Array.from(incoming.media.values());
+    const photos = records.filter(record => record.type === 'image').length;
+    const recordings = records.filter(record => record.type === 'voice').length;
+    const mediaMessage = incoming.replaceMedia
+        ? `Replace all saved photos and recordings with ${photos} photos and ${recordings} recordings.`
+        : 'This older backup has no media list. Existing photos and recordings will be kept.';
+    return `Import this complete backup?\n\nReplace current menus and phrases with ${menus.length} menus and ${phrases} phrases.\nApply settings included in the backup.\n${mediaMessage}\n\nExport your current setup first if you may need it again.`;
+}
+
 async function exportFullAppBackup() {
     if (fullAppBackupExportInProgress) {
         showToast('Backup export is already running', 'info');
@@ -3209,9 +3302,11 @@ async function exportFullAppBackup() {
         if (result === 'cancelled') {
             showToast('Backup export cancelled', 'info');
         } else if (result === 'picker') {
+            rememberBackupExport(result);
             showToast('Complete backup saved', 'success');
         } else {
-            showToast('Complete backup downloaded', 'success');
+            rememberBackupExport(result);
+            showToast('Complete backup download started', 'success');
         }
     } catch (error) {
         console.error(error);
@@ -3221,59 +3316,133 @@ async function exportFullAppBackup() {
     }
 }
 
-async function importFullAppBackup(file) {
-    if (!file) return;
-
-    try {
-        const text = await file.text();
-        const payload = JSON.parse(text);
-        if (payload.type !== FULL_APP_BACKUP_TYPE || !payload.buttonData) {
-            showToast('This is not a MyNewVoice complete backup.', 'error');
-            return;
+async function validateCompleteBackup(payload) {
+    const isObject = value => value && typeof value === 'object' && !Array.isArray(value);
+    if (!isObject(payload) || payload.type !== FULL_APP_BACKUP_TYPE ||
+        (payload.version !== undefined && payload.version !== 1) || !isObject(payload.buttonData)) {
+        throw new Error('Unsupported complete backup.');
+    }
+    const categories = Object.entries(payload.buttonData);
+    if (!categories.length || categories.some(([key, phrases]) =>
+        ['__proto__', 'constructor', 'prototype'].includes(key) || !Array.isArray(phrases) ||
+        phrases.some(phrase => !isObject(phrase) || typeof phrase.text !== 'string'))) {
+        throw new Error('Invalid menu or phrase data.');
+    }
+    if ((payload.categoryConfig !== undefined && !isObject(payload.categoryConfig)) ||
+        (payload.appSettings !== undefined && !isObject(payload.appSettings)) ||
+        (payload.mediaRecords !== undefined && !Array.isArray(payload.mediaRecords))) {
+        throw new Error('Invalid backup settings or media list.');
+    }
+    const media = new Map();
+    for (const record of payload.mediaRecords || []) {
+        if (!isObject(record) || typeof record.id !== 'string' || !record.id || media.has(record.id) ||
+            !['image', 'voice'].includes(record.type || 'image') ||
+            typeof record.dataUrl !== 'string' || !/^data:(image|audio|video)\/[\w.+-]+(?:;[^,]*)?,/i.test(record.dataUrl)) {
+            throw new Error('Invalid or duplicate media record.');
         }
-        const incomingMediaRecords = Array.isArray(payload.mediaRecords) ? payload.mediaRecords : [];
-        if (!Array.isArray(payload.mediaRecords)) {
-            console.warn('Imported backup has no mediaRecords array; treating it as an older text/menu-only backup.');
+        const blob = await dataUrlToBlob(record.dataUrl);
+        const type = record.type || 'image';
+        if (!blob.size || !(type === 'image' ? /^image\//i : /^(audio|video)\//i).test(blob.type)) {
+            throw new Error('Empty or mismatched media record.');
         }
+        media.set(record.id, {
+            id: record.id, type, blob, mime: blob.type,
+            label: String(record.label || ''), text: String(record.text || ''),
+            updatedAt: record.updatedAt || new Date().toISOString()
+        });
+    }
+    return {
+        buttonData: payload.buttonData,
+        categoryConfig: normaliseCategoryConfig(payload.categoryConfig || categoryConfig),
+        appSettings: normaliseAppSettings(payload.appSettings || appSettings),
+        media,
+        replaceMedia: Array.isArray(payload.mediaRecords)
+    };
+}
 
-        if (!confirm('Import this complete backup?\n\nThis will replace current menu/phrase setup and restore saved photos and recordings on this device.')) return;
-
-        buttonData = payload.buttonData;
-        categoryConfig = normaliseCategoryConfig(payload.categoryConfig || categoryConfig);
-        saveCategoryConfig();
-        if (payload.appSettings) {
-            appSettings = normaliseAppSettings(payload.appSettings);
-            saveAppSettings({ render: false });
-        }
-        saveDataToStorage();
-
-        await clearPrivateMediaRecords();
-        let restoredMediaCount = 0;
-        for (const record of incomingMediaRecords) {
-            if (!record || !record.id || !record.dataUrl) {
-                console.warn('Skipping incomplete media record during import:', record && record.id);
-                continue;
-            }
+// Keep all media writes in one transaction. localStorage has no shared transaction,
+// so restore its previous values if either storage system rejects the commit.
+async function commitContentAndMedia(state, media, replaceMedia = false) {
+    const values = new Map([
+        [CATEGORY_CONFIG_KEY, JSON.stringify(state.categoryConfig)],
+        [APP_SETTINGS_KEY, JSON.stringify(state.appSettings)],
+        [STORAGE_KEY, LZString.compressToUTF16(JSON.stringify({
+            buttonData: state.buttonData, categoryConfig: state.categoryConfig,
+            appSettings: state.appSettings, lastModified: new Date().toISOString()
+        }))]
+    ]);
+    const previous = new Map([...values.keys()].map(key => [key, localStorage.getItem(key)]));
+    const db = await openPrivateMediaDb();
+    await new Promise((resolve, reject) => {
+        const transaction = db.transaction(PRIVATE_MEDIA_STORE, 'readwrite');
+        const store = transaction.objectStore(PRIVATE_MEDIA_STORE);
+        const changedKeys = [];
+        let failure = null;
+        transaction.oncomplete = resolve;
+        transaction.onerror = () => { failure = failure || transaction.error; };
+        transaction.onabort = () => {
             try {
-                const blob = await dataUrlToBlob(record.dataUrl);
-                await putPrivateMediaRecord(record.id, record.type || 'image', blob, {
-                    label: record.label || '',
-                    text: record.text || '',
-                    mime: record.mime || blob.type
-                });
-                restoredMediaCount += 1;
-            } catch (mediaError) {
-                console.warn('Could not restore media record:', record.id, mediaError);
+                for (const key of changedKeys.reverse()) {
+                    const value = previous.get(key);
+                    if (value === null) localStorage.removeItem(key);
+                    else localStorage.setItem(key, value);
+                }
+            } catch (error) {
+                reject(new Error('Storage rollback failed. Keep your backup and retry before reloading.', { cause: error }));
+                return;
             }
+            reject(failure || transaction.error || new Error('Content save aborted.'));
+        };
+        try {
+            if (replaceMedia) store.clear();
+            media.forEach((record, id) => record ? store.put(record) : store.delete(id));
+            // This request runs after every queued media write, while abort is still possible.
+            store.count().onsuccess = () => {
+                try {
+                    values.forEach((value, key) => {
+                        localStorage.setItem(key, value);
+                        changedKeys.push(key);
+                    });
+                } catch (error) {
+                    failure = error;
+                    transaction.abort();
+                }
+            };
+        } catch (error) {
+            failure = error;
+            transaction.abort();
         }
+    });
+}
 
+let fullAppBackupImportInProgress = false;
+async function importFullAppBackup(file) {
+    if (!file || fullAppBackupImportInProgress) return;
+    if (contentEditorMediaDraft) {
+        showToast('Finish editing before importing a backup.', 'warning');
+        return;
+    }
+    fullAppBackupImportInProgress = true;
+    try {
+        const incoming = await validateCompleteBackup(JSON.parse(await file.text()));
+        if (!confirm(buildBackupImportPreview(incoming))) return;
+        await commitContentAndMedia(incoming, incoming.media, incoming.replaceMedia);
+        buttonData = incoming.buttonData;
+        categoryConfig = incoming.categoryConfig;
+        appSettings = incoming.appSettings;
+        stopSpokenOutput();
+        revokeAllPrivateMediaUrls();
         await refreshPrivateVoiceKeyIndex();
+        applyAppTheme();
+        updateSettingsControls();
         renderCategoryMenuCards();
         showMainMenu();
-        showToast(`Complete backup imported${incomingMediaRecords.length ? ` (${restoredMediaCount}/${incomingMediaRecords.length} media items restored)` : ''}`, 'success');
+        showToast(`Complete backup imported (${incoming.media.size} media items restored)`, 'success');
     } catch (error) {
         console.error(error);
-        showToast('Complete backup import failed', 'error');
+        showToast(`Backup import failed: ${error.message}`, 'error', 6000);
+    } finally {
+        fullAppBackupImportInProgress = false;
     }
 }
 
@@ -3992,13 +4161,16 @@ function playIntroduction(options = {}) {
             speakText(text, null, { popupToken, showPopup: false });
         } else {
             // Photo/icon-only introduction: still show the popup briefly.
+            stopSpokenOutput();
             closePhrasePopupAfterMinimum(popupToken);
         }
         return;
     }
 
-    playPrivateVoiceForPhrase(fakeButtonInfo, null, popupToken).then(playedPrivateVoice => {
-        if (!playedPrivateVoice) {
+    stopSpokenOutput();
+    const runId = speechPlaybackRunId;
+    playPrivateVoiceForPhrase(fakeButtonInfo, null, popupToken, runId).then(playedPrivateVoice => {
+        if (!playedPrivateVoice && runId === speechPlaybackRunId) {
             if (text) speakText(text, null, { popupToken, showPopup: false });
             else closePhrasePopupAfterMinimum(popupToken);
         }
@@ -4593,6 +4765,9 @@ let contentSetupSelected = null;
 let contentSetupPhraseCategory = DEFAULT_CATEGORY_ORDER[0] || 'quick';
 let contentEditorCleanSnapshot = null;
 let contentEditorPendingInputDirty = false;
+let contentEditorMediaDraft = null;
+let contentEditorLeaving = false;
+let recordingPermissionPending = false;
 
 function cloneContentEditorState() {
     return {
@@ -4612,6 +4787,7 @@ function markContentEditorClean() {
 }
 
 function contentEditorHasUnsavedChanges() {
+    if (contentEditorMediaDraft?.size) return true;
     if (contentEditorPendingInputDirty) return true;
     if (!contentEditorCleanSnapshot) return false;
     return serialiseContentEditorState() !== contentEditorCleanSnapshot;
@@ -4670,24 +4846,29 @@ function commitActiveContentEditorField() {
     active.blur();
 }
 
-function restoreContentEditorSnapshot() {
-    if (!contentEditorCleanSnapshot) return;
+async function restoreContentEditorSnapshot() {
+    if (!contentEditorCleanSnapshot) return true;
     try {
         const snapshot = JSON.parse(contentEditorCleanSnapshot);
         contentEditorPendingInputDirty = false;
         buttonData = snapshot.buttonData || buttonData;
         categoryConfig = normaliseCategoryConfig(snapshot.categoryConfig || categoryConfig);
-        saveCategoryConfig();
-        saveDataToStorage();
+        contentEditorMediaDraft = new Map();
+        stopSpokenOutput();
+        revokeAllPrivateMediaUrls();
+        await refreshPrivateVoiceKeyIndex();
+        markContentEditorClean();
         renderCategoryMenuCards();
         if (currentViewCategory && buttonData[currentViewCategory]) {
             refreshCurrentCategoryView(currentViewCategory);
         } else {
             showMainMenu();
         }
+        return true;
     } catch (error) {
         console.error('Could not restore Content Editor snapshot.', error);
         showToast('Could not discard changes. Please restore a backup if needed.', 'error');
+        return false;
     }
 }
 
@@ -4817,23 +4998,44 @@ async function confirmDeleteTopicInEditor(topicLabel = '', phraseCount = 0) {
     });
 }
 
-async function handleContentEditorLeave(destination) {
-    commitActiveContentEditorField();
-    if (!contentEditorHasUnsavedChanges()) {
-        finishContentEditorNavigation(destination);
+async function handleContentEditorLeave(destination, saveDirectly = false) {
+    if (contentEditorLeaving) return;
+    if (activeRecorder || recordingPermissionPending) {
+        showToast('Stop the recording before leaving the editor.', 'warning');
         return;
     }
-    const choice = await showContentEditorUnsavedDialog();
-    if (choice === 'stay') return;
-    if (choice === 'save') {
-        markContentEditorClean();
+    contentEditorLeaving = true;
+    try {
+        commitActiveContentEditorField();
+        if (!contentEditorHasUnsavedChanges()) {
+            finishContentEditorNavigation(destination);
+            return;
+        }
+        const choice = saveDirectly ? 'save' : await showContentEditorUnsavedDialog();
+        if (choice === 'stay') return;
+        if (choice === 'save') {
+            const panel = document.getElementById('managementPanel');
+            if (panel) panel.inert = true;
+            try {
+                await commitContentAndMedia({ buttonData, categoryConfig, appSettings: normaliseAppSettings(appSettings) }, contentEditorMediaDraft || new Map());
+            } finally {
+                if (panel) panel.inert = false;
+            }
+            contentEditorMediaDraft = new Map();
+            markContentEditorClean();
+            finishContentEditorNavigation(destination);
+            showToast('Content changes saved', 'success');
+            return;
+        }
+        if (!await restoreContentEditorSnapshot()) return;
         finishContentEditorNavigation(destination);
-        showToast('Content changes saved', 'success');
-        return;
+        showToast('Content changes discarded', 'warning');
+    } catch (error) {
+        console.error(error);
+        showToast('Could not save changes. Your draft is still open; retry or discard.', 'error');
+    } finally {
+        contentEditorLeaving = false;
     }
-    restoreContentEditorSnapshot();
-    finishContentEditorNavigation(destination);
-    showToast('Content changes discarded', 'warning');
 }
 
 function makeFallbackCategoryMeta(category) {
@@ -5026,6 +5228,7 @@ function loadCategoryConfig() {
 
 function saveCategoryConfig() {
     categoryConfig = normaliseCategoryConfig(categoryConfig);
+    if (contentEditorMediaDraft) return;
     localStorage.setItem(CATEGORY_CONFIG_KEY, JSON.stringify(categoryConfig));
     showAutoSave();
 }
@@ -5120,7 +5323,8 @@ async function deletePhraseAtIndex(category, index) {
     const phrase = phrases[index];
     await Promise.allSettled([
         deletePrivateMediaRecord(getPrivateMediaKey('phrase', phrase)),
-        deletePrivateMediaRecord(getPrivateMediaKey('voice', phrase))
+        deletePrivateMediaRecord(getPrivateMediaKey('voice', phrase)),
+        deletePrivateMediaRecord(getPrivateMediaKey('voice-mi', phrase))
     ]);
     phrases.splice(index, 1);
     saveDataToStorage();
@@ -5133,6 +5337,7 @@ async function deletePhraseAtIndex(category, index) {
 
 // Function to save all data to localStorage
 function saveDataToStorage() {
+  if (contentEditorMediaDraft) return;
   try {
     const payload = {
       buttonData,
@@ -5302,8 +5507,9 @@ function showPasswordModal(action = 'management') {
     if (title) title.textContent = label[0];
     if (description) description.textContent = label[1];
     modal.style.display = 'flex';
-    document.getElementById('passwordInput').value = '';
-    // v112: avoid auto-focusing password input on iPhone to prevent viewport jump.
+    const input = document.getElementById('passwordInput');
+    input.value = '';
+    input.focus({ preventScroll: true });
 }
 
 function hidePasswordModal() {
@@ -5312,6 +5518,32 @@ function hidePasswordModal() {
     document.getElementById('passwordInput').value = '';
     pendingPasswordAction = 'management';
     if (action === 'teReoMode') pendingTeReoModeTarget = null;
+}
+
+function handlePasswordModalKeydown(event) {
+    const modal = document.getElementById('passwordModal');
+    if (!modal || modal.style.display !== 'flex' || event.isComposing) return;
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        hidePasswordModal();
+    } else if (event.key === 'Enter' && event.target === document.getElementById('passwordInput')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        checkPassword();
+    } else if (event.key === 'Tab') {
+        const controls = Array.from(modal.querySelectorAll('input, button')).filter(control => !control.disabled && control.getClientRects().length);
+        if (!controls.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && event.target === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && event.target === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
 }
 
 function checkPassword() {
@@ -5349,12 +5581,14 @@ function checkPassword() {
         }
     } else {
         showToast('Incorrect password. Please try again.', 'error');
-        document.getElementById('passwordInput').value = '';
-        // v112: avoid auto-focusing password input on iPhone to prevent viewport jump.
+        const passwordInput = document.getElementById('passwordInput');
+        passwordInput.value = '';
+        passwordInput.focus({ preventScroll: true });
     }
 }
 
 function openGridEditorAction(action) {
+    if (fullAppBackupImportInProgress) return;
     const pending = pendingGridEditorAction;
     pendingGridEditorAction = null;
     if (!pending || !pending.category || !buttonData[pending.category]) {
@@ -5364,6 +5598,10 @@ function openGridEditorAction(action) {
 
     contentEditorScreen = 'phrases';
     contentSetupPhraseCategory = pending.category;
+    if (!contentEditorMediaDraft) {
+        contentEditorMediaDraft = new Map();
+        markContentEditorClean();
+    }
 
     let phraseId = pending.phraseId;
     if (action === 'gridAddPhrase' || pending.type === 'add') {
@@ -5587,6 +5825,10 @@ async function showGridPhraseActionMenu() {
 // ============================================================================
 
 function showManagementPanel() {
+    if (fullAppBackupImportInProgress) {
+        showToast('Wait for the backup import to finish.', 'info');
+        return;
+    }
     const overlay = document.getElementById('managementOverlay');
     const panel = document.getElementById('managementPanel');
 
@@ -5600,7 +5842,10 @@ function showManagementPanel() {
         }
         contentEditorOrigin = captureContentEditorOrigin();
         document.body.classList.add('content-editor-open');
-        markContentEditorClean();
+        if (!contentEditorMediaDraft) {
+            contentEditorMediaDraft = new Map();
+            markContentEditorClean();
+        }
         renderContentManagementPanel();
         overlay.style.display = 'block';
         overlay.classList.add('show');
@@ -5617,6 +5862,8 @@ function hideManagementPanel() {
         overlay.style.display = 'none';
         document.body.classList.remove('content-editor-open');
         contentEditorCleanSnapshot = null;
+        contentEditorMediaDraft = null;
+        stopSpokenOutput();
     }
 }
 
@@ -5938,7 +6185,7 @@ function renderContentPhraseRows(category, phrases) {
                         </div>
                     </section>
                     <section class="content-phrase-card-section content-phrase-card-voice">
-                        <div class="content-phrase-card-section-title">Voice</div>
+                        <div class="content-phrase-card-section-title">English voice</div>
                         <div class="voice-cell-inner">
                             ${renderVoiceStatusBadge(voiceKey)}
                             ${renderMediaSizeLine(voiceKey, 'Audio')}
@@ -5963,6 +6210,13 @@ function renderContentPhraseRows(category, phrases) {
                         <input type="text" class="management-input spoken-text-input" data-content-inline-phrase-reo-spoken-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}" value="${escapeHtml(phrase.reoSpokenText || '')}" placeholder="${escapeHtml(phrase.reoText || phrase.text || 'Optional pronunciation')}" aria-label="Te Reo pronunciation">
                         <div class="help-text">Optional. If blank, Te Reo mode speaks the Te Reo wording above.</div>
                         <button type="button" class="management-btn small-management-btn" data-preview-reo-spoken-text="${escapeHtml(phraseId)}" data-category="${escapeHtml(category)}">Play Te Reo wording</button>
+                        ${renderVoiceStatusBadge(getPrivateMediaKey('voice-mi', phrase))}
+                        ${renderMediaSizeLine(getPrivateMediaKey('voice-mi', phrase), 'Te Reo audio')}
+                        <div class="voice-buttons table-button-stack">
+                            <button type="button" class="management-btn small-management-btn" data-record-voice data-key="${escapeHtml(getPrivateMediaKey('voice-mi', phrase))}" data-text="${escapeHtml(phrase.reoText || phrase.reoSpokenText || '')}">Record Te Reo</button>
+                            <button type="button" class="management-btn small-management-btn" data-play-voice data-key="${escapeHtml(getPrivateMediaKey('voice-mi', phrase))}">Play Te Reo recording</button>
+                            <button type="button" class="management-btn remove-btn small-management-btn" data-delete-media data-key="${escapeHtml(getPrivateMediaKey('voice-mi', phrase))}">Delete Te Reo recording</button>
+                        </div>
                     </section>
                     <section class="content-phrase-card-section">
                         <label class="content-phrase-card-label">Fallback icon</label>
@@ -6112,11 +6366,7 @@ async function handleContentManagementClick(event) {
     }
 
     if (target.closest('[data-content-save-close]')) {
-        commitActiveContentEditorField();
-        const hadChanges = contentEditorHasUnsavedChanges();
-        markContentEditorClean();
-        finishContentEditorNavigation('origin');
-        if (hadChanges) showToast('Content changes saved', 'success');
+        await handleContentEditorLeave('origin', true);
         return;
     }
 
@@ -6185,7 +6435,8 @@ async function handleContentManagementClick(event) {
             showToast('Enter wording to preview first.', 'warning');
             return;
         }
-        speakText(text, previewSpokenButton, { showPopup: false });
+        const language = isReoPreview && String(input?.value || phrase?.reoSpokenText || phrase?.reoText || '').trim() ? 'mi' : 'en';
+        speakText(text, previewSpokenButton, { showPopup: false, language });
         return;
     }
 
@@ -6210,11 +6461,12 @@ async function handleContentManagementClick(event) {
         const meta = getCategoryMeta(category);
         const phrases = buttonData[category] || [];
         if (await confirmDeleteTopicInEditor(meta.label, phrases.length) !== 'delete') return;
-        phrases.forEach(phrase => {
-            deletePrivateMediaRecord(getPrivateMediaKey('phrase', phrase));
-            deletePrivateMediaRecord(getPrivateMediaKey('voice', phrase));
-        });
-        deletePrivateMediaRecord(getPrivateMediaKey('menu', category));
+        for (const phrase of phrases) {
+            await deletePrivateMediaRecord(getPrivateMediaKey('phrase', phrase));
+            await deletePrivateMediaRecord(getPrivateMediaKey('voice', phrase));
+            await deletePrivateMediaRecord(getPrivateMediaKey('voice-mi', phrase));
+        }
+        await deletePrivateMediaRecord(getPrivateMediaKey('menu', category));
         delete buttonData[category];
         delete categoryConfig.categories[category];
         categoryConfig.order = (categoryConfig.order || []).filter(item => item !== category);
@@ -6357,7 +6609,7 @@ async function handleContentManagementClick(event) {
         saveDataToStorage();
         renderCategoryMenuCards();
         renderContentManagementPanel();
-        showToast('Section saved', 'success');
+        showToast(contentEditorMediaDraft ? 'Section updated in draft' : 'Section saved', 'success');
         return;
     }
 
@@ -6395,7 +6647,7 @@ async function handleContentManagementClick(event) {
         saveDataToStorage();
         refreshCurrentCategoryView(contentSetupSelected.category);
         renderContentManagementPanel();
-        showToast('Phrase saved', 'success');
+        showToast(contentEditorMediaDraft ? 'Phrase updated in draft' : 'Phrase saved', 'success');
         return;
     }
 
@@ -8740,7 +8992,7 @@ function getPhrasePopupOverlay() {
     overlay.addEventListener('pointercancel', handlePhotoMemoryViewerPointerUp);
     overlay.addEventListener('wheel', handlePhotoMemoryViewerWheel, { passive: false });
     document.addEventListener('keydown', (event) => {
-        if (!overlay.classList.contains('show') || !shouldUseManualPopupClose()) return;
+        if (event.key !== 'Escape' || !overlay.classList.contains('show')) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         hidePhrasePopup();
@@ -8973,16 +9225,20 @@ function findSpeechVoiceBySetting(voices, name, lang) {
       || null;
 }
 
-function getPreferredSpeechVoice() {
+function getPreferredSpeechVoice(language = 'en') {
   const synth = window.speechSynthesis;
   if (!synth || typeof synth.getVoices !== 'function') return null;
   const voices = synth.getVoices() || [];
   if (!voices.length) return null;
 
   const configuredVoice = findSpeechVoiceBySetting(voices, appSettings.speechVoiceName, appSettings.speechVoiceLang);
-  if (configuredVoice) return configuredVoice;
+  if (language === 'mi') {
+    if (configuredVoice && /^mi(?:-|$)/i.test(configuredVoice.lang)) return configuredVoice;
+    return voices.find(voice => /^mi(?:-|$)/i.test(voice.lang)) || null;
+  }
+  if (configuredVoice && /^en(?:-|$)/i.test(configuredVoice.lang)) return configuredVoice;
 
-  const styledVoice = findSpeechVoiceByStyle(voices, appSettings.speechVoiceStyle);
+  const styledVoice = findSpeechVoiceByStyle(voices.filter(voice => /^en(?:-|$)/i.test(voice.lang)), appSettings.speechVoiceStyle);
   if (styledVoice) return styledVoice;
 
   const preferredLanguagePrefixes = ['en-NZ', 'en-AU', 'en-GB', 'en-US', 'en'];
@@ -8990,7 +9246,7 @@ function getPreferredSpeechVoice() {
     const match = voices.find(voice => String(voice.lang || '').toLowerCase().startsWith(prefix.toLowerCase()));
     if (match) return match;
   }
-  return voices[0] || null;
+  return null;
 }
 
 function populateSpeechVoiceSelect() {
@@ -9168,11 +9424,10 @@ function speakText(text, buttonElement, options = {}) {
   const rawSpokenText = String(text || '').trim();
   const spokenText = normaliseTextForSpeech(rawSpokenText);
   const synth = window.speechSynthesis;
-  const speechRunId = speechPlaybackRunId + 1;
-  speechPlaybackRunId = speechRunId;
+  stopSpokenOutput();
+  const speechRunId = speechPlaybackRunId;
   const isCurrentSpeechRun = () => speechRunId === speechPlaybackRunId;
   if (synth) {
-    try { synth.cancel(); } catch (_) {}
     try { synth.resume(); } catch (_) {}
   }
 
@@ -9189,6 +9444,11 @@ function speakText(text, buttonElement, options = {}) {
   let finished = false;
   let watchdog = null;
   let retriedAfterVoicesLoaded = false;
+  activeSpeechCleanup = () => {
+    finished = true;
+    if (watchdog) clearTimeout(watchdog);
+    if (buttonElement) buttonElement.classList.remove('speaking');
+  };
 
   const finishSpeech = () => {
     if (!isCurrentSpeechRun()) return;
@@ -9196,6 +9456,7 @@ function speakText(text, buttonElement, options = {}) {
     finished = true;
     if (watchdog) clearTimeout(watchdog);
     activeSpeechUtterance = null;
+    activeSpeechCleanup = null;
     if (buttonElement) buttonElement.classList.remove('speaking');
     if (popupToken) closePhrasePopupAfterMinimum(popupToken);
   };
@@ -9214,12 +9475,25 @@ function speakText(text, buttonElement, options = {}) {
     utterance.pitch = clampNumber(Number(appSettings.speechPitch || DEFAULT_APP_SETTINGS.speechPitch), 0.8, 1.2);
     utterance.volume = 1.0;
 
-    const preferredVoice = getPreferredSpeechVoice();
+    const language = options.language || 'en';
+    const preferredVoice = getPreferredSpeechVoice(language);
+    if (language === 'mi' && !preferredVoice) {
+      if (!retriedAfterVoicesLoaded) {
+        retriedAfterVoicesLoaded = true;
+        warmSpeechVoices().then(() => {
+          if (!finished && isCurrentSpeechRun()) speakNow();
+        }).catch(finishSpeech);
+      } else {
+        showToast('No Te Reo voice is available. The message is shown; add a Te Reo recording to hear it.', 'warning', 6000);
+        finishSpeech();
+      }
+      return;
+    }
     if (preferredVoice) {
       utterance.voice = preferredVoice;
       utterance.lang = preferredVoice.lang || 'en-NZ';
     } else {
-      utterance.lang = isTeReoModeEnabled() ? 'mi-NZ' : 'en-NZ';
+      utterance.lang = language === 'mi' ? 'mi-NZ' : 'en-NZ';
     }
 
     utterance.onstart = () => {
@@ -9791,6 +10065,10 @@ function showAllPhrases() {
 }
 
 function reloadApp() {
+    if (contentEditorMediaDraft) {
+        handleContentEditorLeave('origin');
+        return;
+    }
     const activeCategory = getCurrentCategory();
     populateGrid(activeCategory);
     hideManagementPanel();
@@ -9943,15 +10221,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (passwordCancel) {
         passwordCancel.addEventListener('click', hidePasswordModal);
     }
-    const passwordInput = document.getElementById('passwordInput');
-    if (passwordInput) {
-        passwordInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                checkPassword();
-            }
-        });
-    }
+    const passwordModal = document.getElementById('passwordModal');
+    if (passwordModal) passwordModal.addEventListener('keydown', handlePasswordModalKeydown);
 
     // Apply the active visual theme.
     applyAppTheme();
@@ -9963,7 +10234,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (managementOverlay && managementPanel) {
         // Close with Escape when the content editor is open.
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && managementOverlay.classList.contains('show')) hideManagementPanel();
+            if (e.key === 'Escape' && managementOverlay.classList.contains('show')) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (['contentEditorUnsavedDialog', 'imageCropOverlay', 'managementImageOptionsOverlay', 'fallbackIconOverlay']
+                    .some(id => document.getElementById(id)?.classList.contains('show'))) return;
+                handleContentEditorLeave('origin');
+            }
         });
     }
 
@@ -9973,6 +10250,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     console.log('App initialization complete!');
+});
+
+window.addEventListener('beforeunload', event => {
+    if (!contentEditorMediaDraft || !contentEditorHasUnsavedChanges()) return;
+    event.preventDefault();
+    event.returnValue = '';
 });
 
 // Service Worker Registration

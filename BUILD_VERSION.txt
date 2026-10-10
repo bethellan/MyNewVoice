@@ -1,3 +1,9 @@
+v217_settings_text_encoding_cleanup
+
+Replaced visible Settings/storage mojibake strings with plain readable text.
+Kept Settings behaviour and storage calculations unchanged.
+Includes v216 stale Settings handler cleanup.
+
 v216_settings_dead_handler_cleanup
 
 Removed stale Settings event handlers and control-sync code for Settings controls that are no longer rendered.
