@@ -216,7 +216,7 @@ const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
 let fullAppBackupExportInProgress = false;
 // v216: Removes stale Settings handlers for controls no longer rendered in the Settings dashboard.
-const CURRENT_APP_VERSION = 'v216';
+const CURRENT_APP_VERSION = 'v218';
 const PHOTO_MEMORIES_CATEGORY = 'photoMemories';
 const PHOTO_MEMORIES_DEFAULT_MIGRATION_KEY = 'mynewvoicePhotoMemoriesDefaultAdded';
 const PRIVATE_IMAGE_MAX_SIZE = 2400;
@@ -3276,7 +3276,11 @@ function rememberBackupExport(destination) {
     updateBackupStatusPanel();
 }
 
-function buildBackupImportPreview(incoming) {
+function buildBackupImportPreview(incoming, metadata = {}) {
+    const created = typeof metadata.exportedAt === 'string' && Number.isFinite(Date.parse(metadata.exportedAt))
+        ? new Date(metadata.exportedAt).toLocaleString() : 'Unknown';
+    const version = typeof metadata.appVersion === 'string' && /^v\d{1,6}$/.test(metadata.appVersion)
+        ? metadata.appVersion : 'Unknown';
     const menus = Object.values(incoming.buttonData);
     const phrases = menus.reduce((total, items) => total + items.length, 0);
     const records = Array.from(incoming.media.values());
@@ -3285,7 +3289,7 @@ function buildBackupImportPreview(incoming) {
     const mediaMessage = incoming.replaceMedia
         ? `Replace all saved photos and recordings with ${photos} photos and ${recordings} recordings.`
         : 'This older backup has no media list. Existing photos and recordings will be kept.';
-    return `Import this complete backup?\n\nReplace current menus and phrases with ${menus.length} menus and ${phrases} phrases.\nApply settings included in the backup.\n${mediaMessage}\n\nExport your current setup first if you may need it again.`;
+    return `Import this complete backup?\n\nBackup created: ${created}\nBackup app version: ${version}\n\nReplace current menus and phrases with ${menus.length} menus and ${phrases} phrases.\nApply settings included in the backup.\n${mediaMessage}\n\nExport your current setup first if you may need it again.`;
 }
 
 async function exportFullAppBackup() {
@@ -3424,8 +3428,9 @@ async function importFullAppBackup(file) {
     }
     fullAppBackupImportInProgress = true;
     try {
-        const incoming = await validateCompleteBackup(JSON.parse(await file.text()));
-        if (!confirm(buildBackupImportPreview(incoming))) return;
+        const payload = JSON.parse(await file.text());
+        const incoming = await validateCompleteBackup(payload);
+        if (!confirm(buildBackupImportPreview(incoming, payload))) return;
         await commitContentAndMedia(incoming, incoming.media, incoming.replaceMedia);
         buttonData = incoming.buttonData;
         categoryConfig = incoming.categoryConfig;

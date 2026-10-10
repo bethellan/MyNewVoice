@@ -1,3 +1,13 @@
+v218_backup_preview_and_release_alignment
+
+11 October 2026
+Backup import preview now shows the export date and originating app version.
+Legacy or invalid date/version metadata displays Unknown without blocking valid backups.
+Aligned runtime, Information screen, update metadata and offline shell at v218.
+Includes prior local reliability, language, backup status and password keyboard improvements.
+Preserves layout, speech timing, saved content, copyright notices and backup schema.
+Local release only; publication and phone verification are still required.
+
 v217_settings_text_encoding_cleanup
 
 Replaced visible Settings/storage mojibake strings with plain readable text.

@@ -6,7 +6,7 @@ Educational simulation tool. Not for clinical decision-making.
 */
 
 // Change this internal cache revision whenever the published app shell changes.
-const CACHE_NAME = 'mnv-shell-password-keyboard-20261010';
+const CACHE_NAME = 'mnv-shell-v218-20261011';
 const ASSET_CACHE_NAME = 'mnv-assets-cache';
 const urlsToCache = [
   './', './index.html', './style.css', './script.js',

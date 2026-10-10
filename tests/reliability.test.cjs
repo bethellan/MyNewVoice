@@ -413,6 +413,34 @@ test('Import preview counts menus, phrases, photos and recordings', () => {
     assert.match(preview, /Replace all saved/);
 });
 
+test('Backup preview includes creation date and version with safe legacy fallbacks', () => {
+    const c = load(['buildBackupImportPreview']);
+    const incoming = { buttonData: { greetings: [] }, replaceMedia: false, media: new Map() };
+    const exportedAt = '2026-10-10T12:00:00.000Z';
+    const preview = c.buildBackupImportPreview(incoming, { exportedAt, appVersion: 'v218' });
+    assert.ok(preview.includes(new Date(exportedAt).toLocaleString()));
+    assert.match(preview, /Backup app version: v218/);
+    const legacy = c.buildBackupImportPreview(incoming);
+    assert.match(legacy, /Backup created: Unknown/);
+    assert.match(legacy, /Backup app version: Unknown/);
+    const invalid = c.buildBackupImportPreview(incoming, { exportedAt: 'bad date', appVersion: 'v218\nMisleading text' });
+    assert.match(invalid, /Backup created: Unknown/);
+    assert.match(invalid, /Backup app version: Unknown/);
+    assert.doesNotMatch(invalid, /Misleading text/);
+});
+
+test('Release version agrees across runtime, HTML, metadata and offline shell', () => {
+    const root = path.join(__dirname, '..');
+    const metadata = JSON.parse(fs.readFileSync(path.join(root, 'app-version.json'), 'utf8'));
+    const version = source.match(/const CURRENT_APP_VERSION = '(v\d+)'/)[1];
+    assert.equal(version, 'v218');
+    assert.equal(metadata.appVersion, version);
+    assert.equal(metadata.version, version);
+    assert.equal(metadata.label, `MyNewVoice ${version}`);
+    assert.ok(fs.readFileSync(path.join(root, 'index.html'), 'utf8').includes(`id="aboutVersionText">Version: ${version}</strong>`));
+    assert.ok(fs.readFileSync(path.join(root, 'sw.js'), 'utf8').includes(`mnv-shell-${version}-`));
+});
+
 test('Legacy import preview preserves existing media', () => {
     const c = load(['buildBackupImportPreview']);
     assert.match(c.buildBackupImportPreview({ buttonData: { greetings: [] }, replaceMedia: false, media: new Map() }),
